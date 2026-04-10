@@ -3,87 +3,124 @@
 <head>
 <title>RPG ONLINE</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap" rel="stylesheet">
+
 <style>
 body {
-    background: linear-gradient(to right, #1e3c72, #2a5298);
+    margin: 0;
+    background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
     color: white;
-    font-family: Arial;
+    font-family: 'Pixelify Sans', cursive;
+}
+
+.screen {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.box {
+    background: rgba(0,0,0,0.7);
+    padding: 30px;
+    border-radius: 20px;
     text-align: center;
+    width: 500px;
 }
 
 button {
+    padding: 12px;
+    margin: 8px;
+    border-radius: 10px;
+    border: none;
+    background: orange;
+    cursor: pointer;
+    font-family: 'Pixelify Sans', cursive;
+}
+
+input {
     padding: 10px;
     margin: 5px;
     border-radius: 10px;
     border: none;
-    cursor: pointer;
-    background: orange;
+    text-align: center;
 }
 
-.box {
-    background: rgba(0,0,0,0.3);
+.class-container {
+    display: flex;
+    gap: 20px;
+}
+
+.card {
+    background: rgba(255,255,255,0.1);
     padding: 20px;
     border-radius: 15px;
-    margin: 10px auto;
-    width: 300px;
+    width: 150px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>🔥 RPG ONLINE 🔥</h1>
-
-<!-- LOGIN -->
-<div id="login" class="box">
-    <input id="user" placeholder="Usuário"><br>
-    <input id="pass" type="password" placeholder="Senha"><br>
-    <button onclick="login()">Entrar</button>
-    <button onclick="register()">Criar Conta</button>
-    <p id="msg"></p>
+<div id="login" class="screen">
+    <div class="box">
+        <h1>🔥 RPG ONLINE 🔥</h1>
+        <input id="user" placeholder="Usuário"><br>
+        <input id="pass" type="password" placeholder="Senha"><br>
+        <button onclick="login()">Entrar</button>
+        <button onclick="register()">Criar Conta</button>
+        <p id="msg"></p>
+    </div>
 </div>
 
-<!-- ESCOLHER CLASSE -->
-<div id="classes" class="box" style="display:none;">
-    <h2>Escolha sua classe</h2>
+<div id="classes" class="screen" style="display:none;">
+    <div class="box">
+        <h1>Escolha sua Classe</h1>
 
-    <button onclick="escolher('barbaro')">🪓 Bárbaro</button><br>
-    <button onclick="escolher('tanque')">🛡️ Tanque</button><br>
-    <button onclick="escolher('guerreiro')">⚔️ Guerreiro</button>
+        <div class="class-container">
+            <div class="card">
+                <h3>🪓 Bárbaro</h3>
+                <button onclick="escolherClasse('Bárbaro')">Escolher</button>
+            </div>
+
+            <div class="card">
+                <h3>🛡️ Tanque</h3>
+                <button onclick="escolherClasse('Tanque')">Escolher</button>
+            </div>
+
+            <div class="card">
+                <h3>⚔️ Guerreiro</h3>
+                <button onclick="escolherClasse('Guerreiro')">Escolher</button>
+            </div>
+        </div>
+    </div>
 </div>
 
-<!-- JOGO -->
-<div id="game" class="box" style="display:none;">
-    <h2 id="classe"></h2>
-    <p id="status"></p>
+<div id="game" class="screen" style="display:none;">
+    <div class="box">
+        <h2 id="classe"></h2>
+        <p id="status"></p>
+        <p id="inv"></p>
 
-    <button onclick="atacar()">⚔️ Atacar</button>
-    <button onclick="especial()">🔥 Especial</button>
-    <button onclick="curar()">💊 Curar</button>
-    <button onclick="abrirLoja()">🛒 Loja</button>
-</div>
-
-<!-- LOJA -->
-<div id="loja" class="box" style="display:none;">
-    <h2>🛒 Loja</h2>
-
-    <button onclick="comprarClasse('barbaro')">Bárbaro (50 gold)</button><br>
-    <button onclick="comprarClasse('tanque')">Tanque (50 gold)</button><br>
-    <button onclick="comprarClasse('guerreiro')">Guerreiro (50 gold)</button><br>
-
-    <button onclick="comprarItem()">💊 Poção (20 gold)</button><br>
-
-    <button onclick="fecharLoja()">Voltar</button>
+        <button onclick="atacar()">⚔️ Atacar</button>
+        <button onclick="especial()">🔥 Especial</button>
+        <button onclick="curar()">💊 Curar</button>
+        <button onclick="comprarItem('Espada')">🗡️ Comprar Espada</button>
+    </div>
 </div>
 
 <script>
+let username = "";
+
 let player = {
     classe: "",
-    hp: 0,
-    maxHP: 0,
-    dano: 0,
-    regen: 0,
-    gold: 0
+    hp: 100,
+    maxHP: 100,
+    gold: 50,
+    especial: 10,
+    regen: 5,
+    inventario: []
 };
 
 function register(){
@@ -103,91 +140,82 @@ function login(){
         body: JSON.stringify({user:user.value, pass:pass.value})
     }).then(r=>r.json()).then(d=>{
         if(d.ok){
-            document.getElementById("login").style.display="none";
-            document.getElementById("classes").style.display="block";
+            username = user.value;
+
+            player.gold = d.data.gold || 50;
+            player.hp = d.data.hp || 100;
+            player.classe = d.data.classe || "";
+            player.inventario = d.data.inventario || [];
+
+            login.style.display="none";
+
+            if(player.classe === ""){
+                classes.style.display="flex";
+            } else {
+                game.style.display="flex";
+                atualizar();
+            }
         } else {
             msg.innerText = d.msg;
         }
     });
 }
 
-function escolher(tipo){
-    if(tipo==="barbaro"){
-        player = {classe:"🪓 Bárbaro", hp:120, maxHP:120, dano:15, regen:5, gold:50};
-    }
-    if(tipo==="tanque"){
-        player = {classe:"🛡️ Tanque", hp:200, maxHP:200, dano:8, regen:3, gold:50};
-    }
-    if(tipo==="guerreiro"){
-        player = {classe:"⚔️ Guerreiro", hp:140, maxHP:140, dano:20, regen:1, gold:50};
-    }
-
-    document.getElementById("classes").style.display="none";
-    document.getElementById("game").style.display="block";
-
+function escolherClasse(nome){
+    player.classe = nome;
+    classes.style.display="none";
+    game.style.display="flex";
+    salvar();
     atualizar();
+}
+
+function salvar(){
+    fetch("/save", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ user: username, data: player })
+    });
 }
 
 function atualizar(){
     classe.innerText = player.classe;
     status.innerText = `❤️ ${player.hp}/${player.maxHP} | 💰 ${player.gold}`;
+    inv.innerText = "Inventário: " + player.inventario.join(", ");
 }
 
 function atacar(){
-    let ganho = Math.floor(Math.random()*10);
-    player.gold += ganho;
+    player.gold += Math.floor(Math.random()*10);
     player.hp += player.regen;
-
     if(player.hp > player.maxHP) player.hp = player.maxHP;
-
+    salvar();
     atualizar();
 }
 
 function especial(){
-    player.gold += 20;
+    player.gold += player.especial;
+    salvar();
     atualizar();
 }
 
 function curar(){
     player.hp += 20;
     if(player.hp > player.maxHP) player.hp = player.maxHP;
+    salvar();
     atualizar();
 }
 
-function abrirLoja(){
-    game.style.display="none";
-    loja.style.display="block";
-}
-
-function fecharLoja(){
-    loja.style.display="none";
-    game.style.display="block";
-}
-
-function comprarClasse(tipo){
-    if(player.gold < 50){
-        alert("Sem gold!");
-        return;
-    }
-
-    player.gold -= 50;
-    escolher(tipo);
-}
-
-function comprarItem(){
+function comprarItem(nome){
     if(player.gold < 20){
         alert("Sem gold!");
         return;
     }
 
     player.gold -= 20;
-    player.hp += 30;
+    player.inventario.push(nome);
+    salvar();
     atualizar();
 }
 </script>
 
 </body>
 </html>
-
-
-
