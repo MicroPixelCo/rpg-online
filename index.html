@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>RPG ONLINE</title>
+
+<style>
+body {
+    background: linear-gradient(to right, #1e3c72, #2a5298);
+    color: white;
+    font-family: Arial;
+    text-align: center;
+}
+
+button {
+    padding: 10px;
+    margin: 5px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    background: orange;
+}
+
+.box {
+    background: rgba(0,0,0,0.3);
+    padding: 20px;
+    border-radius: 15px;
+    margin: 10px auto;
+    width: 300px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🔥 RPG ONLINE 🔥</h1>
+
+<!-- LOGIN -->
+<div id="login" class="box">
+    <input id="user" placeholder="Usuário"><br>
+    <input id="pass" type="password" placeholder="Senha"><br>
+    <button onclick="login()">Entrar</button>
+    <button onclick="register()">Criar Conta</button>
+    <p id="msg"></p>
+</div>
+
+<!-- ESCOLHER CLASSE -->
+<div id="classes" class="box" style="display:none;">
+    <h2>Escolha sua classe</h2>
+
+    <button onclick="escolher('barbaro')">🪓 Bárbaro</button><br>
+    <button onclick="escolher('tanque')">🛡️ Tanque</button><br>
+    <button onclick="escolher('guerreiro')">⚔️ Guerreiro</button>
+</div>
+
+<!-- JOGO -->
+<div id="game" class="box" style="display:none;">
+    <h2 id="classe"></h2>
+    <p id="status"></p>
+
+    <button onclick="atacar()">⚔️ Atacar</button>
+    <button onclick="especial()">🔥 Especial</button>
+    <button onclick="curar()">💊 Curar</button>
+    <button onclick="abrirLoja()">🛒 Loja</button>
+</div>
+
+<!-- LOJA -->
+<div id="loja" class="box" style="display:none;">
+    <h2>🛒 Loja</h2>
+
+    <button onclick="comprarClasse('barbaro')">Bárbaro (50 gold)</button><br>
+    <button onclick="comprarClasse('tanque')">Tanque (50 gold)</button><br>
+    <button onclick="comprarClasse('guerreiro')">Guerreiro (50 gold)</button><br>
+
+    <button onclick="comprarItem()">💊 Poção (20 gold)</button><br>
+
+    <button onclick="fecharLoja()">Voltar</button>
+</div>
+
+<script>
+let player = {
+    classe: "",
+    hp: 0,
+    maxHP: 0,
+    dano: 0,
+    regen: 0,
+    gold: 0
+};
+
+function register(){
+    fetch("/register", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({user:user.value, pass:pass.value})
+    }).then(r=>r.json()).then(d=>{
+        msg.innerText = d.ok ? "Conta criada!" : d.msg;
+    });
+}
+
+function login(){
+    fetch("/login", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({user:user.value, pass:pass.value})
+    }).then(r=>r.json()).then(d=>{
+        if(d.ok){
+            document.getElementById("login").style.display="none";
+            document.getElementById("classes").style.display="block";
+        } else {
+            msg.innerText = d.msg;
+        }
+    });
+}
+
+function escolher(tipo){
+    if(tipo==="barbaro"){
+        player = {classe:"🪓 Bárbaro", hp:120, maxHP:120, dano:15, regen:5, gold:50};
+    }
+    if(tipo==="tanque"){
+        player = {classe:"🛡️ Tanque", hp:200, maxHP:200, dano:8, regen:3, gold:50};
+    }
+    if(tipo==="guerreiro"){
+        player = {classe:"⚔️ Guerreiro", hp:140, maxHP:140, dano:20, regen:1, gold:50};
+    }
+
+    document.getElementById("classes").style.display="none";
+    document.getElementById("game").style.display="block";
+
+    atualizar();
+}
+
+function atualizar(){
+    classe.innerText = player.classe;
+    status.innerText = `❤️ ${player.hp}/${player.maxHP} | 💰 ${player.gold}`;
+}
+
+function atacar(){
+    let ganho = Math.floor(Math.random()*10);
+    player.gold += ganho;
+    player.hp += player.regen;
+
+    if(player.hp > player.maxHP) player.hp = player.maxHP;
+
+    atualizar();
+}
+
+function especial(){
+    player.gold += 20;
+    atualizar();
+}
+
+function curar(){
+    player.hp += 20;
+    if(player.hp > player.maxHP) player.hp = player.maxHP;
+    atualizar();
+}
+
+function abrirLoja(){
+    game.style.display="none";
+    loja.style.display="block";
+}
+
+function fecharLoja(){
+    loja.style.display="none";
+    game.style.display="block";
+}
+
+function comprarClasse(tipo){
+    if(player.gold < 50){
+        alert("Sem gold!");
+        return;
+    }
+
+    player.gold -= 50;
+    escolher(tipo);
+}
+
+function comprarItem(){
+    if(player.gold < 20){
+        alert("Sem gold!");
+        return;
+    }
+
+    player.gold -= 20;
+    player.hp += 30;
+    atualizar();
+}
+</script>
+
+</body>
+</html>
+
+
+
