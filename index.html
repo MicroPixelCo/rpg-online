@@ -1,221 +1,241 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-<title>RPG ONLINE</title>
+    <meta charset="UTF-8">
+    <title>RPG ONLINE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff9f43;
+            --secondary: #54a0ff;
+            --bg-dark: #0f172a;
+            --glass: rgba(255, 255, 255, 0.1);
+            --border-glass: rgba(255, 255, 255, 0.2);
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap" rel="stylesheet">
+        body {
+            margin: 0;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+            color: white;
+            font-family: 'Pixelify Sans', cursive;
+            overflow: hidden;
+        }
 
-<style>
-body {
-    margin: 0;
-    background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
-    color: white;
-    font-family: 'Pixelify Sans', cursive;
-}
+        .screen {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.5s ease-in-out;
+        }
 
-.screen {
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+        .box {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            padding: 40px;
+            border-radius: 24px;
+            text-align: center;
+            width: 90%;
+            max-width: 550px;
+            border: 1px solid var(--border-glass);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
 
-.box {
-    background: rgba(0,0,0,0.7);
-    padding: 30px;
-    border-radius: 20px;
-    text-align: center;
-    width: 500px;
-}
+        h1 { font-size: 2.5rem; text-shadow: 2px 2px #000; margin-bottom: 20px; }
 
-button {
-    padding: 12px;
-    margin: 8px;
-    border-radius: 10px;
-    border: none;
-    background: orange;
-    cursor: pointer;
-    font-family: 'Pixelify Sans', cursive;
-}
+        /* Inputs Estilizados */
+        input {
+            padding: 14px;
+            margin: 10px 0;
+            border-radius: 12px;
+            border: 1px solid var(--border-glass);
+            background: rgba(0,0,0,0.3);
+            color: white;
+            width: 80%;
+            font-family: inherit;
+            transition: 0.3s;
+        }
+        input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 10px var(--primary); }
 
-input {
-    padding: 10px;
-    margin: 5px;
-    border-radius: 10px;
-    border: none;
-    text-align: center;
-}
+        /* Botões Estilizados */
+        button {
+            padding: 12px 24px;
+            margin: 10px 5px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #ff9f43, #ff6b6b);
+            color: white;
+            cursor: pointer;
+            font-family: 'Pixelify Sans', cursive;
+            font-size: 1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-transform: uppercase;
+        }
+        button:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255, 159, 67, 0.4); }
+        button:active { transform: translateY(0); }
 
-.class-container {
-    display: flex;
-    gap: 20px;
-}
+        /* Cards de Classe */
+        .class-container { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+        .card {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 18px;
+            width: 130px;
+            border: 1px solid var(--border-glass);
+            transition: 0.3s;
+        }
+        .card:hover { background: rgba(255,255,255,0.15); border-color: var(--primary); }
 
-.card {
-    background: rgba(255,255,255,0.1);
-    padding: 20px;
-    border-radius: 15px;
-    width: 150px;
-}
-</style>
+        /* Interface de Jogo */
+        .stats-bar {
+            background: rgba(0,0,0,0.4);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            border-left: 5px solid var(--primary);
+        }
+        
+        .inventory-box {
+            background: rgba(0,0,0,0.2);
+            padding: 10px;
+            border-radius: 10px;
+            min-height: 40px;
+            margin: 15px 0;
+            border: 1px dashed var(--border-glass);
+        }
+
+        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        #msg { color: #ff6b6b; height: 20px; font-size: 0.9rem; }
+    </style>
 </head>
-
 <body>
 
-<div id="login" class="screen">
-    <div class="box">
-        <h1>🔥 RPG ONLINE 🔥</h1>
-        <input id="user" placeholder="Usuário"><br>
-        <input id="pass" type="password" placeholder="Senha"><br>
-        <button onclick="login()">Entrar</button>
-        <button onclick="register()">Criar Conta</button>
-        <p id="msg"></p>
+    <div id="login" class="screen">
+        <div class="box">
+            <h1>🔥 RPG ONLINE 🔥</h1>
+            <input id="user" placeholder="Usuário">
+            <input id="pass" type="password" placeholder="Senha">
+            <div style="margin-top: 15px;">
+                <button onclick="login()">Entrar</button>
+                <button onclick="register()" style="background: #4b6584;">Criar Conta</button>
+            </div>
+            <p id="msg"></p>
+        </div>
     </div>
-</div>
 
-<div id="classes" class="screen" style="display:none;">
-    <div class="box">
-        <h1>Escolha sua Classe</h1>
-
-        <div class="class-container">
-            <div class="card">
-                <h3>🪓 Bárbaro</h3>
-                <button onclick="escolherClasse('Bárbaro')">Escolher</button>
-            </div>
-
-            <div class="card">
-                <h3>🛡️ Tanque</h3>
-                <button onclick="escolherClasse('Tanque')">Escolher</button>
-            </div>
-
-            <div class="card">
-                <h3>⚔️ Guerreiro</h3>
-                <button onclick="escolherClasse('Guerreiro')">Escolher</button>
+    <div id="classes" class="screen" style="display:none;">
+        <div class="box">
+            <h1>Escolha sua Classe</h1>
+            <div class="class-container">
+                <div class="card">
+                    <h3>🪓 Bárbaro</h3>
+                    <button onclick="escolherClasse('Bárbaro')">Escolher</button>
+                </div>
+                <div class="card">
+                    <h3>🛡️ Tanque</h3>
+                    <button onclick="escolherClasse('Tanque')">Escolher</button>
+                </div>
+                <div class="card">
+                    <h3>⚔️ Guerreiro</h3>
+                    <button onclick="escolherClasse('Guerreiro')">Escolher</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<div id="game" class="screen" style="display:none;">
-    <div class="box">
-        <h2 id="classe"></h2>
-        <p id="status"></p>
-        <p id="inv"></p>
+    <div id="game" class="screen" style="display:none;">
+        <div class="box">
+            <h2 id="classe" style="color: var(--primary); margin-top: 0;"></h2>
+            
+            <div class="stats-bar" id="status"></div>
+            
+            <div class="inventory-box">
+                <span id="inv"></span>
+            </div>
 
-        <button onclick="atacar()">⚔️ Atacar</button>
-        <button onclick="especial()">🔥 Especial</button>
-        <button onclick="curar()">💊 Curar</button>
-        <button onclick="comprarItem('Espada')">🗡️ Comprar Espada</button>
+            <div class="actions">
+                <button onclick="atacar()">⚔️ Atacar</button>
+                <button onclick="especial()">🔥 Especial</button>
+                <button onclick="curar()" style="background: #20bf6b;">💊 Curar</button>
+                <button onclick="comprarItem('Espada')" style="background: #a55eea;">🗡️ Loja</button>
+            </div>
+        </div>
     </div>
-</div>
 
-<script>
-let username = "";
+    <script>
+        // LÓGICA MANTIDA ORIGINAL
+        let username = "";
+        let player = { classe: "", hp: 100, maxHP: 100, gold: 50, especial: 10, regen: 5, inventario: [] };
 
-let player = {
-    classe: "",
-    hp: 100,
-    maxHP: 100,
-    gold: 50,
-    especial: 10,
-    regen: 5,
-    inventario: []
-};
-
-function register(){
-    fetch("/register", {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({user:user.value, pass:pass.value})
-    }).then(r=>r.json()).then(d=>{
-        msg.innerText = d.ok ? "Conta criada!" : d.msg;
-    });
-}
-
-function login(){
-    fetch("/login", {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({user:user.value, pass:pass.value})
-    }).then(r=>r.json()).then(d=>{
-        if(d.ok){
-            username = user.value;
-
-            player.gold = d.data.gold || 50;
-            player.hp = d.data.hp || 100;
-            player.classe = d.data.classe || "";
-            player.inventario = d.data.inventario || [];
-
-            login.style.display="none";
-
-            if(player.classe === ""){
-                classes.style.display="flex";
-            } else {
-                game.style.display="flex";
-                atualizar();
-            }
-        } else {
-            msg.innerText = d.msg;
+        function register(){
+            fetch("/register", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({user:user.value, pass:pass.value}) })
+            .then(r=>r.json()).then(d=>{ msg.innerText = d.ok ? "Conta criada!" : d.msg; });
         }
-    });
-}
 
-function escolherClasse(nome){
-    player.classe = nome;
-    classes.style.display="none";
-    game.style.display="flex";
-    salvar();
-    atualizar();
-}
+        function login(){
+            fetch("/login", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({user:user.value, pass:pass.value}) })
+            .then(r=>r.json()).then(d=>{
+                if(d.ok){
+                    username = user.value;
+                    player.gold = d.data.gold || 50;
+                    player.hp = d.data.hp || 100;
+                    player.classe = d.data.classe || "";
+                    player.inventario = d.data.inventario || [];
+                    document.getElementById('login').style.display="none";
+                    if(player.classe === ""){
+                        document.getElementById('classes').style.display="flex";
+                    } else {
+                        document.getElementById('game').style.display="flex";
+                        atualizar();
+                    }
+                } else { msg.innerText = d.msg; }
+            });
+        }
 
-function salvar(){
-    fetch("/save", {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({ user: username, data: player })
-    });
-}
+        function escolherClasse(nome){
+            player.classe = nome;
+            document.getElementById('classes').style.display="none";
+            document.getElementById('game').style.display="flex";
+            salvar(); atualizar();
+        }
 
-function atualizar(){
-    classe.innerText = player.classe;
-    status.innerText = `❤️ ${player.hp}/${player.maxHP} | 💰 ${player.gold}`;
-    inv.innerText = "Inventário: " + player.inventario.join(", ");
-}
+        function salvar(){
+            fetch("/save", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ user: username, data: player }) });
+        }
 
-function atacar(){
-    player.gold += Math.floor(Math.random()*10);
-    player.hp += player.regen;
-    if(player.hp > player.maxHP) player.hp = player.maxHP;
-    salvar();
-    atualizar();
-}
+        function atualizar(){
+            document.getElementById('classe').innerText = player.classe;
+            document.getElementById('status').innerHTML = `❤️ ${player.hp}/${player.maxHP} &nbsp;&nbsp; | &nbsp;&nbsp; 💰 ${player.gold}`;
+            document.getElementById('inv').innerText = "🎒 " + (player.inventario.length > 0 ? player.inventario.join(", ") : "Vazio");
+        }
 
-function especial(){
-    player.gold += player.especial;
-    salvar();
-    atualizar();
-}
+        function atacar(){
+            player.gold += Math.floor(Math.random()*10);
+            player.hp += player.regen;
+            if(player.hp > player.maxHP) player.hp = player.maxHP;
+            salvar(); atualizar();
+        }
 
-function curar(){
-    player.hp += 20;
-    if(player.hp > player.maxHP) player.hp = player.maxHP;
-    salvar();
-    atualizar();
-}
+        function especial(){
+            player.gold += player.especial;
+            salvar(); atualizar();
+        }
 
-function comprarItem(nome){
-    if(player.gold < 20){
-        alert("Sem gold!");
-        return;
-    }
+        function curar(){
+            player.hp += 20;
+            if(player.hp > player.maxHP) player.hp = player.maxHP;
+            salvar(); atualizar();
+        }
 
-    player.gold -= 20;
-    player.inventario.push(nome);
-    salvar();
-    atualizar();
-}
-</script>
-
+        function comprarItem(nome){
+            if(player.gold < 20){ alert("Sem gold!"); return; }
+            player.gold -= 20;
+            player.inventario.push(nome);
+            salvar(); atualizar();
+        }
+    </script>
 </body>
 </html>
