@@ -2,283 +2,234 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>RPG ONLINE 6.2 FIX</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap" rel="stylesheet">
+<title>RPG ONLINE FINAL</title>
 
 <style>
 body{
 margin:0;
-font-family:'Pixelify Sans';
-background:radial-gradient(circle,#1a1a2e,#0f0f1a);
+font-family:Arial;
+background:#0f172a;
 color:white;
-overflow:hidden;
+text-align:center;
 }
 
-.screen{
-width:100vw;
-height:100vh;
-display:none;
-justify-content:center;
-align-items:center;
-}
-
+.screen{display:none;height:100vh;justify-content:center;align-items:center;}
 #login{display:flex;}
 
 .box{
-background:rgba(0,0,0,0.75);
+background:#1e293b;
 padding:30px;
 border-radius:15px;
-text-align:center;
-width:420px;
-}
-
-input{
-padding:10px;
-margin:5px;
-width:80%;
-text-align:center;
+width:400px;
 }
 
 button{
 padding:10px;
 margin:5px;
-cursor:pointer;
-background:linear-gradient(135deg,#3a0ca3,#7209b7,#f72585);
-color:white;
 border:none;
 border-radius:10px;
+background:#3b82f6;
+color:white;
+cursor:pointer;
 }
 
-.menu{display:flex;flex-direction:column;gap:10px;}
-
-.card{
-background:rgba(255,255,255,0.1);
-padding:10px;
-margin:10px;
-border-radius:10px;
+.enemy{
+font-size:50px;
+animation:idle 1s infinite alternate;
 }
 
-#hud{
-position:absolute;
-top:10px;
-left:10px;
-background:rgba(0,0,0,0.5);
-padding:10px;
-border-radius:10px;
+@keyframes idle{
+from{transform:translateY(0)}
+to{transform:translateY(-10px)}
 }
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
 <div id="login" class="screen">
 <div class="box">
 <h2>LOGIN</h2>
-<input id="user" placeholder="Usuário">
-<input id="pass" type="password" placeholder="Senha">
+<input id="user" placeholder="User"><br>
+<input id="pass" placeholder="Senha"><br>
 <button onclick="login()">Entrar</button>
 <button onclick="register()">Criar</button>
 <p id="msg"></p>
 </div>
 </div>
 
-<!-- LOBBY -->
 <div id="lobby" class="screen">
 <div class="box">
-<h1>🎮 LOBBY</h1>
-<p>💰 Gold: <span id="gold"></span></p>
-
-<div class="menu">
+<h2>LOBBY</h2>
+<p>Gold: <span id="gold"></span></p>
 <button onclick="start()">Jogar</button>
-<button onclick="openShop()">Loja</button>
-<button onclick="logout()">Sair</button>
-</div>
+<button onclick="waveMode()">Modo Ondas</button>
 </div>
 </div>
 
-<!-- GAME -->
 <div id="game" class="screen">
-
-<div id="hud">
-HP: <span id="hp"></span><br>
-Gold: <span id="gold2"></span><br>
-Classe: <span id="class"></span>
-</div>
-
 <div class="box">
+
+<div class="enemy" id="enemySprite">🧟</div>
 <h2 id="enemyName"></h2>
-<h3>HP: <span id="ehp"></span></h3>
+<p>HP Inimigo: <span id="ehp"></span></p>
+
+<hr>
+
+<p>HP: <span id="hp"></span></p>
+<p>Classe: <span id="class"></span></p>
+<p>Wave: <span id="wave"></span></p>
 
 <button onclick="attack()">Atacar</button>
 <button onclick="special()">Especial</button>
 <button onclick="heal()">Curar</button>
-<button onclick="back()">Lobby</button>
-</div>
-</div>
 
-<!-- SHOP -->
-<div id="shop" class="screen">
-<div class="box">
-<h2>🛒 LOJA</h2>
-
-<div class="card">Mago FREE</div>
-<div class="card">Cavaleiro - 150</div>
-<div class="card">Bárbaro - 400</div>
-<div class="card">Golem - 800</div>
-<div class="card">Dark Knight - 1000</div>
-
-<button onclick="back()">Voltar</button>
 </div>
 </div>
 
 <script>
+const API="http://localhost:3000";
 
-const API="https://vedolarpg.onrender.com";
-
-/* ESTADO */
-let username="";
-let player={gold:0,hp:100,maxHP:100,regen:10,dmg:10,classe:"mage"};
-let enemy={hp:300,name:"🧟 Zumbi"};
-
-let cooldown=0;
-let wave=1;
-
-/* PERSONAGENS */
-const CHAR={
-mage:{hp:100,dmg:10,regen:10,s:45,cool:2},
-knight:{hp:175,dmg:25,regen:10,s:50,cool:2},
-barbarian:{hp:210,dmg:55,regen:18,s:80,cool:3},
-golem:{hp:500,dmg:50,regen:5,s:200,cool:4},
-dark:{hp:350,dmg:60,regen:10,s:150,cool:3}
+/* PLAYER */
+let player={
+gold:50,
+hp:100,
+maxHP:100,
+dmg:10,
+classe:"Guerreiro"
 };
 
-/* SAFE GET */
-function get(id){
-return document.getElementById(id);
-}
+let enemy={
+hp:100,
+name:"🧟 Zumbi",
+dmg:10
+};
 
-/* SHOW */
+let wave=1;
+let cooldown=0;
+
+/* UI */
 function show(id){
 document.querySelectorAll(".screen").forEach(s=>s.style.display="none");
-let el=get(id);
-if(el) el.style.display="flex";
-}
-
-/* UPDATE SAFE */
-function update(){
-if(get("gold")) get("gold").innerText = player.gold;
-if(get("gold2")) get("gold2").innerText = player.gold;
-if(get("hp")) get("hp").innerText = player.hp;
-if(get("class")) get("class").innerText = player.classe;
-if(get("enemyName")) get("enemyName").innerText = enemy.name;
-if(get("ehp")) get("ehp").innerText = enemy.hp;
+document.getElementById(id).style.display="flex";
 }
 
 /* LOGIN */
 function login(){
-const u=get("user"), p=get("pass"), m=get("msg");
-
-if(m) m.innerText="Conectando...";
-
 fetch(API+"/login",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
-body:JSON.stringify({user:u.value,pass:p.value})
+body:JSON.stringify({user:user.value,pass:pass.value})
 })
 .then(r=>r.json())
 .then(d=>{
-if(!d.ok){ if(m) m.innerText=d.msg; return; }
-
-username=u.value;
+if(!d.ok){msg.innerText=d.msg;return;}
 player=d.data;
-
 show("lobby");
 update();
-})
-.catch(()=>{ if(m) m.innerText="Erro de conexão"; });
+});
 }
 
-/* REGISTER */
 function register(){
-const u=get("user"), p=get("pass"), m=get("msg");
-
-if(m) m.innerText="Criando...";
-
 fetch(API+"/register",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
-body:JSON.stringify({user:u.value,pass:p.value})
+body:JSON.stringify({user:user.value,pass:pass.value})
 })
 .then(r=>r.json())
 .then(d=>{
-if(m) m.innerText=d.ok?"Criado!":d.msg;
-})
-.catch(()=>{ if(m) m.innerText="Erro"; });
+msg.innerText=d.ok?"Criado!":d.msg;
+});
 }
 
-/* GAME FLOW */
-function start(){show("game");}
-function openShop(){show("shop");}
-function back(){show("lobby");}
-function logout(){location.reload();}
+/* GAME */
+function start(){
+spawnEnemy();
+show("game");
+update();
+}
 
-/* COMBATE FIXADO */
+function waveMode(){
+wave=1;
+spawnEnemy();
+show("game");
+}
+
+/* SPAWN */
+function spawnEnemy(){
+if(wave%5===0){
+enemy={hp:200+wave*20,name:"👑 Boss",dmg:20};
+}
+else{
+let types=["🧟 Zumbi","🧌 Orc","💀 Esqueleto"];
+enemy={
+hp:100+wave*20,
+name:types[Math.floor(Math.random()*types.length)],
+dmg:10+wave*2
+};
+}
+}
+
+/* COMBATE */
 function attack(){
 enemy.hp-=player.dmg;
 player.gold+=10;
+
 enemyTurn();
-end();
+check();
 }
 
 function special(){
-let c=CHAR[player.classe];
-if(!c || cooldown>0) return;
+if(cooldown>0) return;
 
-enemy.hp-=c.s;
-cooldown=c.cool;
+enemy.hp-=player.dmg*3;
+cooldown=2;
 
 enemyTurn();
-end();
+check();
 }
 
 function heal(){
-player.hp=Math.min(player.maxHP,player.hp+player.regen);
+player.hp=Math.min(player.maxHP,player.hp+20);
+
 enemyTurn();
-end();
+check();
 }
 
-/* ENEMY */
 function enemyTurn(){
-player.hp-=15;
+player.hp-=enemy.dmg;
 }
 
-/* WAVES */
-function end(){
+/* CHECK */
+function check(){
 cooldown=Math.max(0,cooldown-1);
 
 if(enemy.hp<=0){
 wave++;
 player.gold+=50;
-enemy.hp=300+wave*25;
-enemy.name = wave%5===0 ? "👑 BOSS" : "🧟 Zumbi";
+spawnEnemy();
 }
 
 if(player.hp<=0){
-alert("Você perdeu na wave "+wave);
+alert("Morreu na wave "+wave);
 location.reload();
 }
 
 update();
 }
 
-/* INIT */
-window.onload=()=>{
-show("login");
-update();
-};
+/* UPDATE */
+function update(){
+gold.innerText=player.gold;
+hp.innerText=player.hp;
+class.innerText=player.classe;
+enemyName.innerText=enemy.name;
+ehp.innerText=enemy.hp;
+wave.innerText=wave;
+}
 
+/* INIT */
+window.onload=()=>show("login");
 </script>
 
 </body>
