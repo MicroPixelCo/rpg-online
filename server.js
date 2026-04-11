@@ -9,20 +9,54 @@ app.use(express.static(__dirname));
 const DB_FILE = "users.json";
 
 /* =========================
-   CARREGAR BANCO
+   BANCO
 ========================= */
 let users = {};
 
+/* =========================
+   FIX DE USUÁRIO ANTIGO
+========================= */
+function fixUser(u){
+    return {
+        pass: u.pass,
+
+        gold: u.gold ?? 50,
+
+        hp: u.hp ?? 100,
+        maxHP: u.maxHP ?? 100,
+
+        level: u.level ?? 1,
+        xp: u.xp ?? 0,
+
+        classe: u.classe ?? "",
+
+        inventario: u.inventario ?? []
+    };
+}
+
+/* =========================
+   LOAD
+========================= */
 function load() {
     if (fs.existsSync(DB_FILE)) {
         try {
-            users = JSON.parse(fs.readFileSync(DB_FILE));
+            let raw = JSON.parse(fs.readFileSync(DB_FILE));
+
+            for (let k in raw) {
+                raw[k] = fixUser(raw[k]);
+            }
+
+            users = raw;
+
         } catch (e) {
             users = {};
         }
     }
 }
 
+/* =========================
+   SAVE
+========================= */
 function save() {
     fs.writeFileSync(DB_FILE, JSON.stringify(users, null, 2));
 }
@@ -30,7 +64,7 @@ function save() {
 load();
 
 /* =========================
-   REGISTRO
+   REGISTER
 ========================= */
 app.post("/register", (req, res) => {
     const { user, pass } = req.body;
@@ -45,22 +79,12 @@ app.post("/register", (req, res) => {
 
     users[user] = {
         pass,
-
-        // 💰 economia
         gold: 50,
-
-        // ❤️ vida
         hp: 100,
         maxHP: 100,
-
-        // 🧠 RPG progressão
         level: 1,
         xp: 0,
-
-        // 🧍 status
         classe: "",
-
-        // 🎒 inventário
         inventario: []
     };
 
@@ -69,7 +93,7 @@ app.post("/register", (req, res) => {
 });
 
 /* =========================
-   LOGIN
+   LOGIN (100% SEGURO)
 ========================= */
 app.post("/login", (req, res) => {
     const { user, pass } = req.body;
@@ -80,22 +104,14 @@ app.post("/login", (req, res) => {
         return res.json({ ok: false, msg: "Login inválido" });
     }
 
-    res.json({
+    return res.json({
         ok: true,
-        data: {
-            gold: u.gold,
-            hp: u.hp,
-            maxHP: u.maxHP,
-            level: u.level,
-            xp: u.xp,
-            classe: u.classe,
-            inventario: u.inventario
-        }
+        data: fixUser(u)
     });
 });
 
 /* =========================
-   SALVAR
+   SAVE
 ========================= */
 app.post("/save", (req, res) => {
     const { user, data } = req.body;
@@ -104,10 +120,9 @@ app.post("/save", (req, res) => {
         return res.json({ ok: false, msg: "Usuário não existe" });
     }
 
-    // merge seguro (evita crash)
     users[user] = {
         ...users[user],
-        ...data
+        ...fixUser(data)
     };
 
     save();
@@ -116,14 +131,13 @@ app.post("/save", (req, res) => {
 });
 
 /* =========================
-   (BASE FUTURA PvP)
-   depois podemos adicionar:
-   /battle
-   /matchmaking
+   FUTURO (PvP / MATCHMAKING)
 ========================= */
+// app.post("/battle")
+// app.post("/match")
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-    console.log("🔥 RPG SERVER RODANDO NA PORTA " + PORT);
+    console.log("🔥 RPG ONLINE RODANDO NA PORTA " + PORT);
 });
