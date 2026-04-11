@@ -1,148 +1,24 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-<meta charset="UTF-8">
-<title>RPG ONLINE 6.1</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap" rel="stylesheet">
-
-<style>
-body{
-margin:0;
-font-family:'Pixelify Sans';
-background:radial-gradient(circle,#1a1a2e,#0f0f1a);
-color:white;
-overflow:hidden;
-}
-
-.screen{
-width:100vw;
-height:100vh;
-display:none;
-justify-content:center;
-align-items:center;
-}
-
-#login{display:flex;}
-
-.box{
-background:rgba(0,0,0,0.75);
-padding:30px;
-border-radius:15px;
-text-align:center;
-width:420px;
-}
-
-input{
-padding:10px;
-margin:5px;
-width:80%;
-text-align:center;
-}
-
-button{
-padding:10px;
-margin:5px;
-cursor:pointer;
-background:linear-gradient(135deg,#3a0ca3,#7209b7,#f72585);
-color:white;
-border:none;
-border-radius:10px;
-}
-
-.menu{display:flex;flex-direction:column;gap:10px;}
-
-.card{
-background:rgba(255,255,255,0.1);
-padding:10px;
-margin:10px;
-border-radius:10px;
-}
-
-#hud{
-position:absolute;
-top:10px;
-left:10px;
-background:rgba(0,0,0,0.5);
-padding:10px;
-border-radius:10px;
-}
-</style>
-</head>
-
-<body>
-
-<!-- LOGIN -->
-<div id="login" class="screen">
-<div class="box">
-<h2>LOGIN</h2>
-<input id="user" placeholder="Usuário">
-<input id="pass" type="password" placeholder="Senha">
-<button onclick="login()">Entrar</button>
-<button onclick="register()">Criar</button>
-<p id="msg"></p>
-</div>
-</div>
-
-<!-- LOBBY -->
-<div id="lobby" class="screen">
-<div class="box">
-<h1>🎮 LOBBY</h1>
-<p>💰 Gold: <span id="gold"></span></p>
-
-<div class="menu">
-<button onclick="start()">Jogar</button>
-<button onclick="openShop()">Loja</button>
-<button onclick="logout()">Sair</button>
-</div>
-</div>
-</div>
-
-<!-- GAME -->
-<div id="game" class="screen">
-
-<div id="hud">
-HP: <span id="hp"></span><br>
-Gold: <span id="gold2"></span><br>
-Classe: <span id="class"></span>
-</div>
-
-<div class="box">
-<h2 id="enemyName"></h2>
-<h3>HP: <span id="ehp"></span></h3>
-
-<button onclick="attack()">Atacar</button>
-<button onclick="special()">Especial</button>
-<button onclick="heal()">Curar</button>
-<button onclick="back()">Lobby</button>
-</div>
-</div>
-
-<!-- SHOP -->
-<div id="shop" class="screen">
-<div class="box">
-<h2>🛒 LOJA</h2>
-
-<div class="card">Mago FREE<br>100 HP | 10 Dano | 10 Regen</div>
-<div class="card">Cavaleiro - 150</div>
-<div class="card">Bárbaro - 400</div>
-<div class="card">Golem - 800</div>
-<div class="card">Dark Knight - 1000</div>
-
-<button onclick="back()">Voltar</button>
-</div>
-</div>
-
 <script>
 
 const API="https://vedolarpg.onrender.com";
 
+/* =========================
+   FIX CRÍTICO (BUG LOGIN)
+========================= */
+const user = document.getElementById("user");
+const pass = document.getElementById("pass");
+const msg = document.getElementById("msg");
+
+/* =========================
+   PLAYER / GAME
+========================= */
 let username="";
 let player={};
 let enemy={hp:300,name:"🧟 Zumbi"};
 
 let cooldown=0;
 let stun=0;
+let wave=1;
 
 /* =========================
    PERSONAGENS
@@ -164,7 +40,7 @@ document.getElementById(id).style.display="flex";
 }
 
 /* =========================
-   LOGIN FIXADO
+   LOGIN
 ========================= */
 function login(){
 msg.innerText="Conectando...";
@@ -195,6 +71,9 @@ msg.innerText="Servidor demorando...";
 });
 }
 
+/* =========================
+   REGISTER
+========================= */
 function register(){
 msg.innerText="Criando conta...";
 
@@ -208,7 +87,7 @@ pass:pass.value
 })
 .then(r=>r.json())
 .then(d=>{
-msg.innerText=d.ok?"Criado!":d.msg;
+msg.innerText=d.ok?"Criado com sucesso!":"Erro: "+d.msg;
 })
 .catch(()=>{
 msg.innerText="Erro no servidor";
@@ -235,7 +114,7 @@ end();
 
 function special(){
 let c=CHAR[player.classe];
-if(!c||cooldown>0)return;
+if(!c || cooldown>0) return;
 
 enemy.hp-=c.s;
 cooldown=c.cool;
@@ -257,10 +136,8 @@ player.hp-=15;
 }
 
 /* =========================
-   END GAME + WAVES
+   WAVES + BOSSES
 ========================= */
-let wave=1;
-
 function end(){
 
 cooldown=Math.max(0,cooldown-1);
@@ -268,7 +145,8 @@ cooldown=Math.max(0,cooldown-1);
 if(enemy.hp<=0){
 wave++;
 player.gold+=50;
-enemy.hp=300+wave*20;
+
+enemy.hp=300+wave*25;
 enemy.name = wave%5===0 ? "👑 BOSS" : "🧟 Zumbi";
 }
 
@@ -288,10 +166,14 @@ let c=CHAR[id];
 if(!c) return;
 
 let price={
-mage:0,knight:150,barbarian:400,golem:800,dark:1000
+mage:0,
+knight:150,
+barbarian:400,
+golem:800,
+dark:1000
 };
 
-if(player.gold<price[id])return;
+if(player.gold<price[id]) return;
 
 player.gold-=price[id];
 player.classe=id;
@@ -316,18 +198,4 @@ enemyName.innerText=enemy.name;
 ehp.innerText=enemy.hp;
 }
 
-/* =========================
-   PING (Render fix)
-========================= */
-setInterval(()=>{
-fetch(API+"/login",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({user:"ping",pass:"ping"})
-}).catch(()=>{});
-},25000);
-
 </script>
-
-</body>
-</html>
