@@ -50,15 +50,6 @@ border:none;
 border-radius:10px;
 }
 
-#hud{
-position:absolute;
-top:10px;
-left:10px;
-background:rgba(0,0,0,0.5);
-padding:10px;
-border-radius:10px;
-}
-
 .menu{display:flex;flex-direction:column;gap:10px;}
 
 .card{
@@ -103,12 +94,6 @@ border-radius:10px;
 
 <!-- GAME -->
 <div id="game" class="screen">
-<div id="hud">
-HP: <span id="hp"></span><br>
-Gold: <span id="gold2"></span><br>
-Classe: <span id="class"></span>
-</div>
-
 <div class="box">
 <h3>👾 Inimigo HP: <span id="ehp"></span></h3>
 
@@ -136,22 +121,22 @@ Classe: <span id="class"></span>
 
 <script>
 
-const API="https://vedolarpg.onrender.com";
+/* =========================
+   CONFIG
+========================= */
+const API = "https://vedolarpg.onrender.com";
 
-/* 🔥 FIX DO BUG */
-const user = document.getElementById("user");
-const pass = document.getElementById("pass");
-const msg = document.getElementById("msg");
+let username = "";
+let player = {};
+let enemy = { hp: 300 };
 
-let username="";
-let player={};
-let enemy={hp:300};
+let cooldown = 0;
+let stun = 0;
 
-let cooldown=0;
-let stun=0;
-
-/* PERSONAGENS */
-const CHAR={
+/* =========================
+   PERSONAGENS
+========================= */
+const CHAR = {
 mage:{hp:100,dmg:10,regen:10,s:45,cool:2},
 knight:{hp:175,dmg:25,regen:10,s:50,cool:2},
 barbarian:{hp:210,dmg:55,regen:18,s:80,cool:3},
@@ -159,83 +144,106 @@ golem:{hp:500,dmg:50,regen:5,s:200,cool:4,stun:2},
 dark:{hp:350,dmg:60,regen:10,s:150,cool:3}
 };
 
-/* UI */
+/* =========================
+   UI
+========================= */
 function show(id){
 document.querySelectorAll(".screen").forEach(s=>s.style.display="none");
 document.getElementById(id).style.display="flex";
 }
 
-/* LOGIN */
+/* =========================
+   REGISTER (CORRIGIDO)
+========================= */
 function register(){
 fetch(API+"/register",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
-body:JSON.stringify({user:user.value,pass:pass.value})
+body:JSON.stringify({
+user:document.getElementById("user").value,
+pass:document.getElementById("pass").value
+})
 })
 .then(r=>r.json())
-.then(d=>msg.innerText=d.ok?"Criado!":d.msg);
+.then(d=>{
+document.getElementById("msg").innerText =
+d.ok ? "Criado!" : d.msg;
+});
 }
 
+/* =========================
+   LOGIN
+========================= */
 function login(){
 fetch(API+"/login",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
-body:JSON.stringify({user:user.value,pass:pass.value})
+body:JSON.stringify({
+user:document.getElementById("user").value,
+pass:document.getElementById("pass").value
+})
 })
 .then(r=>r.json())
 .then(d=>{
-if(!d.ok) return msg.innerText=d.msg;
+if(!d.ok){
+document.getElementById("msg").innerText = d.msg;
+return;
+}
 
-username=user.value;
-player=d.data;
+username = document.getElementById("user").value;
+player = d.data;
 
 show("lobby");
 update();
 });
 }
 
-/* LOBBY */
-function start(){show("game");}
-function openShop(){show("shop");}
-function back(){show("lobby");}
-function logout(){location.reload();}
+/* =========================
+   LOBBY
+========================= */
+function start(){ show("game"); }
+function openShop(){ show("shop"); }
+function back(){ show("lobby"); }
+function logout(){ location.reload(); }
 
-/* GAME */
+/* =========================
+   GAME
+========================= */
 function attack(){
-if(stun>0){stun--;end();return;}
-enemy.hp-=player.dmg;
-player.gold+=10;
+if(stun>0){ stun--; end(); return; }
+
+enemy.hp -= player.dmg;
+player.gold += 10;
+
 end();
 }
 
 function special(){
-let c=CHAR[player.classe];
-if(!c) return;
+let c = CHAR[player.classe];
+if(!c || cooldown>0) return;
 
-if(cooldown>0) return;
+enemy.hp -= c.s;
+cooldown = c.cool;
 
-enemy.hp-=c.s;
-cooldown=c.cool;
-
-if(c.stun) stun=c.stun;
+if(c.stun) stun = c.stun;
 
 end();
 }
 
 function heal(){
-player.hp=Math.min(player.maxHP,player.hp+player.regen);
+player.hp = Math.min(player.maxHP, player.hp + player.regen);
 end();
 }
 
 function end(){
-cooldown=Math.max(0,cooldown-1);
+cooldown = Math.max(0, cooldown - 1);
 
-if(enemy.hp<=0){
-enemy.hp=300;
-player.gold+=50;
+if(enemy.hp <= 0){
+enemy.hp = 300;
+player.gold += 50;
 }
 
-if(player.hp<=0){
+if(player.hp <= 0){
 alert("Você perdeu!");
 location.reload();
 }
@@ -243,11 +251,13 @@ location.reload();
 update();
 }
 
-/* LOJA */
+/* =========================
+   LOJA
+========================= */
 function buy(id){
-let c=CHAR[id];
+let c = CHAR[id];
 
-let price={
+let price = {
 mage:0,
 knight:150,
 barbarian:400,
@@ -255,26 +265,25 @@ golem:800,
 dark:1000
 };
 
-if(player.gold<price[id])return;
+if(player.gold < price[id]) return;
 
-player.gold-=price[id];
-player.classe=id;
+player.gold -= price[id];
+player.classe = id;
 
-player.maxHP=c.hp;
-player.hp=c.hp;
-player.dmg=c.dmg;
-player.regen=c.regen;
+player.maxHP = c.hp;
+player.hp = c.hp;
+player.dmg = c.dmg;
+player.regen = c.regen;
 
 update();
 }
 
-/* UPDATE */
+/* =========================
+   UPDATE
+========================= */
 function update(){
-gold.innerText=player.gold;
-gold2.innerText=player.gold;
-hp.innerText=player.hp;
-class.innerText=player.classe;
-ehp.innerText=enemy.hp;
+document.getElementById("gold").innerText = player.gold;
+document.getElementById("ehp").innerText = enemy.hp;
 }
 
 </script>
