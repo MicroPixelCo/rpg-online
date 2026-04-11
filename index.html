@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>RPG ONLINE 6.2</title>
+<title>RPG ONLINE 6.2 FIX</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap" rel="stylesheet">
 
@@ -123,7 +123,7 @@ Classe: <span id="class"></span>
 <div class="box">
 <h2>🛒 LOJA</h2>
 
-<div class="card">Mago FREE<br>100 HP | 10 Dano | 10 Regen</div>
+<div class="card">Mago FREE</div>
 <div class="card">Cavaleiro - 150</div>
 <div class="card">Bárbaro - 400</div>
 <div class="card">Golem - 800</div>
@@ -137,58 +137,46 @@ Classe: <span id="class"></span>
 
 const API="https://vedolarpg.onrender.com";
 
-/* =========================
-   ESTADO
-========================= */
+/* ESTADO */
 let username="";
-let player={gold:0,hp:100,maxHP:100,regen:10,dmg:10,classe:""};
+let player={gold:0,hp:100,maxHP:100,regen:10,dmg:10,classe:"mage"};
 let enemy={hp:300,name:"🧟 Zumbi"};
 
 let cooldown=0;
 let wave=1;
 
-/* =========================
-   PERSONAGENS
-========================= */
+/* PERSONAGENS */
 const CHAR={
 mage:{hp:100,dmg:10,regen:10,s:45,cool:2},
 knight:{hp:175,dmg:25,regen:10,s:50,cool:2},
 barbarian:{hp:210,dmg:55,regen:18,s:80,cool:3},
-golem:{hp:500,dmg:50,regen:5,s:200,cool:4,stun:2},
+golem:{hp:500,dmg:50,regen:5,s:200,cool:4},
 dark:{hp:350,dmg:60,regen:10,s:150,cool:3}
 };
 
-/* =========================
-   SAFE GET
-========================= */
+/* SAFE GET */
 function get(id){
 return document.getElementById(id);
 }
 
-/* =========================
-   UPDATE
-========================= */
-function update(){
-if(get("gold")) get("gold").innerText = player.gold || 0;
-if(get("gold2")) get("gold2").innerText = player.gold || 0;
-if(get("hp")) get("hp").innerText = player.hp || 0;
-if(get("class")) get("class").innerText = player.classe || "Nenhuma";
-if(get("enemyName")) get("enemyName").innerText = enemy.name;
-if(get("ehp")) get("ehp").innerText = enemy.hp;
-}
-
-/* =========================
-   SHOW
-========================= */
+/* SHOW */
 function show(id){
 document.querySelectorAll(".screen").forEach(s=>s.style.display="none");
 let el=get(id);
 if(el) el.style.display="flex";
 }
 
-/* =========================
-   LOGIN
-========================= */
+/* UPDATE SAFE */
+function update(){
+if(get("gold")) get("gold").innerText = player.gold;
+if(get("gold2")) get("gold2").innerText = player.gold;
+if(get("hp")) get("hp").innerText = player.hp;
+if(get("class")) get("class").innerText = player.classe;
+if(get("enemyName")) get("enemyName").innerText = enemy.name;
+if(get("ehp")) get("ehp").innerText = enemy.hp;
+}
+
+/* LOGIN */
 function login(){
 const u=get("user"), p=get("pass"), m=get("msg");
 
@@ -212,9 +200,7 @@ update();
 .catch(()=>{ if(m) m.innerText="Erro de conexão"; });
 }
 
-/* =========================
-   REGISTER
-========================= */
+/* REGISTER */
 function register(){
 const u=get("user"), p=get("pass"), m=get("msg");
 
@@ -232,17 +218,13 @@ if(m) m.innerText=d.ok?"Criado!":d.msg;
 .catch(()=>{ if(m) m.innerText="Erro"; });
 }
 
-/* =========================
-   GAME FLOW
-========================= */
+/* GAME FLOW */
 function start(){show("game");}
 function openShop(){show("shop");}
 function back(){show("lobby");}
 function logout(){location.reload();}
 
-/* =========================
-   COMBATE
-========================= */
+/* COMBATE FIXADO */
 function attack(){
 enemy.hp-=player.dmg;
 player.gold+=10;
@@ -265,14 +247,14 @@ function heal(){
 player.hp=Math.min(player.maxHP,player.hp+player.regen);
 enemyTurn();
 end();
+}
 
+/* ENEMY */
 function enemyTurn(){
 player.hp-=15;
 }
 
-/* =========================
-   WAVES
-========================= */
+/* WAVES */
 function end(){
 cooldown=Math.max(0,cooldown-1);
 
@@ -291,37 +273,11 @@ location.reload();
 update();
 }
 
-/* =========================
-   LOJA
-========================= */
-function buy(id){
-let c=CHAR[id];
-if(!c) return;
-
-let price={
-mage:0,knight:150,barbarian:400,golem:800,dark:1000
-};
-
-if(player.gold<price[id]) return;
-
-player.gold-=price[id];
-player.classe=id;
-
-player.maxHP=c.hp;
-player.hp=c.hp;
-player.dmg=c.dmg;
-player.regen=c.regen;
-
-update();
-}
-
-/* =========================
-   INIT SAFE
-========================= */
-window.addEventListener("load",()=>{
+/* INIT */
+window.onload=()=>{
 show("login");
 update();
-});
+};
 
 </script>
 
