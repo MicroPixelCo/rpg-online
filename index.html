@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>RPG ONLINE 5.6</title>
+<title>RPG ONLINE 6.0</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap" rel="stylesheet">
 
@@ -44,11 +44,14 @@ button{
 padding:10px;
 margin:5px;
 cursor:pointer;
-background:linear-gradient(45deg,#ff9f43,#ff4d6d,#6c5ce7);
+background:linear-gradient(135deg,#3a0ca3,#7209b7,#f72585);
 color:white;
 border:none;
 border-radius:10px;
+transition:0.2s;
 }
+
+button:hover{transform:scale(1.05);}
 
 .menu{display:flex;flex-direction:column;gap:10px;}
 
@@ -56,6 +59,15 @@ border-radius:10px;
 background:rgba(255,255,255,0.1);
 padding:10px;
 margin:10px;
+border-radius:10px;
+}
+
+#hud{
+position:absolute;
+top:10px;
+left:10px;
+background:rgba(0,0,0,0.5);
+padding:10px;
 border-radius:10px;
 }
 </style>
@@ -67,13 +79,10 @@ border-radius:10px;
 <div id="login" class="screen">
 <div class="box">
 <h2>LOGIN</h2>
-
 <input id="user" placeholder="Usuário">
 <input id="pass" type="password" placeholder="Senha">
-
 <button onclick="login()">Entrar</button>
 <button onclick="register()">Criar</button>
-
 <p id="msg"></p>
 </div>
 </div>
@@ -94,8 +103,16 @@ border-radius:10px;
 
 <!-- GAME -->
 <div id="game" class="screen">
+
+<div id="hud">
+HP: <span id="hp"></span><br>
+Gold: <span id="gold2"></span><br>
+Classe: <span id="class"></span>
+</div>
+
 <div class="box">
-<h3>👾 Inimigo HP: <span id="ehp"></span></h3>
+<h2 id="enemyName"></h2>
+<h3>HP: <span id="ehp"></span></h3>
 
 <button onclick="attack()">Atacar</button>
 <button onclick="special()">Especial</button>
@@ -121,28 +138,51 @@ border-radius:10px;
 
 <script>
 
-/* =========================
-   CONFIG
-========================= */
-const API = "https://vedolarpg.onrender.com";
+const API="https://vedolarpg.onrender.com";
 
-let username = "";
-let player = {};
-let enemy = { hp: 300 };
-
-let cooldown = 0;
-let stun = 0;
+let username="";
+let player={};
+let cooldown=0;
+let stun=0;
 
 /* =========================
    PERSONAGENS
 ========================= */
-const CHAR = {
+const CHAR={
 mage:{hp:100,dmg:10,regen:10,s:45,cool:2},
 knight:{hp:175,dmg:25,regen:10,s:50,cool:2},
 barbarian:{hp:210,dmg:55,regen:18,s:80,cool:3},
 golem:{hp:500,dmg:50,regen:5,s:200,cool:4,stun:2},
 dark:{hp:350,dmg:60,regen:10,s:150,cool:3}
 };
+
+/* =========================
+   ONDAS + INIMIGOS
+========================= */
+let wave=1;
+
+let enemy=createEnemy();
+
+function createEnemy(){
+
+if(wave%5===0){
+return {
+name:"👑 BOSS ZUMBI",
+hp:200+wave*50,
+dmg:25+wave*3,
+gold:200+wave*30,
+boss:true
+};
+}
+
+return {
+name:"🧟 Zumbi",
+hp:80+wave*20,
+dmg:10+wave*2,
+gold:50+wave*10,
+boss:false
+};
+}
 
 /* =========================
    UI
@@ -153,45 +193,38 @@ document.getElementById(id).style.display="flex";
 }
 
 /* =========================
-   REGISTER (CORRIGIDO)
+   LOGIN
 ========================= */
 function register(){
 fetch(API+"/register",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
 body:JSON.stringify({
-user:document.getElementById("user").value,
-pass:document.getElementById("pass").value
+user:user.value,
+pass:pass.value
 })
 })
 .then(r=>r.json())
 .then(d=>{
-document.getElementById("msg").innerText =
-d.ok ? "Criado!" : d.msg;
+msg.innerText=d.ok?"Criado!":d.msg;
 });
 }
 
-/* =========================
-   LOGIN
-========================= */
 function login(){
 fetch(API+"/login",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
 body:JSON.stringify({
-user:document.getElementById("user").value,
-pass:document.getElementById("pass").value
+user:user.value,
+pass:pass.value
 })
 })
 .then(r=>r.json())
 .then(d=>{
-if(!d.ok){
-document.getElementById("msg").innerText = d.msg;
-return;
-}
+if(!d.ok)return msg.innerText=d.msg;
 
-username = document.getElementById("user").value;
-player = d.data;
+username=user.value;
+player=d.data;
 
 show("lobby");
 update();
@@ -201,50 +234,67 @@ update();
 /* =========================
    LOBBY
 ========================= */
-function start(){ show("game"); }
-function openShop(){ show("shop"); }
-function back(){ show("lobby"); }
-function logout(){ location.reload(); }
+function start(){show("game");}
+function openShop(){show("shop");}
+function back(){show("lobby");}
+function logout(){location.reload();}
 
 /* =========================
-   GAME
+   COMBATE
 ========================= */
 function attack(){
-if(stun>0){ stun--; end(); return; }
 
-enemy.hp -= player.dmg;
-player.gold += 10;
+if(stun>0){stun--;enemyTurn();return;}
 
+enemy.hp-=player.dmg;
+player.gold+=10;
+
+enemyTurn();
 end();
 }
 
 function special(){
-let c = CHAR[player.classe];
-if(!c || cooldown>0) return;
+let c=CHAR[player.classe];
+if(!c||cooldown>0)return;
 
-enemy.hp -= c.s;
-cooldown = c.cool;
+enemy.hp-=c.s;
+cooldown=c.cool;
 
-if(c.stun) stun = c.stun;
+if(c.stun) stun=c.stun;
 
+enemyTurn();
 end();
 }
 
 function heal(){
-player.hp = Math.min(player.maxHP, player.hp + player.regen);
+player.hp=Math.min(player.maxHP,player.hp+player.regen);
+enemyTurn();
 end();
 }
 
-function end(){
-cooldown = Math.max(0, cooldown - 1);
-
-if(enemy.hp <= 0){
-enemy.hp = 300;
-player.gold += 50;
+/* =========================
+   TURNOS
+========================= */
+function enemyTurn(){
+player.hp-=enemy.dmg;
 }
 
-if(player.hp <= 0){
-alert("Você perdeu!");
+/* =========================
+   END GAME
+========================= */
+function end(){
+
+cooldown=Math.max(0,cooldown-1);
+
+if(enemy.hp<=0){
+player.gold+=enemy.gold;
+wave++;
+enemy=createEnemy();
+alert("🌊 Wave "+wave);
+}
+
+if(player.hp<=0){
+alert("Você morreu na wave "+wave);
 location.reload();
 }
 
@@ -255,9 +305,10 @@ update();
    LOJA
 ========================= */
 function buy(id){
-let c = CHAR[id];
 
-let price = {
+let c=CHAR[id];
+
+let price={
 mage:0,
 knight:150,
 barbarian:400,
@@ -265,15 +316,15 @@ golem:800,
 dark:1000
 };
 
-if(player.gold < price[id]) return;
+if(player.gold<price[id])return;
 
-player.gold -= price[id];
-player.classe = id;
+player.gold-=price[id];
+player.classe=id;
 
-player.maxHP = c.hp;
-player.hp = c.hp;
-player.dmg = c.dmg;
-player.regen = c.regen;
+player.maxHP=c.hp;
+player.hp=c.hp;
+player.dmg=c.dmg;
+player.regen=c.regen;
 
 update();
 }
@@ -282,8 +333,13 @@ update();
    UPDATE
 ========================= */
 function update(){
-document.getElementById("gold").innerText = player.gold;
-document.getElementById("ehp").innerText = enemy.hp;
+gold.innerText=player.gold;
+gold2.innerText=player.gold;
+hp.innerText=player.hp;
+class.innerText=player.classe;
+
+enemyName.innerText=enemy.name;
+ehp.innerText=enemy.hp;
 }
 
 </script>
