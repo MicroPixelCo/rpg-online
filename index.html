@@ -2,115 +2,74 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>RPG ONLINE</title>
+<title>RPG ONLINE 5.0</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap" rel="stylesheet">
 
 <style>
-body {
-    margin: 0;
-    font-family: 'Pixelify Sans', cursive;
-    overflow: hidden;
-    background: radial-gradient(circle at top, #1a1a2e, #0f0f1a);
-    color: white;
+body{
+margin:0;
+font-family:'Pixelify Sans';
+background:radial-gradient(circle,#1a1a2e,#0f0f1a);
+color:white;
+overflow:hidden;
 }
 
-/* TELA 100% */
-.screen {
-    position: absolute;
-    width: 100vw;
-    height: 100vh;
-    display: none;
-    justify-content: center;
-    align-items: center;
+.screen{
+width:100vw;
+height:100vh;
+display:none;
+justify-content:center;
+align-items:center;
 }
 
-/* LOGIN */
-#login {
-    display: flex;
+#login{display:flex;}
+
+.box{
+background:rgba(0,0,0,0.75);
+padding:30px;
+border-radius:15px;
+text-align:center;
+width:420px;
 }
 
-.box {
-    background: rgba(0,0,0,0.75);
-    padding: 40px;
-    border-radius: 18px;
-    text-align: center;
-    width: 420px;
-    border: 2px solid #ff9f43;
-    box-shadow: 0 0 25px rgba(255, 159, 67, 0.4);
+input{
+padding:10px;
+margin:5px;
+width:80%;
+text-align:center;
 }
 
-/* INPUTS */
-input {
-    padding: 12px;
-    margin: 6px;
-    border-radius: 10px;
-    border: none;
-    text-align: center;
-    width: 80%;
+button{
+padding:10px;
+margin:5px;
+cursor:pointer;
+background:linear-gradient(45deg,#ff9f43,#ff4d6d,#6c5ce7);
+color:white;
+border:none;
+border-radius:10px;
 }
 
-/* BOTÕES */
-button {
-    padding: 12px 18px;
-    margin: 8px;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    font-family: inherit;
-    background: linear-gradient(45deg, #ff9f43, #ff4d6d, #6c5ce7);
-    color: white;
-    font-weight: bold;
-    transition: 0.2s;
+#hud{
+position:absolute;
+top:10px;
+left:10px;
+background:rgba(0,0,0,0.5);
+padding:10px;
+border-radius:10px;
 }
 
-button:hover {
-    transform: scale(1.05);
+.menu{
+display:flex;
+flex-direction:column;
+gap:10px;
 }
 
-/* LOBBY */
-#lobby {
-    display: none;
-    flex-direction: column;
-    text-align: center;
-}
-
-.title {
-    font-size: 40px;
-    margin-bottom: 20px;
-    color: #ff9f43;
-    text-shadow: 2px 2px black;
-}
-
-.menu {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-/* GAME */
-#game .hud {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background: rgba(0,0,0,0.6);
-    padding: 10px;
-    border-radius: 10px;
-}
-
-/* LOJA */
-#shop {
-    display: none;
-    flex-direction: column;
-    text-align: center;
-}
-
-.card {
-    background: rgba(255,255,255,0.1);
-    padding: 15px;
-    margin: 10px;
-    border-radius: 10px;
-    border: 1px solid #6c5ce7;
+.card{
+background:rgba(255,255,255,0.1);
+padding:10px;
+margin:10px;
+border-radius:10px;
 }
 </style>
 </head>
@@ -119,149 +78,246 @@ button:hover {
 
 <!-- LOGIN -->
 <div id="login" class="screen">
-    <div class="box">
-        <h1>🔥 RPG ONLINE 🔥</h1>
-        <input id="user" placeholder="Usuário">
-        <input id="pass" type="password" placeholder="Senha">
-        <br>
-        <button onclick="login()">Entrar</button>
-        <button onclick="register()">Criar Conta</button>
-        <p id="msg"></p>
-    </div>
+<div class="box">
+<h2>LOGIN</h2>
+<input id="user">
+<input id="pass" type="password">
+<button onclick="login()">Entrar</button>
+<button onclick="register()">Criar</button>
+<p id="msg"></p>
+</div>
 </div>
 
 <!-- LOBBY -->
 <div id="lobby" class="screen">
-    <div>
-        <div class="title">🎮 LOBBY</div>
+<div class="box">
+<h1>🎮 LOBBY</h1>
+<p>💰 Gold: <span id="gold"></span></p>
 
-        <div class="menu">
-            <button onclick="startGame()">▶ Jogar</button>
-            <button onclick="openShop()">🛒 Loja</button>
-            <button onclick="logout()">🚪 Sair</button>
-        </div>
-    </div>
+<div class="menu">
+<button onclick="start()">Jogar</button>
+<button onclick="openShop()">Loja</button>
+<button onclick="logout()">Sair</button>
+</div>
+</div>
 </div>
 
 <!-- GAME -->
 <div id="game" class="screen">
-    <div class="hud">
-        💰 Ouro: <span id="gold"></span><br>
-        ❤️ HP: <span id="hp"></span><br>
-        ⭐ LVL: <span id="lvl"></span>
-    </div>
-
-    <div class="box">
-        <h2 id="classe"></h2>
-
-        <button onclick="attack()">⚔️ Atacar</button>
-        <button onclick="heal()">💊 Curar</button>
-        <button onclick="backLobby()">⬅ Lobby</button>
-    </div>
+<div id="hud">
+HP: <span id="hp"></span><br>
+Gold: <span id="gold2"></span><br>
+Classe: <span id="class"></span>
 </div>
 
-<!-- LOJA -->
+<div class="box">
+<h3>👾 Inimigo HP: <span id="ehp"></span></h3>
+
+<button onclick="attack()">Atacar</button>
+<button onclick="special()">Especial</button>
+<button onclick="heal()">Curar</button>
+<button onclick="back()">Lobby</button>
+</div>
+</div>
+
+<!-- SHOP -->
 <div id="shop" class="screen">
-    <div class="box">
-        <h1>🛒 LOJA</h1>
+<div class="box">
+<h2>🛒 LOJA</h2>
 
-        <div class="card">
-            🗡️ Espada +10 dano<br>
-            <button onclick="buy()">Comprar</button>
-        </div>
+<div class="card">
+Mago FREE<br>
+<button onclick="buy('mage')">Escolher</button>
+</div>
 
-        <div class="card">
-            🛡️ Armadura +vida<br>
-            <button onclick="buy()">Comprar</button>
-        </div>
+<div class="card">
+Cavaleiro - 150<br>
+<button onclick="buy('knight')">Comprar</button>
+</div>
 
-        <button onclick="backLobby()">⬅ Voltar</button>
-    </div>
+<div class="card">
+Bárbaro - 400<br>
+<button onclick="buy('barbarian')">Comprar</button>
+</div>
+
+<div class="card">
+Golem - 800<br>
+<button onclick="buy('golem')">Comprar</button>
+</div>
+
+<div class="card">
+Dark Knight - 1000<br>
+<button onclick="buy('dark')">Comprar</button>
+</div>
+
+<button onclick="back()">Voltar</button>
+</div>
 </div>
 
 <script>
 
-const user = document.getElementById("user");
-const pass = document.getElementById("pass");
-const msg = document.getElementById("msg");
+/* =======================
+   BASE
+======================= */
 
-let username = "";
-let player = {};
+const user=document.getElementById("user");
+const pass=document.getElementById("pass");
+const msg=document.getElementById("msg");
+
+let username="";
+let player={};
+let enemy={hp:300};
+let cooldown=0;
+let stun=0;
+
+/* =======================
+   PERSONAGENS
+======================= */
+
+const CHAR={
+mage:{hp:100,dmg:10,regen:10,s:45,cool:2},
+knight:{hp:175,dmg:25,regen:10,s:50,cool:2},
+barbarian:{hp:210,dmg:55,regen:18,s:80,cool:3},
+golem:{hp:500,dmg:50,regen:5,s:200,cool:4,stun:2},
+dark:{hp:350,dmg:60,regen:10,s:150,cool:3}
+};
+
+/* =======================
+   UI
+======================= */
 
 function show(id){
-    document.querySelectorAll(".screen").forEach(s=>s.style.display="none");
-    document.getElementById(id).style.display="flex";
+document.querySelectorAll(".screen").forEach(s=>s.style.display="none");
+document.getElementById(id).style.display="flex";
 }
 
-/* LOGIN */
+/* =======================
+   LOGIN
+======================= */
+
 function register(){
-fetch("/register",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({user:user.value,pass:pass.value})
-}).then(r=>r.json()).then(d=>{
-msg.innerText = d.ok ? "Conta criada!" : d.msg;
+fetch("/register",{method:"POST",headers:{"Content-Type":"application/json"},
+body:JSON.stringify({user:user.value,pass:pass.value})})
+.then(r=>r.json()).then(d=>{
+msg.innerText=d.ok?"Criado!":d.msg;
 });
 }
 
 function login(){
-fetch("/login",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({user:user.value,pass:pass.value})
-}).then(r=>r.json()).then(d=>{
-if(!d.ok) return msg.innerText = d.msg;
+fetch("/login",{method:"POST",headers:{"Content-Type":"application/json"},
+body:JSON.stringify({user:user.value,pass:pass.value})})
+.then(r=>r.json()).then(d=>{
+if(!d.ok)return msg.innerText=d.msg;
 
-username = user.value;
-player = d.data;
+username=user.value;
+player=d.data;
 
 show("lobby");
 update();
 });
 }
 
-/* LOBBY */
-function startGame(){ show("game"); }
-function openShop(){ show("shop"); }
-function backLobby(){ show("lobby"); }
-function logout(){ location.reload(); }
+/* =======================
+   LOBBY
+======================= */
 
-/* GAME */
+function start(){show("game");}
+function openShop(){show("shop");}
+function back(){show("lobby");}
+function logout(){location.reload();}
+
+/* =======================
+   GAME TURNOS
+======================= */
+
 function attack(){
-player.gold += 10;
-player.xp = (player.xp || 0) + 10;
-update();
-save();
+if(stun>0){stun--;end();return;}
+
+enemy.hp-=player.dmg;
+player.gold+=10;
+
+end();
+}
+
+function special(){
+if(cooldown>0)return;
+
+let c=CHAR[player.classe];
+
+enemy.hp-=c.s;
+
+cooldown=c.cool;
+
+if(c.stun){stun=c.stun;}
+
+end();
 }
 
 function heal(){
-player.hp = Math.min(player.maxHP, player.hp + 20);
-update();
-save();
+player.hp=Math.min(player.maxHP,player.hp+player.regen);
+end();
 }
 
-/* LOJA */
-function buy(){
-player.gold -= 20;
-update();
-save();
+/* inimigo */
+function enemyTurn(){
+player.hp-=20;
+end();
 }
 
-/* UI */
+/* turno */
+function end(){
+cooldown=Math.max(0,cooldown-1);
+
+if(enemy.hp<=0){
+enemy.hp=300;
+player.gold+=50;
+}
+
+if(player.hp<=0){
+alert("Você perdeu!");
+location.reload();
+}
+
+update();
+
+setTimeout(()=>enemyTurn(),700);
+}
+
+/* =======================
+   LOJA
+======================= */
+
+function buy(id){
+
+let c=CHAR[id];
+
+let price={
+mage:0,knight:150,barbarian:400,golem:800,dark:1000
+};
+
+if(player.gold<price[id])return;
+
+player.gold-=price[id];
+player.classe=id;
+
+player.maxHP=c.hp;
+player.hp=c.hp;
+player.dmg=c.dmg;
+player.regen=c.regen;
+
+update();
+}
+
+/* =======================
+   UI UPDATE
+======================= */
+
 function update(){
-gold.innerText = player.gold;
-hp.innerText = player.hp;
-lvl.innerText = player.level;
-classe.innerText = player.classe;
-}
-
-/* SAVE */
-function save(){
-fetch("/save",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({user:username,data:player})
-});
+gold.innerText=player.gold;
+gold2.innerText=player.gold;
+hp.innerText=player.hp;
+class.innerText=player.classe;
+ehp.innerText=enemy.hp;
 }
 
 </script>
