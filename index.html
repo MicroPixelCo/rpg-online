@@ -2,66 +2,181 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>RPG ONLINE 2.0</title>
+<title>RPG ONLINE</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap" rel="stylesheet">
 
 <style>
 body {
-    margin:0;
-    font-family: Arial;
-    background:#0f172a;
-    color:white;
+    margin: 0;
+    font-family: 'Pixelify Sans', cursive;
+    overflow: hidden;
+    background: radial-gradient(circle at top, #1a1a2e, #0f0f1a);
+    color: white;
 }
 
-.screen{
-    width:100vw;
-    height:100vh;
-    display:none;
-    justify-content:center;
-    align-items:center;
+/* TELA 100% */
+.screen {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    display: none;
+    justify-content: center;
+    align-items: center;
 }
 
-.box{
-    background:#1e293b;
-    padding:30px;
-    border-radius:15px;
-    width:400px;
-    text-align:center;
+/* LOGIN */
+#login {
+    display: flex;
 }
 
-button{margin:5px;padding:10px;cursor:pointer}
+.box {
+    background: rgba(0,0,0,0.75);
+    padding: 40px;
+    border-radius: 18px;
+    text-align: center;
+    width: 420px;
+    border: 2px solid #ff9f43;
+    box-shadow: 0 0 25px rgba(255, 159, 67, 0.4);
+}
 
+/* INPUTS */
+input {
+    padding: 12px;
+    margin: 6px;
+    border-radius: 10px;
+    border: none;
+    text-align: center;
+    width: 80%;
+}
+
+/* BOTÕES */
+button {
+    padding: 12px 18px;
+    margin: 8px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    background: linear-gradient(45deg, #ff9f43, #ff4d6d, #6c5ce7);
+    color: white;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+button:hover {
+    transform: scale(1.05);
+}
+
+/* LOBBY */
+#lobby {
+    display: none;
+    flex-direction: column;
+    text-align: center;
+}
+
+.title {
+    font-size: 40px;
+    margin-bottom: 20px;
+    color: #ff9f43;
+    text-shadow: 2px 2px black;
+}
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* GAME */
+#game .hud {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(0,0,0,0.6);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+/* LOJA */
+#shop {
+    display: none;
+    flex-direction: column;
+    text-align: center;
+}
+
+.card {
+    background: rgba(255,255,255,0.1);
+    padding: 15px;
+    margin: 10px;
+    border-radius: 10px;
+    border: 1px solid #6c5ce7;
+}
 </style>
 </head>
 
 <body>
 
 <!-- LOGIN -->
-<div id="login" class="screen" style="display:flex">
-<div class="box">
-<h2>LOGIN</h2>
-<input id="user"><br>
-<input id="pass" type="password"><br>
-<button onclick="login()">Entrar</button>
-<button onclick="register()">Criar</button>
-<p id="msg"></p>
+<div id="login" class="screen">
+    <div class="box">
+        <h1>🔥 RPG ONLINE 🔥</h1>
+        <input id="user" placeholder="Usuário">
+        <input id="pass" type="password" placeholder="Senha">
+        <br>
+        <button onclick="login()">Entrar</button>
+        <button onclick="register()">Criar Conta</button>
+        <p id="msg"></p>
+    </div>
 </div>
+
+<!-- LOBBY -->
+<div id="lobby" class="screen">
+    <div>
+        <div class="title">🎮 LOBBY</div>
+
+        <div class="menu">
+            <button onclick="startGame()">▶ Jogar</button>
+            <button onclick="openShop()">🛒 Loja</button>
+            <button onclick="logout()">🚪 Sair</button>
+        </div>
+    </div>
 </div>
 
 <!-- GAME -->
 <div id="game" class="screen">
-<div class="box">
+    <div class="hud">
+        💰 Ouro: <span id="gold"></span><br>
+        ❤️ HP: <span id="hp"></span><br>
+        ⭐ LVL: <span id="lvl"></span>
+    </div>
 
-<h2 id="classe"></h2>
-<p id="stats"></p>
+    <div class="box">
+        <h2 id="classe"></h2>
 
-<h3>👾 Inimigo</h3>
-<p id="enemy"></p>
-
-<button onclick="attack()">⚔️ Atacar</button>
-<button onclick="heal()">💊 Curar</button>
-<button onclick="shop()">🛒 Loja</button>
-
+        <button onclick="attack()">⚔️ Atacar</button>
+        <button onclick="heal()">💊 Curar</button>
+        <button onclick="backLobby()">⬅ Lobby</button>
+    </div>
 </div>
+
+<!-- LOJA -->
+<div id="shop" class="screen">
+    <div class="box">
+        <h1>🛒 LOJA</h1>
+
+        <div class="card">
+            🗡️ Espada +10 dano<br>
+            <button onclick="buy()">Comprar</button>
+        </div>
+
+        <div class="card">
+            🛡️ Armadura +vida<br>
+            <button onclick="buy()">Comprar</button>
+        </div>
+
+        <button onclick="backLobby()">⬅ Voltar</button>
+    </div>
 </div>
 
 <script>
@@ -71,17 +186,21 @@ const pass = document.getElementById("pass");
 const msg = document.getElementById("msg");
 
 let username = "";
-
 let player = {};
-let enemy = { hp: 50 };
 
+function show(id){
+    document.querySelectorAll(".screen").forEach(s=>s.style.display="none");
+    document.getElementById(id).style.display="flex";
+}
+
+/* LOGIN */
 function register(){
 fetch("/register",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
 body:JSON.stringify({user:user.value,pass:pass.value})
 }).then(r=>r.json()).then(d=>{
-msg.innerText = d.ok ? "Criado!" : d.msg;
+msg.innerText = d.ok ? "Conta criada!" : d.msg;
 });
 }
 
@@ -96,67 +215,47 @@ if(!d.ok) return msg.innerText = d.msg;
 username = user.value;
 player = d.data;
 
-document.getElementById("login").style.display="none";
-document.getElementById("game").style.display="flex";
-
+show("lobby");
 update();
 });
 }
 
-/* GAME LOOP */
-function update(){
-document.getElementById("classe").innerText =
-player.classe || "Sem classe";
+/* LOBBY */
+function startGame(){ show("game"); }
+function openShop(){ show("shop"); }
+function backLobby(){ show("lobby"); }
+function logout(){ location.reload(); }
 
-document.getElementById("stats").innerText =
-`❤️ ${player.hp} | 💰 ${player.gold} | ⭐ LVL ${player.level} (${player.xp} XP)`;
-
-document.getElementById("enemy").innerText =
-`HP: ${enemy.hp}`;
-}
-
-/* BATALHA PvE */
+/* GAME */
 function attack(){
-enemy.hp -= 10;
-
-player.gold += 5;
-player.xp += 10;
-
-if(enemy.hp <= 0){
-enemy.hp = 50;
-player.gold += 20;
-player.xp += 50;
-}
-
-levelUp();
-save();
+player.gold += 10;
+player.xp = (player.xp || 0) + 10;
 update();
+save();
 }
 
 function heal(){
 player.hp = Math.min(player.maxHP, player.hp + 20);
-save();
 update();
+save();
 }
 
-function levelUp(){
-if(player.xp >= 100){
-player.level++;
-player.xp = 0;
-player.maxHP += 20;
-player.hp = player.maxHP;
-}
-}
-
-function shop(){
-if(player.gold >= 20){
+/* LOJA */
+function buy(){
 player.gold -= 20;
-alert("Comprou espada!");
-}
-save();
 update();
+save();
 }
 
+/* UI */
+function update(){
+gold.innerText = player.gold;
+hp.innerText = player.hp;
+lvl.innerText = player.level;
+classe.innerText = player.classe;
+}
+
+/* SAVE */
 function save(){
 fetch("/save",{
 method:"POST",
