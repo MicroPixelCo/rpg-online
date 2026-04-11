@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>RPG ONLINE 6.0</title>
+<title>RPG ONLINE 6.1</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap" rel="stylesheet">
 
@@ -48,10 +48,7 @@ background:linear-gradient(135deg,#3a0ca3,#7209b7,#f72585);
 color:white;
 border:none;
 border-radius:10px;
-transition:0.2s;
 }
-
-button:hover{transform:scale(1.05);}
 
 .menu{display:flex;flex-direction:column;gap:10px;}
 
@@ -126,11 +123,11 @@ Classe: <span id="class"></span>
 <div class="box">
 <h2>🛒 LOJA</h2>
 
-<div class="card">Mago FREE<br>100 HP | 10 Dano | 10 Regen<br><button onclick="buy('mage')">Escolher</button></div>
-<div class="card">Cavaleiro - 150<br>175 HP | 25 Dano | 10 Regen<br><button onclick="buy('knight')">Comprar</button></div>
-<div class="card">Bárbaro - 400<br>210 HP | 55 Dano | 18 Regen<br><button onclick="buy('barbarian')">Comprar</button></div>
-<div class="card">Golem - 800<br>500 HP | 50 Dano | 5 Regen<br><button onclick="buy('golem')">Comprar</button></div>
-<div class="card">Dark Knight - 1000<br>350 HP | 60 Dano | 10 Regen<br><button onclick="buy('dark')">Comprar</button></div>
+<div class="card">Mago FREE<br>100 HP | 10 Dano | 10 Regen</div>
+<div class="card">Cavaleiro - 150</div>
+<div class="card">Bárbaro - 400</div>
+<div class="card">Golem - 800</div>
+<div class="card">Dark Knight - 1000</div>
 
 <button onclick="back()">Voltar</button>
 </div>
@@ -142,6 +139,8 @@ const API="https://vedolarpg.onrender.com";
 
 let username="";
 let player={};
+let enemy={hp:300,name:"🧟 Zumbi"};
+
 let cooldown=0;
 let stun=0;
 
@@ -157,34 +156,6 @@ dark:{hp:350,dmg:60,regen:10,s:150,cool:3}
 };
 
 /* =========================
-   ONDAS + INIMIGOS
-========================= */
-let wave=1;
-
-let enemy=createEnemy();
-
-function createEnemy(){
-
-if(wave%5===0){
-return {
-name:"👑 BOSS ZUMBI",
-hp:200+wave*50,
-dmg:25+wave*3,
-gold:200+wave*30,
-boss:true
-};
-}
-
-return {
-name:"🧟 Zumbi",
-hp:80+wave*20,
-dmg:10+wave*2,
-gold:50+wave*10,
-boss:false
-};
-}
-
-/* =========================
    UI
 ========================= */
 function show(id){
@@ -193,9 +164,40 @@ document.getElementById(id).style.display="flex";
 }
 
 /* =========================
-   LOGIN
+   LOGIN FIXADO
 ========================= */
+function login(){
+msg.innerText="Conectando...";
+
+fetch(API+"/login",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+user:user.value,
+pass:pass.value
+})
+})
+.then(r=>r.json())
+.then(d=>{
+if(!d.ok){
+msg.innerText=d.msg;
+return;
+}
+
+username=user.value;
+player=d.data;
+
+show("lobby");
+update();
+})
+.catch(()=>{
+msg.innerText="Servidor demorando...";
+});
+}
+
 function register(){
+msg.innerText="Criando conta...";
+
 fetch(API+"/register",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
@@ -207,27 +209,9 @@ pass:pass.value
 .then(r=>r.json())
 .then(d=>{
 msg.innerText=d.ok?"Criado!":d.msg;
-});
-}
-
-function login(){
-fetch(API+"/login",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({
-user:user.value,
-pass:pass.value
 })
-})
-.then(r=>r.json())
-.then(d=>{
-if(!d.ok)return msg.innerText=d.msg;
-
-username=user.value;
-player=d.data;
-
-show("lobby");
-update();
+.catch(()=>{
+msg.innerText="Erro no servidor";
 });
 }
 
@@ -243,12 +227,8 @@ function logout(){location.reload();}
    COMBATE
 ========================= */
 function attack(){
-
-if(stun>0){stun--;enemyTurn();return;}
-
 enemy.hp-=player.dmg;
 player.gold+=10;
-
 enemyTurn();
 end();
 }
@@ -272,29 +252,28 @@ enemyTurn();
 end();
 }
 
-/* =========================
-   TURNOS
-========================= */
 function enemyTurn(){
-player.hp-=enemy.dmg;
+player.hp-=15;
 }
 
 /* =========================
-   END GAME
+   END GAME + WAVES
 ========================= */
+let wave=1;
+
 function end(){
 
 cooldown=Math.max(0,cooldown-1);
 
 if(enemy.hp<=0){
-player.gold+=enemy.gold;
 wave++;
-enemy=createEnemy();
-alert("🌊 Wave "+wave);
+player.gold+=50;
+enemy.hp=300+wave*20;
+enemy.name = wave%5===0 ? "👑 BOSS" : "🧟 Zumbi";
 }
 
 if(player.hp<=0){
-alert("Você morreu na wave "+wave);
+alert("Você perdeu na wave "+wave);
 location.reload();
 }
 
@@ -305,15 +284,11 @@ update();
    LOJA
 ========================= */
 function buy(id){
-
 let c=CHAR[id];
+if(!c) return;
 
 let price={
-mage:0,
-knight:150,
-barbarian:400,
-golem:800,
-dark:1000
+mage:0,knight:150,barbarian:400,golem:800,dark:1000
 };
 
 if(player.gold<price[id])return;
@@ -337,10 +312,20 @@ gold.innerText=player.gold;
 gold2.innerText=player.gold;
 hp.innerText=player.hp;
 class.innerText=player.classe;
-
 enemyName.innerText=enemy.name;
 ehp.innerText=enemy.hp;
 }
+
+/* =========================
+   PING (Render fix)
+========================= */
+setInterval(()=>{
+fetch(API+"/login",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({user:"ping",pass:"ping"})
+}).catch(()=>{});
+},25000);
 
 </script>
 
