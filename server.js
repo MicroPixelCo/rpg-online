@@ -1,20 +1,17 @@
-const express = require("express");
-const fs = require("fs");
+const express = require('express');
+const fs = require('fs');
 
 const app = express();
 
 app.use(express.json());
 app.use(express.static(__dirname));
 
-const DB_FILE = "users.json";
+const DB_FILE = 'users.json';
 
-/* =========================
-   BANCO
-========================= */
 let users = {};
 
 /* =========================
-   FIX DE USUÁRIO ANTIGO
+   FIX USER (EVITA BUGS)
 ========================= */
 function fixUser(u){
     return {
@@ -35,30 +32,29 @@ function fixUser(u){
 }
 
 /* =========================
-   LOAD
+   LOAD BANCO
 ========================= */
-function load() {
-    if (fs.existsSync(DB_FILE)) {
-        try {
+function load(){
+    if(fs.existsSync(DB_FILE)){
+        try{
             let raw = JSON.parse(fs.readFileSync(DB_FILE));
 
-            for (let k in raw) {
+            for(let k in raw){
                 raw[k] = fixUser(raw[k]);
             }
 
             users = raw;
-
-        } catch (e) {
+        }catch(e){
             users = {};
         }
     }
 }
 
 /* =========================
-   SAVE
+   SAVE BANCO
 ========================= */
-function save() {
-    fs.writeFileSync(DB_FILE, JSON.stringify(users, null, 2));
+function save(){
+    fs.writeFileSync(DB_FILE, JSON.stringify(users,null,2));
 }
 
 load();
@@ -66,58 +62,65 @@ load();
 /* =========================
    REGISTER
 ========================= */
-app.post("/register", (req, res) => {
-    const { user, pass } = req.body;
+app.post('/register', (req,res)=>{
+    const {user,pass} = req.body;
 
-    if (!user || !pass) {
-        return res.json({ ok: false, msg: "Dados inválidos" });
+    if(!user || !pass){
+        return res.json({ok:false,msg:"Dados inválidos"});
     }
 
-    if (users[user]) {
-        return res.json({ ok: false, msg: "Usuário já existe!" });
+    if(users[user]){
+        return res.json({ok:false,msg:"Usuário já existe"});
     }
 
-    users[user] = {
+    users[user] = fixUser({
         pass,
-        gold: 50,
-        hp: 100,
-        maxHP: 100,
-        level: 1,
-        xp: 0,
-        classe: "",
-        inventario: []
-    };
+        gold:50,
+        hp:100,
+        maxHP:100,
+        level:1,
+        xp:0,
+        classe:"",
+        inventario:[]
+    });
 
     save();
-    res.json({ ok: true });
+
+    return res.json({ok:true});
 });
 
 /* =========================
-   LOGIN (100% SEGURO)
+   LOGIN (SEGURO)
 ========================= */
-app.post("/login", (req, res) => {
+app.post('/login', (req, res) => {
     const { user, pass } = req.body;
-
     const u = users[user];
 
     if (!u || u.pass !== pass) {
-        return res.json({ ok: false, msg: "Login inválido" });
+        return res.status(401).json({
+            ok: false,
+            msg: "Login inválido"
+        });
     }
+
+    const fixedUser = fixUser(u);
+
+    const { pass: _, ...userData } = fixedUser;
 
     return res.json({
         ok: true,
-        data: fixUser(u)
+        data: userData
     });
 });
 
 /* =========================
    SAVE
 ========================= */
-app.post("/save", (req, res) => {
-    const { user, data } = req.body;
+app.post('/save', (req,res)=>{
+    const {user,data} = req.body;
 
-    if (!users[user]) {
-        return res.json({ ok: false, msg: "Usuário não existe" });
+    if(!users[user]){
+        return res.json({ok:false,msg:"Usuário não existe"});
     }
 
     users[user] = {
@@ -127,7 +130,7 @@ app.post("/save", (req, res) => {
 
     save();
 
-    res.json({ ok: true });
+    return res.json({ok:true});
 });
 
 /* =========================
