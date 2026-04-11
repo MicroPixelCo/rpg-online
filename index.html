@@ -107,7 +107,7 @@ border-radius:10px;
 <div id="hud">
 HP: <span id="hp"></span><br>
 Gold: <span id="gold2"></span><br>
-Classe: <span id="class"></span>
+Classe: <span id="className"></span>
 </div>
 
 <div class="box">
@@ -125,30 +125,11 @@ Classe: <span id="class"></span>
 <div class="box">
 <h2>🛒 LOJA</h2>
 
-<div class="card">
-Mago FREE<br>
-<button onclick="buy('mage')">Escolher</button>
-</div>
-
-<div class="card">
-Cavaleiro - 150<br>
-<button onclick="buy('knight')">Comprar</button>
-</div>
-
-<div class="card">
-Bárbaro - 400<br>
-<button onclick="buy('barbarian')">Comprar</button>
-</div>
-
-<div class="card">
-Golem - 800<br>
-<button onclick="buy('golem')">Comprar</button>
-</div>
-
-<div class="card">
-Dark Knight - 1000<br>
-<button onclick="buy('dark')">Comprar</button>
-</div>
+<div class="card">Mago FREE<br><button onclick="buy('mage')">Escolher</button></div>
+<div class="card">Cavaleiro - 150<br><button onclick="buy('knight')">Comprar</button></div>
+<div class="card">Bárbaro - 400<br><button onclick="buy('barbarian')">Comprar</button></div>
+<div class="card">Golem - 800<br><button onclick="buy('golem')">Comprar</button></div>
+<div class="card">Dark Knight - 1000<br><button onclick="buy('dark')">Comprar</button></div>
 
 <button onclick="back()">Voltar</button>
 </div>
@@ -156,23 +137,14 @@ Dark Knight - 1000<br>
 
 <script>
 
-/* =======================
-   BASE
-======================= */
-
-const user=document.getElementById("user");
-const pass=document.getElementById("pass");
-const msg=document.getElementById("msg");
+const API = "https://vedolarpg.onrender.com";
 
 let username="";
 let player={};
 let enemy={hp:300};
+
 let cooldown=0;
 let stun=0;
-
-/* =======================
-   PERSONAGENS
-======================= */
 
 const CHAR={
 mage:{hp:100,dmg:10,regen:10,s:45,cool:2},
@@ -182,31 +154,30 @@ golem:{hp:500,dmg:50,regen:5,s:200,cool:4,stun:2},
 dark:{hp:350,dmg:60,regen:10,s:150,cool:3}
 };
 
-/* =======================
-   UI
-======================= */
-
 function show(id){
 document.querySelectorAll(".screen").forEach(s=>s.style.display="none");
 document.getElementById(id).style.display="flex";
 }
 
-/* =======================
-   LOGIN
-======================= */
-
+/* LOGIN */
 function register(){
-fetch("/register",{method:"POST",headers:{"Content-Type":"application/json"},
-body:JSON.stringify({user:user.value,pass:pass.value})})
-.then(r=>r.json()).then(d=>{
-msg.innerText=d.ok?"Criado!":d.msg;
-});
+fetch(API+"/register",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({user:user.value,pass:pass.value})
+})
+.then(r=>r.json())
+.then(d=>msg.innerText=d.ok?"Criado!":d.msg);
 }
 
 function login(){
-fetch("/login",{method:"POST",headers:{"Content-Type":"application/json"},
-body:JSON.stringify({user:user.value,pass:pass.value})})
-.then(r=>r.json()).then(d=>{
+fetch(API+"/login",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({user:user.value,pass:pass.value})
+})
+.then(r=>r.json())
+.then(d=>{
 if(!d.ok)return msg.innerText=d.msg;
 
 username=user.value;
@@ -217,25 +188,18 @@ update();
 });
 }
 
-/* =======================
-   LOBBY
-======================= */
-
+/* LOBBY */
 function start(){show("game");}
 function openShop(){show("shop");}
 function back(){show("lobby");}
 function logout(){location.reload();}
 
-/* =======================
-   GAME TURNOS
-======================= */
-
+/* GAME */
 function attack(){
 if(stun>0){stun--;end();return;}
 
 enemy.hp-=player.dmg;
 player.gold+=10;
-
 end();
 }
 
@@ -247,8 +211,7 @@ let c=CHAR[player.classe];
 enemy.hp-=c.s;
 
 cooldown=c.cool;
-
-if(c.stun){stun=c.stun;}
+if(c.stun) stun=c.stun;
 
 end();
 }
@@ -258,13 +221,6 @@ player.hp=Math.min(player.maxHP,player.hp+player.regen);
 end();
 }
 
-/* inimigo */
-function enemyTurn(){
-player.hp-=20;
-end();
-}
-
-/* turno */
 function end(){
 cooldown=Math.max(0,cooldown-1);
 
@@ -279,21 +235,13 @@ location.reload();
 }
 
 update();
-
-setTimeout(()=>enemyTurn(),700);
+setTimeout(()=>player.hp-=20,700);
 }
 
-/* =======================
-   LOJA
-======================= */
-
+/* LOJA */
 function buy(id){
-
 let c=CHAR[id];
-
-let price={
-mage:0,knight:150,barbarian:400,golem:800,dark:1000
-};
+let price={mage:0,knight:150,barbarian:400,golem:800,dark:1000};
 
 if(player.gold<price[id])return;
 
@@ -308,15 +256,12 @@ player.regen=c.regen;
 update();
 }
 
-/* =======================
-   UI UPDATE
-======================= */
-
+/* UI */
 function update(){
 gold.innerText=player.gold;
 gold2.innerText=player.gold;
 hp.innerText=player.hp;
-class.innerText=player.classe;
+className.innerText=player.classe;
 ehp.innerText=enemy.hp;
 }
 
