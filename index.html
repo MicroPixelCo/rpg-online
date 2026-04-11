@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>RPG ONLINE</title>
+<title>RPG ONLINE 5.5</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap" rel="stylesheet">
 
@@ -59,11 +59,7 @@ padding:10px;
 border-radius:10px;
 }
 
-.menu{
-display:flex;
-flex-direction:column;
-gap:10px;
-}
+.menu{display:flex;flex-direction:column;gap:10px;}
 
 .card{
 background:rgba(255,255,255,0.1);
@@ -125,11 +121,35 @@ Classe: <span id="class"></span>
 <div class="box">
 <h2>🛒 LOJA</h2>
 
-<div class="card">Mago FREE<br><button onclick="buy('mage')">Escolher</button></div>
-<div class="card">Cavaleiro - 150<br><button onclick="buy('knight')">Comprar</button></div>
-<div class="card">Bárbaro - 400<br><button onclick="buy('barbarian')">Comprar</button></div>
-<div class="card">Golem - 800<br><button onclick="buy('golem')">Comprar</button></div>
-<div class="card">Dark Knight - 1000<br><button onclick="buy('dark')">Comprar</button></div>
+<div class="card">
+Mago FREE<br>
+❤️100 ⚔️10 🔄10 ✨45<br>
+<button onclick="buy('mage')">Escolher</button>
+</div>
+
+<div class="card">
+Cavaleiro - 150<br>
+❤️175 ⚔️25 🔄10 ✨50<br>
+<button onclick="buy('knight')">Comprar</button>
+</div>
+
+<div class="card">
+Bárbaro - 400<br>
+❤️210 ⚔️55 🔄18 ✨80<br>
+<button onclick="buy('barbarian')">Comprar</button>
+</div>
+
+<div class="card">
+Golem - 800<br>
+❤️500 ⚔️50 🔄5 ✨200 (stun)<br>
+<button onclick="buy('golem')">Comprar</button>
+</div>
+
+<div class="card">
+Dark Knight - 1000<br>
+❤️350 ⚔️60 🔄10 ✨150<br>
+<button onclick="buy('dark')">Comprar</button>
+</div>
 
 <button onclick="back()">Voltar</button>
 </div>
@@ -137,26 +157,23 @@ Classe: <span id="class"></span>
 
 <script>
 
-/* ======================
-   API
-====================== */
-const API = "https://vedolarpg.onrender.com";
+const API="https://vedolarpg.onrender.com";
 
-/* ======================
-   VARIAVEIS
-====================== */
 let username="";
 let player={};
 let enemy={hp:300};
 
+let cooldown=0;
+let stun=0;
+
 /* ======================
-   PERSONAGENS
+   PERSONAGENS DO TEXTÃO
 ====================== */
 const CHAR={
 mage:{hp:100,dmg:10,regen:10,s:45,cool:2},
 knight:{hp:175,dmg:25,regen:10,s:50,cool:2},
 barbarian:{hp:210,dmg:55,regen:18,s:80,cool:3},
-golem:{hp:500,dmg:50,regen:5,s:200,cool:4},
+golem:{hp:500,dmg:50,regen:5,s:200,cool:4,stun:2},
 dark:{hp:350,dmg:60,regen:10,s:150,cool:3}
 };
 
@@ -169,7 +186,7 @@ document.getElementById(id).style.display="flex";
 }
 
 /* ======================
-   LOGIN / REGISTER
+   LOGIN
 ====================== */
 function register(){
 fetch(API+"/register",{
@@ -178,9 +195,7 @@ headers:{"Content-Type":"application/json"},
 body:JSON.stringify({user:user.value,pass:pass.value})
 })
 .then(r=>r.json())
-.then(d=>{
-msg.innerText=d.ok?"Criado!":d.msg;
-});
+.then(d=>msg.innerText=d.ok?"Criado!":d.msg);
 }
 
 function login(){
@@ -210,9 +225,11 @@ function back(){show("lobby");}
 function logout(){location.reload();}
 
 /* ======================
-   GAME
+   GAME TURNOS
 ====================== */
 function attack(){
+if(stun>0){stun--;end();return;}
+
 enemy.hp-=player.dmg;
 player.gold+=10;
 end();
@@ -220,7 +237,15 @@ end();
 
 function special(){
 let c=CHAR[player.classe];
+if(!c) return;
+
+if(cooldown>0) return;
+
 enemy.hp-=c.s;
+cooldown=c.cool;
+
+if(c.stun) stun=c.stun;
+
 end();
 }
 
@@ -230,6 +255,8 @@ end();
 }
 
 function end(){
+
+cooldown=Math.max(0,cooldown-1);
 
 if(enemy.hp<=0){
 enemy.hp=300;
