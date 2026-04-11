@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>RPG ONLINE 5.5</title>
+<title>RPG ONLINE 5.6</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap" rel="stylesheet">
 
@@ -76,10 +76,13 @@ border-radius:10px;
 <div id="login" class="screen">
 <div class="box">
 <h2>LOGIN</h2>
-<input id="user">
-<input id="pass" type="password">
+
+<input id="user" placeholder="Usuário">
+<input id="pass" type="password" placeholder="Senha">
+
 <button onclick="login()">Entrar</button>
 <button onclick="register()">Criar</button>
+
 <p id="msg"></p>
 </div>
 </div>
@@ -121,35 +124,11 @@ Classe: <span id="class"></span>
 <div class="box">
 <h2>🛒 LOJA</h2>
 
-<div class="card">
-Mago FREE<br>
-❤️100 ⚔️10 🔄10 ✨45<br>
-<button onclick="buy('mage')">Escolher</button>
-</div>
-
-<div class="card">
-Cavaleiro - 150<br>
-❤️175 ⚔️25 🔄10 ✨50<br>
-<button onclick="buy('knight')">Comprar</button>
-</div>
-
-<div class="card">
-Bárbaro - 400<br>
-❤️210 ⚔️55 🔄18 ✨80<br>
-<button onclick="buy('barbarian')">Comprar</button>
-</div>
-
-<div class="card">
-Golem - 800<br>
-❤️500 ⚔️50 🔄5 ✨200 (stun)<br>
-<button onclick="buy('golem')">Comprar</button>
-</div>
-
-<div class="card">
-Dark Knight - 1000<br>
-❤️350 ⚔️60 🔄10 ✨150<br>
-<button onclick="buy('dark')">Comprar</button>
-</div>
+<div class="card">Mago FREE<br>100 HP | 10 Dano | 10 Regen<br><button onclick="buy('mage')">Escolher</button></div>
+<div class="card">Cavaleiro - 150<br>175 HP | 25 Dano | 10 Regen<br><button onclick="buy('knight')">Comprar</button></div>
+<div class="card">Bárbaro - 400<br>210 HP | 55 Dano | 18 Regen<br><button onclick="buy('barbarian')">Comprar</button></div>
+<div class="card">Golem - 800<br>500 HP | 50 Dano | 5 Regen<br><button onclick="buy('golem')">Comprar</button></div>
+<div class="card">Dark Knight - 1000<br>350 HP | 60 Dano | 10 Regen<br><button onclick="buy('dark')">Comprar</button></div>
 
 <button onclick="back()">Voltar</button>
 </div>
@@ -159,6 +138,11 @@ Dark Knight - 1000<br>
 
 const API="https://vedolarpg.onrender.com";
 
+/* 🔥 FIX DO BUG */
+const user = document.getElementById("user");
+const pass = document.getElementById("pass");
+const msg = document.getElementById("msg");
+
 let username="";
 let player={};
 let enemy={hp:300};
@@ -166,9 +150,7 @@ let enemy={hp:300};
 let cooldown=0;
 let stun=0;
 
-/* ======================
-   PERSONAGENS DO TEXTÃO
-====================== */
+/* PERSONAGENS */
 const CHAR={
 mage:{hp:100,dmg:10,regen:10,s:45,cool:2},
 knight:{hp:175,dmg:25,regen:10,s:50,cool:2},
@@ -177,17 +159,13 @@ golem:{hp:500,dmg:50,regen:5,s:200,cool:4,stun:2},
 dark:{hp:350,dmg:60,regen:10,s:150,cool:3}
 };
 
-/* ======================
-   UI
-====================== */
+/* UI */
 function show(id){
 document.querySelectorAll(".screen").forEach(s=>s.style.display="none");
 document.getElementById(id).style.display="flex";
 }
 
-/* ======================
-   LOGIN
-====================== */
+/* LOGIN */
 function register(){
 fetch(API+"/register",{
 method:"POST",
@@ -206,7 +184,7 @@ body:JSON.stringify({user:user.value,pass:pass.value})
 })
 .then(r=>r.json())
 .then(d=>{
-if(!d.ok)return msg.innerText=d.msg;
+if(!d.ok) return msg.innerText=d.msg;
 
 username=user.value;
 player=d.data;
@@ -216,20 +194,15 @@ update();
 });
 }
 
-/* ======================
-   LOBBY
-====================== */
+/* LOBBY */
 function start(){show("game");}
 function openShop(){show("shop");}
 function back(){show("lobby");}
 function logout(){location.reload();}
 
-/* ======================
-   GAME TURNOS
-====================== */
+/* GAME */
 function attack(){
 if(stun>0){stun--;end();return;}
-
 enemy.hp-=player.dmg;
 player.gold+=10;
 end();
@@ -255,7 +228,6 @@ end();
 }
 
 function end(){
-
 cooldown=Math.max(0,cooldown-1);
 
 if(enemy.hp<=0){
@@ -271,9 +243,7 @@ location.reload();
 update();
 }
 
-/* ======================
-   LOJA
-====================== */
+/* LOJA */
 function buy(id){
 let c=CHAR[id];
 
@@ -298,9 +268,7 @@ player.regen=c.regen;
 update();
 }
 
-/* ======================
-   UPDATE
-====================== */
+/* UPDATE */
 function update(){
 gold.innerText=player.gold;
 gold2.innerText=player.gold;
