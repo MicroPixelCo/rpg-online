@@ -1,323 +1,1271 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<title>RPG ONLINE FINAL</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RPG ONLINE - Shop & Inventory</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap" rel="stylesheet">
+    body {
+      font-family: 'Pixelify Sans', sans-serif;
+      background: radial-gradient(circle, #1a1a2e, #0f0f1a);
+      color: white;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
 
-<style>
-body{
-margin:0;
-font-family:'Pixelify Sans';
-background:radial-gradient(circle,#1a1a2e,#0f0f1a);
-color:white;
-overflow:hidden;
-}
+    .screen {
+      width: 100vw;
+      height: 100vh;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.3s ease-in;
+      overflow-y: auto;
+    }
 
-.screen{
-width:100vw;
-height:100vh;
-display:none;
-justify-content:center;
-align-items:center;
-}
+    .screen.active {
+      display: flex;
+    }
 
-#login{display:flex;}
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
 
-.box{
-background:rgba(0,0,0,0.75);
-padding:30px;
-border-radius:15px;
-text-align:center;
-width:420px;
-}
+    .box {
+      background: rgba(0, 0, 0, 0.75);
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      width: 90%;
+      max-width: 600px;
+      backdrop-filter: blur(10px);
+      margin: 20px auto;
+    }
 
-button{
-padding:10px;
-margin:5px;
-cursor:pointer;
-background:linear-gradient(135deg,#3a0ca3,#7209b7,#f72585);
-color:white;
-border:none;
-border-radius:10px;
-}
+    input, button {
+      padding: 12px;
+      margin: 8px 5px;
+      border: 2px solid #7209b7;
+      border-radius: 10px;
+      font-family: 'Pixelify Sans', sans-serif;
+      font-size: 14px;
+    }
 
-input{
-padding:10px;
-margin:5px;
-width:80%;
-text-align:center;
-}
+    input {
+      width: 85%;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
 
-#hud{
-position:absolute;
-top:10px;
-left:10px;
-background:rgba(0,0,0,0.5);
-padding:10px;
-border-radius:10px;
-}
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
 
-.character{
-font-size:60px;
-transition:0.2s;
-}
+    button {
+      padding: 12px 20px;
+      width: auto;
+      cursor: pointer;
+      background: linear-gradient(135deg, #3a0ca3, #7209b7, #f72585);
+      color: white;
+      border: none;
+      transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+    }
 
-.hit{
-transform:scale(1.2);
-}
-</style>
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(247, 37, 133, 0.4);
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      filter: grayscale(50%);
+    }
+
+    button.secondary {
+      background: linear-gradient(135deg, #0ea5e9, #06b6d4);
+    }
+
+    button.warning {
+      background: linear-gradient(135deg, #f59e0b, #dc2626);
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      border-bottom: 2px solid #7209b7;
+      z-index: 100;
+    }
+
+    .header-left {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .header-right {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .gold-display {
+      background: rgba(255, 215, 0, 0.1);
+      padding: 8px 15px;
+      border-radius: 8px;
+      border: 1px solid #ffd700;
+      font-weight: bold;
+    }
+
+    /* ===== LOBBY ===== */
+    .lobby-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      width: 90%;
+      max-width: 900px;
+      margin-top: 80px;
+    }
+
+    .lobby-card {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 25px;
+      border-radius: 15px;
+      border: 2px solid #7209b7;
+      text-align: center;
+    }
+
+    .lobby-card h3 {
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+
+    /* ===== SHOP ===== */
+    .shop-container {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 20px;
+      width: 95%;
+      max-width: 1000px;
+      margin-top: 80px;
+    }
+
+    .shop-sidebar {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 20px;
+      border-radius: 15px;
+      border: 2px solid #3a0ca3;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+
+    .shop-content {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 20px;
+      border-radius: 15px;
+      border: 2px solid #7209b7;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+
+    .filter-btn {
+      width: 100%;
+      margin: 8px 0;
+      text-align: left;
+      padding: 10px 15px;
+      background: rgba(112, 9, 183, 0.3);
+      border: 1px solid #7209b7;
+    }
+
+    .filter-btn.active {
+      background: rgba(112, 9, 183, 0.8);
+      border: 2px solid #f72585;
+    }
+
+    /* ===== ITEMS GRID ===== */
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 15px;
+    }
+
+    .item-card {
+      background: rgba(50, 30, 80, 0.5);
+      padding: 15px;
+      border-radius: 10px;
+      border: 2px solid #7209b7;
+      text-align: center;
+      transition: transform 0.2s, border-color 0.2s;
+      cursor: pointer;
+    }
+
+    .item-card:hover {
+      transform: translateY(-5px);
+      border-color: #f72585;
+    }
+
+    .item-card.selected {
+      background: rgba(247, 37, 133, 0.3);
+      border-color: #f72585;
+    }
+
+    .item-emoji {
+      font-size: 40px;
+      margin: 10px 0;
+    }
+
+    .item-name {
+      font-weight: bold;
+      font-size: 14px;
+      margin: 8px 0;
+    }
+
+    .item-type {
+      font-size: 11px;
+      color: #00ffff;
+      margin: 5px 0;
+    }
+
+    .item-stats {
+      font-size: 11px;
+      color: #ffff00;
+      margin: 8px 0;
+      line-height: 1.4;
+    }
+
+    .item-price {
+      font-size: 13px;
+      color: #ffd700;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    .item-rarity {
+      font-size: 10px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-top: 8px;
+      font-weight: bold;
+    }
+
+    .rarity-common {
+      background: rgba(100, 100, 100, 0.5);
+      color: #cccccc;
+    }
+
+    .rarity-uncommon {
+      background: rgba(0, 200, 100, 0.5);
+      color: #00ff00;
+    }
+
+    .rarity-rare {
+      background: rgba(0, 100, 255, 0.5);
+      color: #00ffff;
+    }
+
+    .rarity-epic {
+      background: rgba(150, 0, 200, 0.5);
+      color: #ff00ff;
+    }
+
+    .rarity-legendary {
+      background: rgba(255, 150, 0, 0.5);
+      color: #ffff00;
+    }
+
+    /* ===== INVENTORY ===== */
+    .inventory-container {
+      width: 95%;
+      max-width: 1200px;
+      margin-top: 80px;
+    }
+
+    .inventory-section {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 20px;
+      border-radius: 15px;
+      border: 2px solid #7209b7;
+      margin-bottom: 20px;
+    }
+
+    .inventory-section h3 {
+      margin-bottom: 15px;
+      color: #f72585;
+    }
+
+    .inventory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 12px;
+    }
+
+    .inventory-item {
+      background: rgba(50, 30, 80, 0.5);
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #7209b7;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .inventory-item:hover {
+      transform: scale(1.05);
+      border-color: #f72585;
+    }
+
+    .inventory-item.equipped {
+      border: 2px solid #00ff00;
+      background: rgba(0, 255, 0, 0.1);
+    }
+
+    .item-quantity {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: #f72585;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    /* ===== DETAIL PANEL ===== */
+    .detail-panel {
+      background: rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      border-radius: 15px;
+      border: 2px solid #3a0ca3;
+      margin-top: 20px;
+    }
+
+    .detail-panel h4 {
+      margin-bottom: 12px;
+      color: #00ffff;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 13px;
+    }
+
+    /* ===== BUTTON GROUP ===== */
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      width: 100%;
+      margin-top: 15px;
+    }
+
+    .message {
+      color: #f72585;
+      font-weight: bold;
+      min-height: 20px;
+      margin: 10px 0;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== TABS ===== */
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #7209b7;
+    }
+
+    .tab-btn {
+      padding: 10px 20px;
+      background: rgba(112, 9, 183, 0.3);
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      color: white;
+      font-family: 'Pixelify Sans', sans-serif;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: rgba(112, 9, 183, 0.8);
+      border-bottom-color: #f72585;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 900px) {
+      .lobby-container {
+        grid-template-columns: 1fr;
+      }
+
+      .shop-container {
+        grid-template-columns: 1fr;
+      }
+
+      .items-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      }
+
+      .inventory-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      }
+    }
+
+    @media (max-width: 600px) {
+      .header {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .screen {
+        margin-top: 60px;
+      }
+
+      .lobby-container, .shop-container {
+        margin-top: 80px;
+      }
+
+      .items-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      }
+    }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #7209b7;
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #f72585;
+    }
+  </style>
 </head>
 
 <body>
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <h2>🎮 RPG ONLINE</h2>
+      <span id="headerWave" style="display: none;">Wave: <span id="headerWaveNum">1</span></span>
+    </div>
+    <div class="header-right">
+      <div class="gold-display">💰 <span id="headerGold">0</span></div>
+      <button class="secondary" onclick="gameState.goBack()" id="backBtn" style="display: none;">← Voltar</button>
+      <button class="warning" onclick="gameState.logout()">Sair</button>
+    </div>
+  </div>
 
-<!-- LOGIN -->
-<div id="login" class="screen">
-<div class="box">
-<h2>LOGIN</h2>
-<input id="user" placeholder="Usuário">
-<input id="pass" type="password" placeholder="Senha">
-<button onclick="login()">Entrar</button>
-<button onclick="register()">Criar</button>
-<p id="msg"></p>
-</div>
-</div>
+  <!-- LOGIN -->
+  <div id="login" class="screen active">
+    <div class="box">
+      <h2>🎮 LOGIN</h2>
+      <input id="user" placeholder="Usuário" type="text">
+      <input id="pass" type="password" placeholder="Senha">
+      <div class="message" id="msg"></div>
+      <div class="button-group">
+        <button onclick="gameState.login()">Entrar</button>
+        <button class="secondary" onclick="gameState.register()">Criar</button>
+      </div>
+    </div>
+  </div>
 
-<!-- LOBBY -->
-<div id="lobby" class="screen">
-<div class="box">
-<h1>🎮 LOBBY</h1>
-<p>💰 Gold: <span id="gold"></span></p>
+  <!-- LOBBY -->
+  <div id="lobby" class="screen">
+    <div class="lobby-container">
+      <div class="lobby-card">
+        <h3>👤 Jogador</h3>
+        <p style="margin: 10px 0;">Classe: <strong id="classDisplay">Mage</strong></p>
+        <p>Nível: <strong id="levelDisplay">1</strong></p>
+        <p style="margin: 15px 0; font-size: 12px;">
+          ❤️ HP: <span id="maxHpDisplay">100</span><br>
+          ⚔️ ATK: <span id="atkDisplay">10</span><br>
+          🛡️ DEF: <span id="defDisplay">0</span>
+        </p>
+        <div class="button-group">
+          <button class="secondary" onclick="gameState.showInventory()">📦 Inventário</button>
+          <button onclick="gameState.startGame()">⚔️ Jogar</button>
+        </div>
+      </div>
 
-<button onclick="start()">Jogar</button>
-<button onclick="startWave()">Modo Ondas</button>
-<button onclick="logout()">Sair</button>
-</div>
-</div>
+      <div class="lobby-card">
+        <h3>🛍️ Loja & Upgrades</h3>
+        <p style="margin: 10px 0;">💰 Gold: <span id="gold">0</span></p>
+        <p style="margin: 15px 0; font-size: 13px; min-height: 40px;">
+          Compre itens para aumentar seus atributos
+        </p>
+        <div class="button-group">
+          <button class="secondary" onclick="gameState.showShop()">🛒 Abrir Loja</button>
+          <button onclick="gameState.startWave()">🌊 Modo Ondas</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<!-- GAME -->
-<div id="game" class="screen">
+  <!-- SHOP -->
+  <div id="shop" class="screen">
+    <div class="shop-container">
+      <!-- Sidebar Filters -->
+      <div class="shop-sidebar">
+        <h3 style="margin-bottom: 15px;">📂 Filtros</h3>
+        <button class="filter-btn active" onclick="gameState.filterShop('all')">Todos</button>
+        <button class="filter-btn" onclick="gameState.filterShop('weapon')">⚔️ Armas</button>
+        <button class="filter-btn" onclick="gameState.filterShop('armor')">🛡️ Armaduras</button>
+        <button class="filter-btn" onclick="gameState.filterShop('accessory')">✨ Acessórios</button>
+        <button class="filter-btn" onclick="gameState.filterShop('potion')">🧪 Poções</button>
+        
+        <hr style="margin: 20px 0; border: none; border-top: 1px solid #7209b7;">
+        <h4>Raridade</h4>
+        <button class="filter-btn" onclick="gameState.filterShop('rarity-common')">⚪ Comum</button>
+        <button class="filter-btn" onclick="gameState.filterShop('rarity-uncommon')">🟢 Incomum</button>
+        <button class="filter-btn" onclick="gameState.filterShop('rarity-rare')">🔵 Raro</button>
+        <button class="filter-btn" onclick="gameState.filterShop('rarity-epic')">🟣 Épico</button>
+        <button class="filter-btn" onclick="gameState.filterShop('rarity-legendary')">🟠 Lendário</button>
+      </div>
 
-<div id="hud">
-HP: <span id="hp"></span><br>
-Gold: <span id="gold2"></span><br>
-Classe: <span id="class"></span><br>
-Wave: <span id="wave"></span>
-</div>
+      <!-- Shop Items -->
+      <div class="shop-content">
+        <h3 style="margin-bottom: 15px;">Itens Disponíveis</h3>
+        <div class="items-grid" id="shopGrid"></div>
 
-<div class="box">
-<div id="playerSprite" class="character">🧙</div>
+        <!-- Detail Panel -->
+        <div class="detail-panel" id="detailPanel" style="display: none;">
+          <h4 id="detailName"></h4>
+          <div id="detailStats"></div>
+          <button onclick="gameState.buyItem()" style="width: 100%; margin-top: 15px;">💳 Comprar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<h2 id="enemyName"></h2>
+  <!-- INVENTORY -->
+  <div id="inventory" class="screen">
+    <div class="inventory-container">
+      <h2 style="margin-bottom: 20px;">📦 Inventário</h2>
 
-<div id="enemySprite" class="character">🧟</div>
+      <!-- Equipped Items -->
+      <div class="inventory-section">
+        <h3>⚡ Equipados</h3>
+        <div class="inventory-grid" id="equippedGrid"></div>
+      </div>
 
-<h3>HP: <span id="ehp"></span></h3>
+      <!-- Weapons -->
+      <div class="inventory-section">
+        <h3>⚔️ Armas</h3>
+        <div class="inventory-grid" id="weaponsGrid"></div>
+      </div>
 
-<button onclick="attack()">Atacar</button>
-<button onclick="special()">Especial</button>
-<button onclick="heal()">Curar</button>
-<button onclick="back()">Lobby</button>
-</div>
+      <!-- Armor -->
+      <div class="inventory-section">
+        <h3>🛡️ Armaduras</h3>
+        <div class="inventory-grid" id="armorGrid"></div>
+      </div>
 
-</div>
+      <!-- Accessories -->
+      <div class="inventory-section">
+        <h3>✨ Acessórios</h3>
+        <div class="inventory-grid" id="accessoriesGrid"></div>
+      </div>
 
-<script>
+      <!-- Potions -->
+      <div class="inventory-section">
+        <h3>🧪 Poções</h3>
+        <div class="inventory-grid" id="potionsGrid"></div>
+      </div>
 
-const API="http://localhost:3000";
+      <div class="button-group">
+        <button class="secondary" onclick="gameState.goBack()">← Voltar</button>
+      </div>
+    </div>
+  </div>
 
-/* =========================
-   ESTADO
-========================= */
-let username="";
-let player={gold:0,hp:100,maxHP:100,dmg:10,regen:5,classe:"mage"};
-let enemy={hp:100,name:"🧟 Zumbi"};
+  <!-- GAME -->
+  <div id="game" class="screen">
+    <div style="position: absolute; top: 80px; left: 20px; background: rgba(0,0,0,0.7); padding: 15px; border-radius: 10px; border: 2px solid #f72585;">
+      <div>❤️ <span id="gameHp">100</span>/<span id="gameMaxHp">100</span></div>
+      <div>💰 <span id="gameGold">0</span></div>
+      <div>⚔️ <span id="gameAtk">10</span></div>
+      <div>🛡️ <span id="gameDef">0</span></div>
+      <div>🌊 Wave: <span id="gameWave">1</span></div>
+    </div>
 
-let cooldown=0;
-let wave=1;
-let waveMode=false;
+    <div class="box" style="max-width: 500px;">
+      <h2 id="enemyName">Enemy</h2>
+      <div style="font-size: 60px; margin: 20px 0;">vs</div>
+      <div style="font-size: 40px; margin: 20px 0;" id="enemyEmoji">🧟</div>
+      <p>HP: <span id="enemyHp">100</span>/<span id="enemyMaxHp">100</span></p>
+      <div class="button-group">
+        <button onclick="gameState.attack()">⚔️ Atacar</button>
+        <button onclick="gameState.defend()">🛡️ Defender</button>
+        <button onclick="gameState.gameHeal()">💚 Curar</button>
+        <button class="secondary" onclick="gameState.goBack()">← Sair</button>
+      </div>
+    </div>
+  </div>
 
-/* =========================
-   PERSONAGENS
-========================= */
-const CHAR={
-mage:{emoji:"🧙",hp:100,dmg:10,regen:10,s:45,cool:2},
-knight:{emoji:"🛡️",hp:180,dmg:25,regen:8,s:50,cool:2},
-barbarian:{emoji:"🪓",hp:220,dmg:50,regen:5,s:80,cool:3}
-};
+  <script>
+    /**
+     * Item Database
+     */
+    const ITEM_DATABASE = {
+      weapons: [
+        { id: 'iron_sword', name: 'Espada de Ferro', emoji: '⚔️', type: 'weapon', dmg: 15, cost: 100, rarity: 'common', desc: '+5 ATK' },
+        { id: 'steel_sword', name: 'Espada de Aço', emoji: '⚔️', type: 'weapon', dmg: 25, cost: 300, rarity: 'uncommon', desc: '+15 ATK' },
+        { id: 'dragon_sword', name: 'Espada do Dragão', emoji: '🗡️', type: 'weapon', dmg: 50, cost: 1000, rarity: 'epic', desc: '+40 ATK' },
+        { id: 'excalibur', name: 'Excalibur', emoji: '✨', type: 'weapon', dmg: 80, cost: 2000, rarity: 'legendary', desc: '+70 ATK' },
+        { id: 'staff', name: 'Cajado Mágico', emoji: '🪄', type: 'weapon', dmg: 20, cost: 250, rarity: 'uncommon', desc: '+10 ATK +5 SP' },
+      ],
+      armor: [
+        { id: 'leather_armor', name: 'Armadura de Couro', emoji: '🧥', type: 'armor', def: 5, cost: 150, rarity: 'common', desc: '+5 DEF' },
+        { id: 'iron_armor', name: 'Armadura de Ferro', emoji: '🛡️', type: 'armor', def: 15, cost: 500, rarity: 'uncommon', desc: '+15 DEF' },
+        { id: 'diamond_armor', name: 'Armadura de Diamante', emoji: '💎', type: 'armor', def: 30, cost: 1200, rarity: 'epic', desc: '+30 DEF' },
+        { id: 'mithril_armor', name: 'Armadura de Mithril', emoji: '⚪', type: 'armor', def: 40, cost: 2000, rarity: 'legendary', desc: '+40 DEF' },
+      ],
+      accessories: [
+        { id: 'ring_power', name: 'Anel do Poder', emoji: '💍', type: 'accessory', dmg: 10, cost: 200, rarity: 'rare', desc: '+10 ATK' },
+        { id: 'amulet_defense', name: 'Amuleto de Defesa', emoji: '🔮', type: 'accessory', def: 10, cost: 200, rarity: 'rare', desc: '+10 DEF' },
+        { id: 'crown_wisdom', name: 'Coroa da Sabedoria', emoji: '👑', type: 'accessory', dmg: 20, def: 20, cost: 800, rarity: 'epic', desc: '+20 ATK/DEF' },
+        { id: 'infinity_stone', name: 'Pedra do Infinito', emoji: '🔷', type: 'accessory', dmg: 50, def: 50, cost: 3000, rarity: 'legendary', desc: '+50 ATK/DEF' },
+      ],
+      potions: [
+        { id: 'minor_heal', name: 'Poção Menor', emoji: '🧪', type: 'potion', heal: 30, cost: 50, rarity: 'common', desc: 'Cura 30 HP' },
+        { id: 'major_heal', name: 'Poção Maior', emoji: '🧫', type: 'potion', heal: 80, cost: 150, rarity: 'uncommon', desc: 'Cura 80 HP' },
+        { id: 'mega_heal', name: 'Poção Mega', emoji: '🧬', type: 'potion', heal: 150, cost: 300, rarity: 'rare', desc: 'Cura 150 HP' },
+      ]
+    };
 
-/* =========================
-   UI
-========================= */
-function get(id){return document.getElementById(id);}
+    /**
+     * Main Game State
+     */
+    class GameState {
+      constructor() {
+        this.API = "http://localhost:3000";
+        this.username = "";
+        this.currentScreen = "login";
+        this.currentFilter = "all";
+        this.selectedShopItem = null;
 
-function update(){
-if(get("gold")) get("gold").innerText=player.gold;
-if(get("gold2")) get("gold2").innerText=player.gold;
-if(get("hp")) get("hp").innerText=player.hp;
-if(get("class")) get("class").innerText=player.classe;
-if(get("ehp")) get("ehp").innerText=enemy.hp;
-if(get("enemyName")) get("enemyName").innerText=enemy.name;
-if(get("wave")) get("wave").innerText=wave;
+        this.player = {
+          gold: 1000,
+          hp: 100,
+          maxHP: 100,
+          dmg: 10,
+          def: 0,
+          classe: "mage",
+          level: 1
+        };
 
-if(get("playerSprite"))
-get("playerSprite").innerText=CHAR[player.classe]?.emoji || "🧙";
-}
+        this.inventory = {
+          weapons: [],
+          armor: [],
+          accessories: [],
+          potions: []
+        };
 
-function show(id){
-document.querySelectorAll(".screen").forEach(s=>s.style.display="none");
-let el=get(id);
-if(el) el.style.display="flex";
-}
+        this.equipped = {
+          weapon: null,
+          armor: null,
+          accessory: null
+        };
 
-/* =========================
-   LOGIN
-========================= */
-function login(){
-let u=get("user"),p=get("pass"),m=get("msg");
+        this.enemy = {
+          hp: 100,
+          maxHP: 100,
+          dmg: 10,
+          name: "Enemy"
+        };
 
-fetch(API+"/login",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({user:u.value,pass:p.value})
-})
-.then(r=>r.json())
-.then(d=>{
-if(!d.ok){m.innerText=d.msg;return;}
+        this.wave = 1;
+        this.waveMode = false;
+      }
 
-username=u.value;
-player=d.data;
+      get(id) {
+        return document.getElementById(id);
+      }
 
-show("lobby");
-update();
-});
-}
+      /**
+       * Update all UI
+       */
+      updateUI() {
+        this.get("headerGold").innerText = this.player.gold;
+        this.get("gold").innerText = this.player.gold;
+        this.get("classDisplay").innerText = this.capitalize(this.player.classe);
+        this.get("levelDisplay").innerText = this.player.level;
+        this.get("maxHpDisplay").innerText = this.player.maxHP;
+        this.get("atkDisplay").innerText = this.player.dmg;
+        this.get("defDisplay").innerText = this.player.def;
 
-function register(){
-let u=get("user"),p=get("pass"),m=get("msg");
+        if (this.currentScreen === "game") {
+          this.get("gameHp").innerText = Math.max(0, this.player.hp);
+          this.get("gameMaxHp").innerText = this.player.maxHP;
+          this.get("gameGold").innerText = this.player.gold;
+          this.get("gameAtk").innerText = this.player.dmg;
+          this.get("gameDef").innerText = this.player.def;
+          this.get("gameWave").innerText = this.wave;
+          this.get("enemyHp").innerText = Math.max(0, this.enemy.hp);
+          this.get("enemyMaxHp").innerText = this.enemy.maxHP;
+        }
+      }
 
-fetch(API+"/register",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({user:u.value,pass:p.value})
-})
-.then(r=>r.json())
-.then(d=>{
-m.innerText=d.ok?"Criado!":d.msg;
-});
-}
+      /**
+       * Navigate screens
+       */
+      showScreen(screenId) {
+        document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+        this.get(screenId).classList.add("active");
+        this.currentScreen = screenId;
 
-/* =========================
-   GAME
-========================= */
-function start(){
-waveMode=false;
-show("game");
-update();
-}
+        // Show/hide back button
+        const backBtn = this.get("backBtn");
+        if (screenId === "shop" || screenId === "inventory" || screenId === "game") {
+          backBtn.style.display = "inline-block";
+        } else {
+          backBtn.style.display = "none";
+        }
 
-function startWave(){
-waveMode=true;
-wave=1;
-enemy.hp=100;
-show("game");
-update();
-}
+        // Show/hide wave display
+        const headerWave = this.get("headerWave");
+        if (screenId === "game") {
+          headerWave.style.display = "inline-block";
+          this.get("headerWaveNum").innerText = this.wave;
+        } else {
+          headerWave.style.display = "none";
+        }
 
-function attack(){
-animate("enemySprite");
+        this.updateUI();
+      }
 
-enemy.hp-=player.dmg;
-player.gold+=10;
+      goBack() {
+        this.showScreen("lobby");
+      }
 
-enemyTurn();
-end();
-}
+      capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+      }
 
-function special(){
-let c=CHAR[player.classe];
-if(!c || cooldown>0)return;
+      /**
+       * AUTH: Login
+       */
+      login() {
+        const userInput = this.get("user");
+        const passInput = this.get("pass");
+        const msgElement = this.get("msg");
 
-animate("enemySprite");
+        if (!userInput.value || !passInput.value) {
+          msgElement.innerText = "Preencha todos os campos";
+          return;
+        }
 
-enemy.hp-=c.s;
-cooldown=c.cool;
+        fetch(this.API + "/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user: userInput.value, pass: passInput.value })
+        })
+        .then(r => r.json())
+        .then(data => {
+          if (!data.ok) {
+            msgElement.innerText = data.msg || "Erro ao fazer login";
+            return;
+          }
+          this.username = userInput.value;
+          this.player = { ...this.player, ...data.data };
+          this.loadInventory();
+          this.showScreen("lobby");
+        })
+        .catch(err => {
+          msgElement.innerText = "Erro de conexão";
+          console.error(err);
+        });
+      }
 
-enemyTurn();
-end();
-}
+      /**
+       * AUTH: Register
+       */
+      register() {
+        const userInput = this.get("user");
+        const passInput = this.get("pass");
+        const msgElement = this.get("msg");
 
-function heal(){
-player.hp=Math.min(player.maxHP,player.hp+player.regen);
+        if (!userInput.value || !passInput.value) {
+          msgElement.innerText = "Preencha todos os campos";
+          return;
+        }
 
-animate("playerSprite");
+        fetch(this.API + "/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user: userInput.value, pass: passInput.value })
+        })
+        .then(r => r.json())
+        .then(data => {
+          msgElement.innerText = data.ok ? "✓ Conta criada! Faça login." : (data.msg || "Erro ao criar conta");
+        })
+        .catch(err => {
+          msgElement.innerText = "Erro de conexão";
+          console.error(err);
+        });
+      }
 
-enemyTurn();
-end();
-}
+      /**
+       * SHOP: Render shop
+       */
+      showShop() {
+        this.showScreen("shop");
+        this.renderShop("all");
+      }
 
-function enemyTurn(){
-player.hp-=10+wave*2;
-}
+      filterShop(filter) {
+        this.currentFilter = filter;
+        
+        // Update active button
+        document.querySelectorAll(".filter-btn").forEach(btn => {
+          btn.classList.remove("active");
+        });
+        event.target.classList.add("active");
 
-function end(){
+        this.renderShop(filter);
+      }
 
-cooldown=Math.max(0,cooldown-1);
+      /**
+       * Render shop items
+       */
+      renderShop(filter) {
+        let items = [];
 
-if(enemy.hp<=0){
-player.gold+=50;
+        // Get all items
+        Object.values(ITEM_DATABASE).forEach(category => {
+          items.push(...category);
+        });
 
-if(waveMode){
-wave++;
-enemy.hp=100+wave*40;
-enemy.name = wave%5===0 ? "👑 BOSS" : "🧟 Zumbi";
-}else{
-enemy.hp=100;
-}
-}
+        // Apply filter
+        if (filter !== "all") {
+          if (filter.startsWith("rarity-")) {
+            const rarity = filter.split("-")[1];
+            items = items.filter(i => i.rarity === rarity);
+          } else {
+            items = items.filter(i => i.type === filter);
+          }
+        }
 
-if(player.hp<=0){
-alert("Você perdeu!");
-location.reload();
-}
+        // Render grid
+        const grid = this.get("shopGrid");
+        grid.innerHTML = items.map(item => `
+          <div class="item-card" onclick="gameState.selectShopItem(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+            <div class="item-emoji">${item.emoji}</div>
+            <div class="item-name">${item.name}</div>
+            <div class="item-type">${this.getItemTypeLabel(item.type)}</div>
+            <div class="item-stats">${this.getItemStats(item)}</div>
+            <div class="item-price">💰 ${item.cost}</div>
+            <div class="item-rarity rarity-${item.rarity}">${this.capitalize(item.rarity)}</div>
+          </div>
+        `).join("");
+      }
 
-update();
-}
+      /**
+       * Select shop item
+       */
+      selectShopItem(item) {
+        this.selectedShopItem = item;
+        const detail = this.get("detailPanel");
+        detail.style.display = "block";
 
-/* =========================
-   ANIMAÇÃO
-========================= */
-function animate(id){
-let el=get(id);
-if(!el)return;
+        const name = this.get("detailName");
+        const stats = this.get("detailStats");
 
-el.classList.add("hit");
+        name.innerText = `${item.emoji} ${item.name}`;
+        stats.innerHTML = `
+          <div class="detail-row">
+            <span>Tipo:</span>
+            <strong>${this.getItemTypeLabel(item.type)}</strong>
+          </div>
+          <div class="detail-row">
+            <span>Raridade:</span>
+            <strong>${this.capitalize(item.rarity)}</strong>
+          </div>
+          <div class="detail-row">
+            <span>Descrição:</span>
+            <strong>${item.desc}</strong>
+          </div>
+          <div class="detail-row">
+            <span>Preço:</span>
+            <strong>💰 ${item.cost}</strong>
+          </div>
+          ${this.player.gold >= item.cost ? '<div class="detail-row" style="color: #00ff00;"><strong>✓ Você pode comprar!</strong></div>' : '<div class="detail-row" style="color: #ff6600;"><strong>✗ Ouro insuficiente</strong></div>'}
+        `;
+      }
 
-setTimeout(()=>{
-el.classList.remove("hit");
-},200);
-}
+      /**
+       * Buy item
+       */
+      buyItem() {
+        if (!this.selectedShopItem) return;
+        if (this.player.gold < this.selectedShopItem.cost) {
+          alert("Ouro insuficiente!");
+          return;
+        }
 
-/* =========================
-   FLOW
-========================= */
-function back(){show("lobby");}
-function logout(){location.reload();}
+        this.player.gold -= this.selectedShopItem.cost;
+        this.addToInventory(this.selectedShopItem);
+        alert(`✓ ${this.selectedShopItem.name} adicionado ao inventário!`);
+        this.updateUI();
+      }
 
-/* =========================
-   INIT
-========================= */
-window.onload=()=>{
-show("login");
-update();
-};
+      /**
+       * Add to inventory
+       */
+      addToInventory(item) {
+        const type = item.type;
+        if (!this.inventory[type === 'weapon' ? 'weapons' : type === 'armor' ? 'armor' : type === 'accessory' ? 'accessories' : 'potions']) {
+          this.inventory[type === 'potion' ? 'potions' : type + 's'] = [];
+        }
 
-</script>
+        const key = type === 'potion' ? 'potions' : type + 's';
+        const existing = this.inventory[key].find(i => i.id === item.id);
+        
+        if (existing && item.type === 'potion') {
+          existing.quantity = (existing.quantity || 1) + 1;
+        } else if (!existing) {
+          this.inventory[key].push({ ...item, quantity: item.type === 'potion' ? 1 : 0 });
+        }
+      }
 
+      /**
+       * INVENTORY: Show inventory
+       */
+      showInventory() {
+        this.showScreen("inventory");
+        this.renderInventory();
+      }
+
+      /**
+       * Render inventory
+       */
+      renderInventory() {
+        // Equipped items
+        const equippedGrid = this.get("equippedGrid");
+        let equipped = [];
+        if (this.equipped.weapon) equipped.push(this.equipped.weapon);
+        if (this.equipped.armor) equipped.push(this.equipped.armor);
+        if (this.equipped.accessory) equipped.push(this.equipped.accessory);
+        
+        equippedGrid.innerHTML = equipped.length > 0 ? equipped.map(item => `
+          <div class="inventory-item equipped">
+            <div style="font-size: 30px;">${item.emoji}</div>
+            <div style="font-size: 12px; font-weight: bold;">${item.name}</div>
+            <button class="secondary" style="width: 100%; margin-top: 8px; padding: 5px;" onclick="gameState.unequipItem('${item.type}')">Deseguipar</button>
+          </div>
+        `).join("") : "<p style='grid-column: 1/-1; color: #aaa;'>Nenhum item equipado</p>";
+
+        // Weapons
+        this.renderInventoryCategory("weapons", "weaponsGrid");
+        this.renderInventoryCategory("armor", "armorGrid");
+        this.renderInventoryCategory("accessories", "accessoriesGrid");
+        this.renderInventoryCategory("potions", "potionsGrid");
+      }
+
+      /**
+       * Render inventory category
+       */
+      renderInventoryCategory(category, elementId) {
+        const grid = this.get(elementId);
+        const items = this.inventory[category] || [];
+
+        if (items.length === 0) {
+          grid.innerHTML = "<p style='grid-column: 1/-1; color: #aaa;'>Vazio</p>";
+          return;
+        }
+
+        grid.innerHTML = items.map(item => `
+          <div class="inventory-item" onclick="gameState.equipItem('${item.type}', '${item.id}')">
+            <div style="font-size: 30px;">${item.emoji}</div>
+            <div style="font-size: 12px; font-weight: bold;">${item.name}</div>
+            ${item.quantity ? `<div class="item-quantity">${item.quantity}</div>` : ''}
+            <div style="font-size: 10px; margin-top: 8px; color: #00ffff;">${this.getItemStats(item)}</div>
+          </div>
+        `).join("");
+      }
+
+      /**
+       * Equip item
+       */
+      equipItem(type, itemId) {
+        const categories = {
+          'weapon': 'weapons',
+          'armor': 'armor',
+          'accessory': 'accessories',
+          'potion': 'potions'
+        };
+
+        const category = categories[type];
+        const item = this.inventory[category].find(i => i.id === itemId);
+
+        if (!item) return;
+
+        // Can't equip potions
+        if (type === 'potion') {
+          alert(`Você usou ${item.name}! +${item.heal} HP`);
+          this.player.hp = Math.min(this.player.maxHP, this.player.hp + item.heal);
+          item.quantity--;
+          if (item.quantity <= 0) {
+            this.inventory[category] = this.inventory[category].filter(i => i.id !== itemId);
+          }
+          this.renderInventory();
+          return;
+        }
+
+        // Unequip previous item
+        const equipKey = type === 'weapon' ? 'weapon' : type === 'armor' ? 'armor' : 'accessory';
+        if (this.equipped[equipKey] && this.equipped[equipKey].id !== itemId) {
+          // Add back to inventory
+          const prevCategory = categories[this.equipped[equipKey].type];
+          if (!this.inventory[prevCategory].find(i => i.id === this.equipped[equipKey].id)) {
+            this.inventory[prevCategory].push(this.equipped[equipKey]);
+          }
+        }
+
+        // Equip new item
+        this.equipped[equipKey] = item;
+        this.inventory[category] = this.inventory[category].filter(i => i.id !== itemId);
+
+        // Recalculate stats
+        this.recalculateStats();
+        this.renderInventory();
+        this.updateUI();
+      }
+
+      /**
+       * Unequip item
+       */
+      unequipItem(type) {
+        const equipKey = type === 'weapon' ? 'weapon' : type === 'armor' ? 'armor' : 'accessory';
+        const item = this.equipped[equipKey];
+
+        if (item) {
+          const category = type === 'weapon' ? 'weapons' : type === 'armor' ? 'armor' : 'accessories';
+          this.inventory[category].push(item);
+          this.equipped[equipKey] = null;
+          this.recalculateStats();
+          this.renderInventory();
+          this.updateUI();
+        }
+      }
+
+      /**
+       * Recalculate player stats
+       */
+      recalculateStats() {
+        this.player.dmg = 10;
+        this.player.def = 0;
+
+        if (this.equipped.weapon) {
+          this.player.dmg += this.equipped.weapon.dmg || 0;
+        }
+        if (this.equipped.armor) {
+          this.player.def += this.equipped.armor.def || 0;
+        }
+        if (this.equipped.accessory) {
+          this.player.dmg += this.equipped.accessory.dmg || 0;
+          this.player.def += this.equipped.accessory.def || 0;
+        }
+      }
+
+      /**
+       * Get item type label
+       */
+      getItemTypeLabel(type) {
+        const labels = {
+          'weapon': '⚔️ Arma',
+          'armor': '🛡️ Armadura',
+          'accessory': '✨ Acessório',
+          'potion': '🧪 Poção'
+        };
+        return labels[type] || type;
+      }
+
+      /**
+       * Get item stats display
+       */
+      getItemStats(item) {
+        let stats = [];
+        if (item.dmg) stats.push(`+${item.dmg} ATK`);
+        if (item.def) stats.push(`+${item.def} DEF`);
+        if (item.heal) stats.push(`+${item.heal} HP`);
+        return stats.join(" ");
+      }
+
+      /**
+       * Load inventory from storage
+       */
+      loadInventory() {
+        const saved = localStorage.getItem(`rpg_inventory_${this.username}`);
+        if (saved) {
+          this.inventory = JSON.parse(saved);
+          this.recalculateStats();
+        }
+      }
+
+      /**
+       * GAME: Start game
+       */
+      startGame() {
+        this.waveMode = false;
+        this.wave = 1;
+        this.player.hp = this.player.maxHP;
+        this.generateEnemy();
+        this.showScreen("game");
+      }
+
+      /**
+       * GAME: Start wave mode
+       */
+      startWave() {
+        this.waveMode = true;
+        this.wave = 1;
+        this.player.hp = this.player.maxHP;
+        this.generateEnemy();
+        this.showScreen("game");
+      }
+
+      /**
+       * Generate enemy
+       */
+      generateEnemy() {
+        const baseDmg = 10 + this.wave;
+        this.enemy = {
+          hp: 100 + this.wave * 20,
+          maxHP: 100 + this.wave * 20,
+          dmg: baseDmg,
+          name: this.wave % 5 === 0 ? "👑 BOSS" : "🧟"
+        };
+      }
+
+      /**
+       * GAME: Attack
+       */
+      attack() {
+        const damage = Math.round(this.player.dmg * (0.8 + Math.random() * 0.4));
+        this.enemy.hp -= damage;
+        
+        if (this.enemy.hp <= 0) {
+          const reward = 50 + this.wave * 10;
+          this.player.gold += reward;
+          alert(`✓ Vitória! +${reward} ouro!`);
+
+          if (this.waveMode) {
+            this.wave++;
+            this.generateEnemy();
+            this.player.hp = this.player.maxHP;
+          } else {
+            this.showScreen("lobby");
+          }
+        } else {
+          this.enemyAttack();
+        }
+
+        this.updateUI();
+      }
+
+      /**
+       * GAME: Defend
+       */
+      defend() {
+        const reducedDamage = Math.round(this.enemy.dmg * 0.3);
+        this.player.hp -= reducedDamage;
+        
+        if (this.player.hp <= 0) {
+          alert("💀 Você foi derrotado!");
+          this.showScreen("lobby");
+        }
+        this.updateUI();
+      }
+
+      /**
+       * GAME: Heal
+       */
+      gameHeal() {
+        const healAmount = 30;
+        this.player.hp = Math.min(this.player.maxHP, this.player.hp + healAmount);
+        this.enemyAttack();
+        this.updateUI();
+      }
+
+      /**
+       * Enemy attack
+       */
+      enemyAttack() {
+        const damage = Math.round(this.enemy.dmg * (0.7 + Math.random() * 0.3) - this.player.def * 0.2);
+        this.player.hp = Math.max(0, this.player.hp - Math.max(1, damage));
+
+        if (this.player.hp <= 0) {
+          alert("💀 Você foi derrotado!");
+          this.showScreen("lobby");
+        }
+      }
+
+      /**
+       * AUTH: Logout
+       */
+      logout() {
+        localStorage.setItem(`rpg_inventory_${this.username}`, JSON.stringify(this.inventory));
+        location.reload();
+      }
+    }
+
+    // Initialize
+    const gameState = new GameState();
+
+    window.addEventListener("load", () => {
+      gameState.showScreen("login");
+      gameState.updateUI();
+    });
+  </script>
 </body>
 </html>
-
 
 
 
