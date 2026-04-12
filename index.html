@@ -1,15 +1,17 @@
-<!DOCTYPE html>
+   <!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>⚔️ RPG ULTIMATE PRO - v2.4</title>
+  <title>⚔️ RPG ULTIMATE PRO - v2.6</title>
   <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      -webkit-user-select: none;
+      user-select: none;
     }
 
     :root {
@@ -23,31 +25,44 @@
       --darker: #1a1a2e;
       --text: #ffffff;
       --text-muted: #aaaaaa;
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      --glow: 0 0 20px rgba(114, 9, 183, 0.4);
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
     }
 
     body {
       font-family: 'Pixelify Sans', sans-serif;
-      background: linear-gradient(135deg, var(--darker) 0%, #16213e 100%);
+      background: linear-gradient(135deg, var(--darker) 0%, #16213e 50%, #0a3a52 100%);
       color: var(--text);
-      overflow: hidden;
       height: 100vh;
       width: 100vw;
     }
 
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
     @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
     @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
     @keyframes bounceIn { 0% { transform: scale(0.3); opacity: 0; } 50% { opacity: 1; } 100% { transform: scale(1); } }
     @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+    @keyframes glow { 0%, 100% { box-shadow: var(--glow), inset 0 0 10px rgba(114, 9, 183, 0.2); } 50% { box-shadow: 0 0 30px rgba(114, 9, 183, 0.6), inset 0 0 20px rgba(114, 9, 183, 0.3); } }
+    @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
 
     .screen {
-      position: absolute;
-      width: 100vw;
-      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       display: none;
       flex-direction: column;
-      animation: fadeIn 0.3s ease-in;
+      animation: fadeIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .screen.active {
@@ -58,27 +73,32 @@
       position: fixed;
       top: 0;
       width: 100%;
-      height: 60px;
-      background: linear-gradient(90deg, rgba(0, 0, 0, 0.95), rgba(20, 10, 40, 0.9));
-      border-bottom: 2px solid var(--primary);
+      height: 65px;
+      background: linear-gradient(90deg, rgba(0, 0, 0, 0.95), rgba(20, 10, 40, 0.9), rgba(0, 0, 0, 0.95));
+      border-bottom: 3px solid var(--secondary);
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 0 20px;
       z-index: 1000;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
     }
 
     .header-left {
       display: flex;
-      gap: 30px;
+      gap: 20px;
       align-items: center;
     }
 
     .header-title {
       font-size: 18px;
       font-weight: 700;
-      color: var(--secondary);
+      background: linear-gradient(135deg, var(--secondary), var(--primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 10px rgba(247, 37, 133, 0.3);
+      letter-spacing: 1px;
     }
 
     .header-right {
@@ -88,19 +108,21 @@
     }
 
     .gold-display {
-      background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
-      padding: 8px 16px;
-      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.05));
+      padding: 10px 16px;
+      border-radius: 10px;
       border: 2px solid #ffd700;
       font-weight: bold;
       font-size: 13px;
       display: flex;
       gap: 8px;
       align-items: center;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.2), inset 0 0 10px rgba(255, 215, 0, 0.05);
+      letter-spacing: 0.5px;
     }
 
     button {
-      padding: 10px 18px;
+      padding: 12px 18px;
       background: linear-gradient(135deg, #3a0ca3, var(--primary));
       border: 2px solid var(--secondary);
       border-radius: 8px;
@@ -109,12 +131,35 @@
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.3s ease;
+      min-height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+      position: relative;
+      overflow: hidden;
+      letter-spacing: 0.5px;
     }
 
-    button:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(247, 37, 133, 0.4);
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    button:hover::before {
+      left: 100%;
+    }
+
+    button:active:not(:disabled) {
+      transform: scale(0.95);
+      box-shadow: 0 4px 12px rgba(247, 37, 133, 0.6), inset 0 0 10px rgba(247, 37, 133, 0.3);
     }
 
     button:disabled {
@@ -128,53 +173,58 @@
     .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); border-color: #d97706; }
 
     input {
-      padding: 12px;
+      padding: 14px;
       background: rgba(255, 255, 255, 0.08);
       border: 2px solid var(--primary);
       border-radius: 8px;
       color: white;
       font-family: 'Pixelify Sans', sans-serif;
-      font-size: 12px;
+      font-size: 14px;
+      width: 100%;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
     }
 
     input:focus {
       outline: none;
       border-color: var(--secondary);
       background: rgba(255, 255, 255, 0.12);
-      box-shadow: 0 0 15px rgba(247, 37, 133, 0.2);
+      box-shadow: 0 0 20px rgba(247, 37, 133, 0.3), inset 0 0 10px rgba(247, 37, 133, 0.1);
     }
 
-    input::placeholder { color: rgba(255, 255, 255, 0.4); }
+    input::placeholder { color: rgba(255, 255, 255, 0.3); }
 
     /* LOGIN SCREEN */
     #login {
       justify-content: center;
       align-items: center;
       background: linear-gradient(135deg, var(--darker) 0%, #1a1a2e 50%, #0f1f3f 100%);
+      padding: 20px;
     }
 
     .login-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 40px;
-      width: 90%;
+      width: 100%;
       max-width: 1000px;
     }
 
     .login-left h1 {
-      font-size: 42px;
+      font-size: 48px;
       font-weight: 700;
       margin-bottom: 20px;
-      background: linear-gradient(135deg, var(--secondary), var(--primary));
+      background: linear-gradient(135deg, var(--secondary), var(--primary), var(--info));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      letter-spacing: 2px;
     }
 
     .login-left p {
       font-size: 14px;
       color: var(--text-muted);
-      line-height: 1.6;
-      margin-bottom: 20px;
+      line-height: 1.7;
+      margin-bottom: 25px;
     }
 
     .login-features {
@@ -184,73 +234,100 @@
     }
 
     .feature {
-      background: rgba(112, 9, 183, 0.2);
-      padding: 12px;
+      background: linear-gradient(135deg, rgba(114, 9, 183, 0.2), rgba(247, 37, 133, 0.1));
+      padding: 14px;
       border-radius: 8px;
-      border-left: 3px solid var(--secondary);
+      border-left: 4px solid var(--secondary);
       font-size: 11px;
-      line-height: 1.5;
+      line-height: 1.6;
+      box-shadow: 0 4px 15px rgba(114, 9, 183, 0.1);
+      backdrop-filter: blur(5px);
     }
 
     .login-box {
-      background: rgba(0, 0, 0, 0.6);
-      padding: 35px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 40px;
       border-radius: 12px;
       border: 2px solid var(--primary);
       backdrop-filter: blur(10px);
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), var(--glow);
+      animation: fadeIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .login-box h2 {
-      margin-bottom: 25px;
+      margin-bottom: 28px;
       font-size: 28px;
       text-align: center;
       color: var(--secondary);
+      letter-spacing: 1px;
     }
 
     .input-group {
-      margin-bottom: 12px;
+      margin-bottom: 16px;
     }
 
     .input-group label {
-      font-size: 10px;
+      font-size: 11px;
       color: var(--info);
       display: block;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
       font-weight: 700;
       text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .input-group input {
       width: 100%;
+      padding: 14px;
+    }
+
+    .input-hint {
+      font-size: 10px;
+      color: var(--warning);
+      margin-top: 6px;
+      display: block;
     }
 
     .message {
       color: var(--warning);
       text-align: center;
-      margin: 12px 0;
-      font-size: 11px;
-      min-height: 16px;
+      margin: 14px 0;
+      font-size: 12px;
+      min-height: 18px;
       animation: slideDown 0.3s ease;
+      padding: 10px;
+      border-radius: 6px;
+      background: rgba(255, 102, 0, 0.15);
+      border: 1px solid rgba(255, 102, 0, 0.3);
     }
 
-    .message.success { color: var(--success); }
-    .message.error { color: var(--danger); }
+    .message.success { 
+      color: var(--success);
+      background: rgba(0, 255, 0, 0.15);
+      border: 1px solid rgba(0, 255, 0, 0.3);
+    }
+
+    .message.error { 
+      color: var(--danger);
+      background: rgba(255, 0, 0, 0.15);
+      border: 1px solid rgba(255, 0, 0, 0.3);
+    }
 
     .login-buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 24px;
     }
 
     .login-buttons button {
-      flex: 1;
+      width: 100%;
+      font-size: 13px;
     }
 
     /* LOBBY SCREEN */
     #lobby {
-      padding: 80px 20px 20px;
-      overflow-y: auto;
+      padding: 80px 24px 24px;
       justify-content: flex-start;
       background: linear-gradient(135deg, var(--darker) 0%, #16213e 100%);
     }
@@ -263,67 +340,94 @@
 
     .lobby-header {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 32px;
     }
 
     .lobby-header h1 {
-      font-size: 36px;
-      margin-bottom: 8px;
-      background: linear-gradient(135deg, var(--secondary), var(--primary));
+      font-size: 42px;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, var(--secondary), var(--primary), var(--info));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
     }
 
     .lobby-header p {
       color: var(--text-muted);
-      font-size: 12px;
+      font-size: 13px;
+      letter-spacing: 0.5px;
     }
 
     .quick-menu {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 10px;
-      margin-bottom: 30px;
-      background: rgba(0, 0, 0, 0.4);
-      padding: 15px;
-      border-radius: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 32px;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(114, 9, 183, 0.1));
+      padding: 18px;
+      border-radius: 12px;
       border: 2px solid var(--primary);
+      box-shadow: var(--glow), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(5px);
     }
 
     .quick-btn {
-      padding: 12px;
+      padding: 14px;
       text-align: center;
-      font-size: 13px;
-      background: rgba(112, 9, 183, 0.3);
-      border: 1px solid var(--primary);
-      border-radius: 6px;
+      font-size: 12px;
+      background: linear-gradient(135deg, rgba(114, 9, 183, 0.3), rgba(114, 9, 183, 0.1));
+      border: 2px solid var(--primary);
+      border-radius: 8px;
       color: white;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.3s ease;
       font-family: 'Pixelify Sans', sans-serif;
       font-weight: 700;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+      box-shadow: 0 4px 15px rgba(114, 9, 183, 0.1);
     }
 
     .quick-btn:hover {
-      background: rgba(247, 37, 133, 0.4);
       border-color: var(--secondary);
+      background: linear-gradient(135deg, rgba(247, 37, 133, 0.3), rgba(247, 37, 133, 0.1));
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(247, 37, 133, 0.2);
+    }
+
+    .quick-btn:active {
+      transform: scale(0.95);
     }
 
     .lobby-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 20px;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 1200px) {
+      .lobby-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .lobby-grid { grid-template-columns: 1fr; }
+      .login-container { grid-template-columns: 1fr; }
     }
 
     .card {
-      background: rgba(50, 30, 80, 0.4);
-      padding: 25px;
+      background: linear-gradient(135deg, rgba(50, 30, 80, 0.5), rgba(30, 10, 60, 0.3));
+      padding: 28px;
       border-radius: 12px;
       border: 2px solid var(--primary);
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
       position: relative;
       overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(5px);
     }
 
     .card::before {
@@ -336,114 +440,146 @@
       background: linear-gradient(90deg, transparent, var(--secondary), transparent);
     }
 
+    .card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(114, 9, 183, 0.1), transparent);
+      pointer-events: none;
+    }
+
     .card:hover {
       transform: translateY(-5px);
       border-color: var(--secondary);
-      box-shadow: 0 10px 30px rgba(247, 37, 133, 0.2);
+      box-shadow: 0 12px 40px rgba(247, 37, 133, 0.2), var(--glow), inset 0 1px 0 rgba(255, 255, 255, 0.05);
     }
 
     .card h3 {
-      font-size: 16px;
+      font-size: 18px;
       color: var(--secondary);
-      margin-bottom: 15px;
+      margin-bottom: 16px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      letter-spacing: 0.5px;
+      position: relative;
+      z-index: 1;
     }
 
     .card-buttons {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      margin-top: 15px;
+      gap: 10px;
+      margin-top: 16px;
+      position: relative;
+      z-index: 1;
     }
 
     .card-buttons button {
       width: 100%;
-      font-size: 11px;
-      padding: 10px;
+      font-size: 12px;
+      padding: 12px;
     }
 
     .char-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin: 12px 0;
+      gap: 12px;
+      margin: 16px 0;
+      position: relative;
+      z-index: 1;
     }
 
     .char-option {
-      background: rgba(112, 9, 183, 0.2);
-      padding: 12px;
+      background: linear-gradient(135deg, rgba(114, 9, 183, 0.2), rgba(114, 9, 183, 0.05));
+      padding: 16px;
       border-radius: 8px;
       border: 2px solid var(--primary);
       cursor: pointer;
       text-align: center;
-      transition: all 0.2s ease;
+      transition: all 0.3s ease;
+      min-height: 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
 
     .char-option:hover {
       border-color: var(--secondary);
-      background: rgba(112, 9, 183, 0.4);
+      background: linear-gradient(135deg, rgba(247, 37, 133, 0.2), rgba(247, 37, 133, 0.05));
+      transform: translateY(-2px);
     }
 
     .char-option.selected {
       border-color: var(--success);
-      background: rgba(0, 255, 0, 0.1);
-      box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.2);
+      background: linear-gradient(135deg, rgba(0, 255, 0, 0.15), rgba(0, 255, 0, 0.05));
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.3), inset 0 0 10px rgba(0, 255, 0, 0.1);
     }
 
     .char-emoji {
-      font-size: 32px;
+      font-size: 40px;
       margin: 8px 0;
     }
 
     .char-name {
       font-weight: 700;
-      font-size: 11px;
+      font-size: 12px;
       color: var(--info);
+      margin-bottom: 4px;
     }
 
     .char-stats {
-      font-size: 9px;
+      font-size: 10px;
       color: var(--text-muted);
-      margin-top: 6px;
-      line-height: 1.4;
+      line-height: 1.5;
     }
 
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin: 12px 0;
+      gap: 12px;
+      margin: 16px 0;
+      position: relative;
+      z-index: 1;
     }
 
     .stat-box {
-      background: rgba(112, 9, 183, 0.2);
-      padding: 12px;
+      background: linear-gradient(135deg, rgba(114, 9, 183, 0.2), rgba(114, 9, 183, 0.05));
+      padding: 14px;
       border-radius: 8px;
-      border: 1px solid var(--primary);
+      border: 2px solid var(--primary);
       text-align: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .stat-box:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(247, 37, 133, 0.15);
     }
 
     .stat-label {
-      font-size: 9px;
+      font-size: 10px;
       color: var(--info);
       text-transform: uppercase;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
     }
 
     .stat-value {
-      font-size: 20px;
+      font-size: 24px;
       color: var(--secondary);
       font-weight: 700;
     }
 
     .stat-bar {
       width: 100%;
-      height: 6px;
+      height: 8px;
       background: rgba(0, 0, 0, 0.3);
-      border-radius: 3px;
-      margin-top: 6px;
+      border-radius: 4px;
+      margin-top: 8px;
       overflow: hidden;
       border: 1px solid var(--primary);
     }
@@ -457,28 +593,33 @@
 
     /* SHOP SCREEN */
     #shop {
-      padding: 80px 20px 20px;
-      overflow-y: auto;
+      padding: 80px 24px 24px;
+      justify-content: flex-start;
     }
 
     .shop-wrapper {
       width: 100%;
-      max-width: 1600px;
-      margin: 0 auto;
+      max-width: 100%;
       display: grid;
-      grid-template-columns: 220px 1fr;
+      grid-template-columns: 180px 1fr;
       gap: 20px;
     }
 
+    @media (max-width: 768px) {
+      .shop-wrapper { grid-template-columns: 1fr; }
+    }
+
     .shop-sidebar {
-      background: rgba(0, 0, 0, 0.6);
-      padding: 15px;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(114, 9, 183, 0.1));
+      padding: 16px;
       border-radius: 10px;
       border: 2px solid var(--primary);
-      height: fit-content;
       display: flex;
       flex-direction: column;
       gap: 12px;
+      height: fit-content;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), var(--glow);
+      backdrop-filter: blur(5px);
     }
 
     .sidebar-title {
@@ -487,121 +628,135 @@
       text-transform: uppercase;
       font-weight: 700;
       margin-bottom: 6px;
+      letter-spacing: 0.5px;
     }
 
     .filter-btn {
       width: 100%;
       text-align: left;
-      padding: 8px 10px;
-      background: rgba(112, 9, 183, 0.2);
-      border: 1px solid var(--primary);
+      padding: 10px 12px;
+      background: linear-gradient(135deg, rgba(114, 9, 183, 0.2), rgba(114, 9, 183, 0.05));
+      border: 2px solid var(--primary);
       border-radius: 6px;
       color: white;
       font-family: 'Pixelify Sans', sans-serif;
       cursor: pointer;
-      font-size: 10px;
-      transition: all 0.2s ease;
+      font-size: 11px;
+      transition: all 0.3s ease;
+      min-height: 40px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
 
     .filter-btn:hover {
-      background: rgba(112, 9, 183, 0.4);
+      background: linear-gradient(135deg, rgba(247, 37, 133, 0.2), rgba(247, 37, 133, 0.05));
       border-color: var(--secondary);
+      transform: translateX(4px);
     }
 
     .filter-btn.active {
-      background: rgba(247, 37, 133, 0.5);
+      background: linear-gradient(135deg, rgba(247, 37, 133, 0.4), rgba(247, 37, 133, 0.2));
       border-color: var(--secondary);
+      box-shadow: 0 0 15px rgba(247, 37, 133, 0.3), inset 0 0 10px rgba(247, 37, 133, 0.1);
     }
 
     .shop-content {
-      background: rgba(0, 0, 0, 0.6);
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(114, 9, 183, 0.1));
       padding: 20px;
       border-radius: 10px;
       border: 2px solid var(--primary);
-      overflow-y: auto;
-      height: fit-content;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), var(--glow);
+      backdrop-filter: blur(5px);
     }
 
     .items-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 14px;
     }
 
     .item-card {
-      background: rgba(50, 30, 80, 0.5);
-      padding: 15px;
+      background: linear-gradient(135deg, rgba(50, 30, 80, 0.6), rgba(30, 10, 60, 0.3));
+      padding: 16px;
       border-radius: 8px;
       border: 2px solid var(--primary);
       text-align: center;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
+      min-height: 160px;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .item-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(247, 37, 133, 0.1), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
     }
 
     .item-card:hover {
-      transform: translateY(-3px);
+      transform: translateY(-4px) scale(1.02);
       border-color: var(--secondary);
+      box-shadow: 0 8px 25px rgba(247, 37, 133, 0.2), var(--glow);
+    }
+
+    .item-card:hover::before {
+      opacity: 1;
     }
 
     .item-emoji { font-size: 32px; }
-    .item-name { font-weight: 700; font-size: 11px; color: var(--text); }
-    .item-type { font-size: 8px; color: var(--info); text-transform: uppercase; }
-    .item-stats { font-size: 9px; color: #ffff00; line-height: 1.3; }
-    .item-price { font-size: 11px; color: #ffd700; font-weight: 700; }
-    .item-rarity { font-size: 8px; padding: 2px 6px; border-radius: 3px; font-weight: 700; text-transform: uppercase; }
-    .item-cost { font-size: 10px; color: var(--success); font-weight: bold; margin-top: 6px; }
+    .item-name { font-weight: 700; font-size: 11px; color: var(--text); position: relative; z-index: 1; }
+    .item-type { font-size: 9px; color: var(--info); text-transform: uppercase; position: relative; z-index: 1; }
+    .item-stats { font-size: 10px; color: #ffff00; line-height: 1.2; position: relative; z-index: 1; }
+    .item-price { font-size: 12px; color: #ffd700; font-weight: 700; position: relative; z-index: 1; }
+    .item-rarity { font-size: 8px; padding: 4px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; position: relative; z-index: 1; }
+    .item-cost { font-size: 10px; color: var(--success); font-weight: bold; margin-top: 4px; position: relative; z-index: 1; }
 
+    .rarity-free { background: rgba(0, 255, 0, 0.3); color: var(--success); box-shadow: 0 0 10px rgba(0, 255, 0, 0.2); }
     .rarity-common { background: rgba(100, 100, 100, 0.5); color: #cccccc; }
-    .rarity-uncommon { background: rgba(0, 200, 100, 0.5); color: var(--success); }
+    .rarity-mid { background: rgba(100, 150, 255, 0.4); color: #64b6ff; box-shadow: 0 0 10px rgba(100, 150, 255, 0.2); }
     .rarity-rare { background: rgba(0, 100, 255, 0.5); color: var(--info); }
     .rarity-epic { background: rgba(150, 0, 200, 0.5); color: #ff00ff; }
-    .rarity-legendary { background: rgba(255, 150, 0, 0.5); color: #ffff00; }
     .rarity-special { background: rgba(255, 0, 255, 0.5); color: #ff00ff; }
 
     /* INVENTORY */
     #inventory {
-      padding: 80px 20px 20px;
-      overflow-y: auto;
+      padding: 80px 24px 24px;
       justify-content: flex-start;
     }
 
     .inventory-wrapper {
       width: 100%;
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-
-    .inventory-section {
-      background: rgba(0, 0, 0, 0.6);
-      padding: 20px;
-      border-radius: 10px;
-      border: 2px solid var(--primary);
-      margin-bottom: 20px;
-    }
-
-    .inventory-section h3 {
-      font-size: 14px;
-      color: var(--secondary);
-      margin-bottom: 12px;
     }
 
     .inventory-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 12px;
     }
 
     .inventory-item {
-      background: rgba(50, 30, 80, 0.5);
-      padding: 10px;
+      background: linear-gradient(135deg, rgba(50, 30, 80, 0.6), rgba(30, 10, 60, 0.3));
+      padding: 12px;
       border-radius: 8px;
       border: 2px solid var(--primary);
       text-align: center;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.3s ease;
+      min-height: 110px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
 
     .inventory-item:hover {
@@ -610,48 +765,53 @@
     }
 
     .inv-emoji { font-size: 28px; margin: 6px 0; }
-    .inv-name { font-size: 9px; font-weight: bold; }
-    .inv-empty { color: var(--text-muted); font-size: 11px; grid-column: 1/-1; text-align: center; padding: 20px; }
+    .inv-name { font-size: 10px; font-weight: bold; }
+    .inv-empty { color: var(--text-muted); font-size: 12px; grid-column: 1/-1; text-align: center; padding: 40px 20px; }
 
     /* COMBAT */
     #combat {
       background: linear-gradient(135deg, var(--darker) 0%, #16213e 50%, #0f3460 100%);
-      padding: 80px 20px 20px;
-      overflow: hidden;
+      padding: 80px 24px 24px;
       justify-content: space-between;
+      overflow-y: auto;
     }
 
     .combat-info {
-      font-size: 12px;
+      font-size: 13px;
       color: var(--info);
       text-align: center;
-      margin-bottom: 10px;
-      padding: 8px;
-      background: rgba(0, 255, 255, 0.1);
+      margin-bottom: 12px;
+      padding: 10px;
+      background: linear-gradient(135deg, rgba(0, 255, 255, 0.15), rgba(0, 255, 255, 0.05));
       border-radius: 6px;
-      border: 1px solid var(--info);
+      border: 2px solid var(--info);
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+      letter-spacing: 0.5px;
     }
 
     .combat-hud {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 20px;
+      gap: 16px;
       margin-bottom: 20px;
     }
 
     .hud-card {
-      background: rgba(0, 0, 0, 0.6);
-      padding: 15px;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(114, 9, 183, 0.1));
+      padding: 16px;
       border-radius: 10px;
       border: 2px solid var(--primary);
       font-size: 11px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(5px);
     }
 
     .hud-name {
-      font-size: 12px;
+      font-size: 13px;
       color: var(--info);
       margin-bottom: 8px;
       font-weight: 700;
+      letter-spacing: 0.5px;
     }
 
     .hp-bar {
@@ -665,6 +825,7 @@
       display: flex;
       align-items: center;
       padding-right: 6px;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
     }
 
     .hp-fill {
@@ -678,6 +839,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
     }
 
     .hud-stats {
@@ -688,12 +850,13 @@
     }
 
     .hud-stat {
-      background: rgba(112, 9, 183, 0.2);
-      padding: 6px;
+      background: linear-gradient(135deg, rgba(114, 9, 183, 0.2), rgba(114, 9, 183, 0.05));
+      padding: 8px;
       border-radius: 4px;
       text-align: center;
       border: 1px solid var(--primary);
       font-size: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
 
     .combat-arena {
@@ -703,11 +866,13 @@
       align-items: center;
       gap: 30px;
       margin: 20px 0;
+      min-height: 180px;
     }
 
     .sprite {
       font-size: 100px;
       animation: float 3s ease-in-out infinite;
+      filter: drop-shadow(0 0 10px rgba(114, 9, 183, 0.3));
     }
 
     .sprite.attack {
@@ -728,17 +893,24 @@
       font-size: 50px;
       color: rgba(255, 255, 255, 0.2);
       animation: pulse 2s ease-in-out infinite;
+      filter: drop-shadow(0 0 10px rgba(247, 37, 133, 0.2));
     }
 
     .combat-buttons {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 600px) {
+      .combat-buttons { grid-template-columns: repeat(2, 1fr); }
     }
 
     .action-btn {
-      padding: 12px;
-      font-size: 11px;
+      padding: 14px;
+      font-size: 12px;
+      min-height: 50px;
     }
 
     .damage-number {
@@ -746,9 +918,10 @@
       font-weight: bold;
       font-size: 28px;
       pointer-events: none;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+      text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9);
       animation: floatDamage 0.8s ease-out forwards;
       z-index: 100;
+      filter: drop-shadow(0 0 5px rgba(114, 9, 183, 0.5));
     }
 
     @keyframes floatDamage {
@@ -761,7 +934,7 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.95);
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(20, 10, 40, 0.9));
       padding: 40px;
       border-radius: 12px;
       border: 3px solid var(--secondary);
@@ -770,13 +943,16 @@
       display: none;
       animation: bounceIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
       min-width: 350px;
-      max-height: 80vh;
+      max-height: 70vh;
       overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(247, 37, 133, 0.3);
+      backdrop-filter: blur(10px);
     }
 
     .battle-result h2 {
       font-size: 32px;
-      margin-bottom: 15px;
+      margin-bottom: 16px;
+      letter-spacing: 1px;
     }
 
     .battle-result.victory {
@@ -785,6 +961,7 @@
 
     .battle-result.victory h2 {
       color: var(--success);
+      text-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
     }
 
     .battle-result.defeat {
@@ -793,64 +970,79 @@
 
     .battle-result.defeat h2 {
       color: var(--danger);
+      text-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
     }
 
     .result-text {
       font-size: 12px;
-      margin: 15px 0;
-      line-height: 1.6;
+      margin: 16px 0;
+      line-height: 1.8;
       text-align: left;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 12px;
+      border-radius: 6px;
+      border-left: 3px solid var(--secondary);
     }
 
     .result-buttons {
-      display: flex;
-      gap: 10px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
       margin-top: 20px;
-      flex-wrap: wrap;
     }
 
     .result-buttons button {
-      flex: 1;
-      font-size: 11px;
-      min-width: 120px;
+      font-size: 12px;
+      min-height: 45px;
     }
 
     /* ACHIEVEMENTS */
     #achievements {
-      padding: 80px 20px 20px;
-      overflow-y: auto;
+      padding: 80px 24px 24px;
       justify-content: flex-start;
     }
 
     .achievements-wrapper {
       width: 100%;
-      max-width: 1400px;
-      margin: 0 auto;
     }
 
     .achievements-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 15px;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 14px;
+    }
+
+    @media (min-width: 768px) {
+      .achievements-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      }
     }
 
     .achievement-card {
-      background: rgba(50, 30, 80, 0.5);
-      padding: 20px;
+      background: linear-gradient(135deg, rgba(50, 30, 80, 0.6), rgba(30, 10, 60, 0.3));
+      padding: 18px;
       border-radius: 10px;
       border: 2px solid var(--primary);
       text-align: center;
-      transition: all 0.2s ease;
+      transition: all 0.3s ease;
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
 
     .achievement-card:hover {
-      transform: translateY(-3px);
+      transform: translateY(-4px);
       border-color: var(--secondary);
+      box-shadow: 0 8px 25px rgba(247, 37, 133, 0.2);
     }
 
     .achievement-card.unlocked {
       border-color: var(--success);
-      background: rgba(0, 255, 0, 0.1);
+      background: linear-gradient(135deg, rgba(0, 255, 0, 0.15), rgba(0, 255, 0, 0.05));
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
     }
 
     .achievement-card.locked {
@@ -860,12 +1052,14 @@
     .achievement-emoji {
       font-size: 40px;
       margin-bottom: 10px;
+      filter: drop-shadow(0 0 5px rgba(114, 9, 183, 0.3));
     }
 
     .achievement-name {
       font-weight: bold;
       font-size: 12px;
       margin-bottom: 6px;
+      color: var(--info);
     }
 
     .achievement-desc {
@@ -875,402 +1069,9 @@
 
     .achievement-progress {
       font-size: 9px;
-      color: var(--info);
+      color: var(--secondary);
       margin-top: 8px;
-    }
-
-    /* QUESTS */
-    #quests {
-      padding: 80px 20px 20px;
-      overflow-y: auto;
-      justify-content: flex-start;
-    }
-
-    .quests-wrapper {
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .quests-tabs {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    .quest-tab {
-      padding: 10px 16px;
-      background: rgba(112, 9, 183, 0.2);
-      border: 1px solid var(--primary);
-      border-radius: 6px;
-      color: white;
-      font-family: 'Pixelify Sans', sans-serif;
-      cursor: pointer;
-      font-size: 11px;
       font-weight: 700;
-      transition: all 0.2s ease;
-    }
-
-    .quest-tab:hover {
-      border-color: var(--secondary);
-    }
-
-    .quest-tab.active {
-      background: rgba(247, 37, 133, 0.5);
-      border-color: var(--secondary);
-    }
-
-    .quest-card {
-      background: rgba(50, 30, 80, 0.4);
-      padding: 20px;
-      border-radius: 10px;
-      border: 2px solid var(--primary);
-      margin-bottom: 15px;
-      transition: all 0.2s ease;
-    }
-
-    .quest-card:hover {
-      border-color: var(--secondary);
-    }
-
-    .quest-card.completed {
-      border-color: var(--success);
-      background: rgba(0, 255, 0, 0.05);
-    }
-
-    .quest-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .quest-title {
-      font-size: 14px;
-      font-weight: bold;
-      color: var(--secondary);
-    }
-
-    .quest-reward {
-      font-size: 11px;
-      color: #ffd700;
-    }
-
-    .quest-desc {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-bottom: 10px;
-    }
-
-    .quest-progress {
-      width: 100%;
-      height: 8px;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 4px;
-      overflow: hidden;
-      margin-bottom: 8px;
-    }
-
-    .quest-progress-bar {
-      height: 100%;
-      background: linear-gradient(90deg, var(--info), var(--secondary));
-      width: 0%;
-      transition: width 0.3s ease;
-    }
-
-    .quest-timer {
-      font-size: 10px;
-      color: var(--warning);
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    /* SKILLS */
-    #skills {
-      padding: 80px 20px 20px;
-      overflow-y: auto;
-      justify-content: flex-start;
-    }
-
-    .skills-wrapper {
-      width: 100%;
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-
-    .skills-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 15px;
-    }
-
-    .skill-card {
-      background: rgba(50, 30, 80, 0.4);
-      padding: 15px;
-      border-radius: 10px;
-      border: 2px solid var(--primary);
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .skill-card:hover {
-      transform: translateY(-3px);
-      border-color: var(--secondary);
-    }
-
-    .skill-card.learned {
-      border-color: var(--success);
-      background: rgba(0, 255, 0, 0.1);
-    }
-
-    .skill-emoji {
-      font-size: 36px;
-      margin-bottom: 8px;
-    }
-
-    .skill-name {
-      font-weight: bold;
-      font-size: 11px;
-      margin-bottom: 4px;
-    }
-
-    .skill-cost {
-      font-size: 9px;
-      color: var(--info);
-      margin-bottom: 6px;
-    }
-
-    /* GUILD */
-    #guild {
-      padding: 80px 20px 20px;
-      overflow-y: auto;
-      justify-content: flex-start;
-    }
-
-    .guild-wrapper {
-      width: 100%;
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-
-    .guild-info {
-      background: rgba(50, 30, 80, 0.4);
-      padding: 20px;
-      border-radius: 10px;
-      border: 2px solid var(--primary);
-      margin-bottom: 20px;
-    }
-
-    .guild-members {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 15px;
-    }
-
-    .member-card {
-      background: rgba(50, 30, 80, 0.5);
-      padding: 15px;
-      border-radius: 8px;
-      border: 1px solid var(--primary);
-      text-align: center;
-    }
-
-    .member-name {
-      font-weight: bold;
-      font-size: 12px;
-      margin-bottom: 6px;
-    }
-
-    .member-level {
-      font-size: 10px;
-      color: var(--info);
-    }
-
-    .member-role {
-      font-size: 9px;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    /* PVP */
-    #pvp {
-      padding: 80px 20px 20px;
-      overflow-y: auto;
-      justify-content: flex-start;
-    }
-
-    .pvp-wrapper {
-      width: 100%;
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-
-    .matchmaking-container {
-      background: rgba(50, 30, 80, 0.4);
-      padding: 30px;
-      border-radius: 12px;
-      border: 2px solid var(--primary);
-      text-align: center;
-    }
-
-    .opponent-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 15px;
-      margin-top: 20px;
-    }
-
-    .opponent-card {
-      background: rgba(50, 30, 80, 0.5);
-      padding: 20px;
-      border-radius: 10px;
-      border: 2px solid var(--primary);
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .opponent-card:hover {
-      border-color: var(--secondary);
-      transform: translateY(-3px);
-    }
-
-    .opponent-name {
-      font-weight: bold;
-      font-size: 13px;
-      margin-bottom: 6px;
-    }
-
-    .opponent-level {
-      font-size: 11px;
-      color: var(--info);
-      margin-bottom: 8px;
-    }
-
-    .difficulty-badge {
-      display: inline-block;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 10px;
-      font-weight: bold;
-      margin-bottom: 12px;
-    }
-
-    .difficulty-easy { background: rgba(0, 255, 0, 0.2); color: var(--success); }
-    .difficulty-medium { background: rgba(255, 215, 0, 0.2); color: #ffd700; }
-    .difficulty-hard { background: rgba(255, 0, 0, 0.2); color: var(--danger); }
-
-    /* DAILY REWARDS */
-    #dailyRewards {
-      padding: 80px 20px 20px;
-      overflow-y: auto;
-      justify-content: flex-start;
-    }
-
-    .rewards-wrapper {
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .daily-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 15px;
-    }
-
-    .reward-day {
-      background: rgba(50, 30, 80, 0.4);
-      padding: 20px;
-      border-radius: 10px;
-      border: 2px solid var(--primary);
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .reward-day:hover {
-      transform: translateY(-3px);
-    }
-
-    .reward-day.claimed {
-      border-color: var(--success);
-      background: rgba(0, 255, 0, 0.1);
-    }
-
-    .reward-day.locked {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .reward-day-num {
-      font-size: 24px;
-      font-weight: bold;
-      color: var(--secondary);
-      margin-bottom: 8px;
-    }
-
-    .reward-emoji {
-      font-size: 32px;
-      margin-bottom: 8px;
-    }
-
-    .reward-amount {
-      font-size: 11px;
-      color: var(--info);
-    }
-
-    .reward-timer {
-      font-size: 9px;
-      color: var(--warning);
-      margin-top: 8px;
-    }
-
-    /* LEADERBOARD */
-    #leaderboard {
-      padding: 80px 20px 20px;
-      overflow-y: auto;
-      justify-content: flex-start;
-    }
-
-    .leaderboard-wrapper {
-      width: 100%;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    .leaderboard-table {
-      background: rgba(0, 0, 0, 0.6);
-      border-radius: 10px;
-      border: 2px solid var(--primary);
-      overflow: hidden;
-    }
-
-    .leaderboard-row {
-      display: grid;
-      grid-template-columns: 60px 1fr 80px 80px 80px;
-      gap: 12px;
-      padding: 12px;
-      border-bottom: 1px solid var(--primary);
-      align-items: center;
-      font-size: 11px;
-    }
-
-    .leaderboard-row.header {
-      background: rgba(112, 9, 183, 0.3);
-      font-weight: bold;
-      color: var(--secondary);
-    }
-
-    @media (max-width: 1024px) {
-      .login-container { grid-template-columns: 1fr; }
-      .lobby-grid { grid-template-columns: 1fr; }
-      .shop-wrapper { grid-template-columns: 1fr; }
-      .combat-buttons { grid-template-columns: repeat(2, 1fr); }
-      .items-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
     }
 
     ::-webkit-scrollbar { width: 8px; }
@@ -1282,47 +1083,46 @@
 <body>
   <div class="header" id="headerContainer" style="display: none;">
     <div class="header-left">
-      <div class="header-title">⚔️ RPG ULTIMATE PRO v2.4</div>
+      <div class="header-title">⚔️ RPG ULTIMATE PRO</div>
     </div>
     <div class="header-right">
       <div class="gold-display" id="goldDisplay">💰 Ouro: 1000</div>
-      <button class="btn-danger" style="padding: 8px 14px; font-size: 11px;" onclick="game.logout()">🚪 Sair</button>
+      <button type="button" class="btn-danger" style="padding: 10px 14px; font-size: 11px;" onclick="game.logout()">🚪 Sair</button>
     </div>
   </div>
 
   <div id="login" class="screen active">
     <div class="login-container">
       <div class="login-left">
-        <h1>⚔️ RPG<br>ULTIMATE<br>PRO v2.4</h1>
-        <p>Bem-vindo ao RPG mais completo! Com 10+ telas, combate avançado com 6 bosses, personagens únicos com habilidades especiais e missões dinamicas!</p>
+        <h1>⚔️ RPG<br>ULTIMATE<br>PRO v2.6</h1>
+        <p>Bem-vindo ao RPG mais completo com 10+ classes épicas, combate dinâmico com 6 bosses progressivos, e missões que resetam automaticamente!</p>
         <div class="login-features">
-          <div class="feature">⚔️ 10+ Classes Unicas</div>
-          <div class="feature">📋 Missoes Diarias 7h</div>
-          <div class="feature">📅 Missoes Semanais Sexta</div>
-          <div class="feature">🎮 Combat por Rodadas</div>
+          <div class="feature">⚔️ 10 Classes Únicas</div>
+          <div class="feature">📋 Missões com Timer</div>
+          <div class="feature">🎮 Combate Avançado</div>
           <div class="feature">🏆 Achievements</div>
-          <div class="feature">👥 Guilds & PvP</div>
+          <div class="feature">👥 Guild & PvP</div>
           <div class="feature">💎 Trading</div>
-          <div class="feature">🎁 Daily Rewards</div>
+          <div class="feature">🌊 Modo Ondas</div>
+          <div class="feature">👑 6 Bosses</div>
         </div>
       </div>
 
-      <div class="login-right">
-        <div class="login-box">
-          <h2>LOGIN</h2>
-          <div class="input-group">
-            <label>👤 Usuario</label>
-            <input id="user" type="text" placeholder="Digite seu nome">
-          </div>
-          <div class="input-group">
-            <label>🔐 Senha</label>
-            <input id="pass" type="password" placeholder="Digite sua senha">
-          </div>
-          <div class="message" id="msg"></div>
-          <div class="login-buttons">
-            <button onclick="game.login()">🔓 Entrar</button>
-            <button class="btn-secondary" onclick="game.register()">📝 Criar Conta</button>
-          </div>
+      <div class="login-box">
+        <h2>LOGIN</h2>
+        <div class="input-group">
+          <label>👤 Usuário</label>
+          <input type="text" id="user" placeholder="3-20 caracteres" maxlength="20">
+          <span class="input-hint" id="userHint"></span>
+        </div>
+        <div class="input-group">
+          <label>🔐 Senha</label>
+          <input type="password" id="pass" placeholder="Digite sua senha" maxlength="50">
+        </div>
+        <div class="message" id="msg"></div>
+        <div class="login-buttons">
+          <button type="button" onclick="game.login()">🔓 Entrar</button>
+          <button type="button" class="btn-secondary" onclick="game.register()">📝 Registrar</button>
         </div>
       </div>
     </div>
@@ -1332,35 +1132,36 @@
     <div class="lobby-wrapper">
       <div class="lobby-header">
         <h1>⚔️ RPG ULTIMATE PRO</h1>
-        <p id="welcomeMsg">Bem-vindo!</p>
-        <p style="font-size: 11px; color: var(--warning); margin-top: 10px;">Personagem Selecionado: <strong id="selectedChar" style="color: var(--secondary);">Mago</strong></p>
+        <p id="welcomeMsg">Bem-vindo ao melhor RPG!</p>
       </div>
 
-      <div class="quick-menu" id="quickMenu">
-        <div class="quick-btn" onclick="game.startCombat('normal')">🎮 Combate Normal</div>
-        <div class="quick-btn" onclick="game.startCombat('wave')">🌊 Modo Ondas</div>
-        <div class="quick-btn" onclick="game.showShop()">🛒 Loja Personagens</div>
+      <div class="quick-menu">
+        <div class="quick-btn" onclick="game.startCombat('normal')">🎮 Combate</div>
+        <div class="quick-btn" onclick="game.startCombat('wave')">🌊 Ondas</div>
+        <div class="quick-btn" onclick="game.startCombat('boss')">👑 Boss</div>
+        <div class="quick-btn" onclick="game.showShop()">🛒 Loja</div>
         <div class="quick-btn" onclick="game.showInventory()">📦 Personagens</div>
-        <div class="quick-btn" onclick="game.showDailyRewards()">🎁 Recompensas</div>
         <div class="quick-btn" onclick="game.showAchievements()">🏆 Achievements</div>
       </div>
 
       <div class="lobby-grid">
         <div class="card">
-          <h3>🎨 Seu Heroi Atual</h3>
-          <div style="font-size: 48px; margin: 15px 0;" id="currentCharEmoji">🧙</div>
-          <div style="color: var(--info); font-size: 14px; font-weight: bold; margin-bottom: 10px;" id="currentCharName">Mago</div>
-          <div style="font-size: 10px; color: var(--text-muted); line-height: 1.6; text-align: left; margin-bottom: 12px;">
+          <h3>🎨 Seu Herói</h3>
+          <div style="font-size: 56px; margin: 16px 0;" id="currentCharEmoji">🧙</div>
+          <div style="color: var(--info); font-size: 16px; font-weight: bold; margin-bottom: 12px;" id="currentCharName">Mago</div>
+          <div style="font-size: 11px; color: var(--text-muted); line-height: 1.7; text-align: left;">
             <div>❤️ HP: <strong id="charDisplayHP">100</strong></div>
             <div>⚔️ ATK: <strong id="charDisplayATK">18</strong></div>
             <div>🛡️ DEF: <strong id="charDisplayDEF">2</strong></div>
-            <div style="margin-top: 8px;">📜 Habilidade:</div>
-            <div style="color: var(--warning); margin-top: 4px;">⚡ <span id="charDisplaySkill">Golpe de magia 45 dmg</span></div>
+            <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+              <div>✨ Habilidade:</div>
+              <div style="color: var(--secondary); margin-top: 4px;" id="charDisplaySkill">Golpe de magia 45 dmg</div>
+            </div>
           </div>
         </div>
 
         <div class="card">
-          <h3>📊 Seus Atributos</h3>
+          <h3>📊 Atributos</h3>
           <div class="stats-grid">
             <div class="stat-box"><div class="stat-label">❤️ HP</div><div class="stat-value" id="statHp">100</div></div>
             <div class="stat-box"><div class="stat-label">⚔️ ATK</div><div class="stat-value" id="statAtk">10</div></div>
@@ -1372,64 +1173,40 @@
         <div class="card">
           <h3>⚔️ Combate</h3>
           <div class="card-buttons">
-            <button onclick="game.startCombat('normal')">▶️ Normal</button>
-            <button class="btn-secondary" onclick="game.startCombat('wave')">🌊 Ondas</button>
-            <button class="btn-warning" onclick="game.startCombat('boss')">👑 Boss x6</button>
+            <button type="button" onclick="game.startCombat('normal')">▶️ Normal</button>
+            <button type="button" class="btn-secondary" onclick="game.startCombat('wave')">🌊 Ondas</button>
+            <button type="button" class="btn-warning" onclick="game.startCombat('boss')">👑 Boss x6</button>
           </div>
         </div>
 
         <div class="card">
-          <h3>📋 Missoes</h3>
+          <h3>📋 Missões</h3>
           <div class="card-buttons">
-            <button onclick="game.showDailyQuests()">📅 Diarias (7h)</button>
-            <button class="btn-secondary" onclick="game.showWeeklyQuests()">📆 Semanais (Sexta)</button>
-            <button class="btn-secondary" onclick="game.showQuests()">🎯 Normais</button>
+            <button type="button" onclick="game.showDailyQuests()">📅 Diárias (7h)</button>
+            <button type="button" class="btn-secondary" onclick="game.showWeeklyQuests()">📆 Semanais</button>
+            <button type="button" class="btn-secondary" onclick="game.showQuests()">🎯 Normais</button>
           </div>
         </div>
 
         <div class="card">
           <h3>🛍️ Recursos</h3>
           <div class="card-buttons">
-            <button onclick="game.showShop()">🛒 Loja Personagens</button>
-            <button class="btn-secondary" onclick="game.showInventory()">📦 Meus Personagens</button>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3>🎯 Sistemas</h3>
-          <div class="card-buttons">
-            <button onclick="game.showAchievements()">🏆 Achievements</button>
-            <button class="btn-secondary" onclick="game.showSkills()">🌳 Habilidades</button>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3>👥 Multiplayer</h3>
-          <div class="card-buttons">
-            <button onclick="game.showGuild()">👥 Guild</button>
-            <button class="btn-secondary" onclick="game.showPvp()">⚔️ PvP</button>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3>🎁 Mais</h3>
-          <div class="card-buttons">
-            <button onclick="game.showDailyRewards()">🎁 Daily Rewards</button>
-            <button class="btn-secondary" onclick="game.showLeaderboard()">🏆 Ranking</button>
+            <button type="button" onclick="game.showShop()">🛒 Loja</button>
+            <button type="button" class="btn-secondary" onclick="game.showInventory()">📦 Personagens</button>
           </div>
         </div>
 
         <div class="card">
           <h3>💎 Progresso</h3>
           <div style="font-size: 11px; line-height: 1.8;">
-            <div>👤 <span id="playerName">Anonimo</span></div>
+            <div>👤 <strong id="playerName">Anônimo</strong></div>
             <div>💰 Ouro: <strong id="playerGold">1000</strong></div>
             <div>⭐ EXP: <strong id="playerExp">0</strong>/100</div>
-            <div style="margin-top: 8px;">
+            <div style="margin-top: 10px;">
               <div class="stat-bar"><div class="stat-fill" id="expBar" style="width: 0%;"></div></div>
             </div>
-            <div style="margin-top: 8px; color: var(--success);">✓ <span id="playerWins">0</span> Vitorias</div>
-            <div style="color: var(--danger);">✗ <span id="playerLosses">0</span> Derrotas</div>
+            <div style="margin-top: 10px; color: var(--success); font-weight: 700;">✓ <span id="playerWins">0</span> Vitórias</div>
+            <div style="color: var(--danger); font-weight: 700;">✗ <span id="playerLosses">0</span> Derrotas</div>
           </div>
         </div>
       </div>
@@ -1439,16 +1216,15 @@
   <div id="shop" class="screen">
     <div class="shop-wrapper">
       <div class="shop-sidebar">
-        <div>
-          <div class="sidebar-title">📂 Raridade</div>
-          <button class="filter-btn active" onclick="game.filterShop('all')">Todos</button>
-          <button class="filter-btn" onclick="game.filterShop('free')">FREE</button>
-          <button class="filter-btn" onclick="game.filterShop('common')">Comum</button>
-          <button class="filter-btn" onclick="game.filterShop('rare')">Raro</button>
-          <button class="filter-btn" onclick="game.filterShop('epic')">Epico</button>
-          <button class="filter-btn" onclick="game.filterShop('special')">Especial</button>
-        </div>
-        <button class="btn-secondary" style="margin-top: 15px; width: 100%;" onclick="game.goLobby()">← Voltar</button>
+        <div class="sidebar-title">Raridade</div>
+        <button type="button" class="filter-btn active" onclick="game.filterShop('all')">Todos</button>
+        <button type="button" class="filter-btn" onclick="game.filterShop('free')">FREE</button>
+        <button type="button" class="filter-btn" onclick="game.filterShop('mid')">MID</button>
+        <button type="button" class="filter-btn" onclick="game.filterShop('common')">Comum</button>
+        <button type="button" class="filter-btn" onclick="game.filterShop('rare')">Raro</button>
+        <button type="button" class="filter-btn" onclick="game.filterShop('epic')">Épico</button>
+        <button type="button" class="filter-btn" onclick="game.filterShop('special')">Especial</button>
+        <button type="button" class="btn-secondary" style="margin-top: 14px; font-size: 11px;" onclick="game.goLobby()">← Voltar</button>
       </div>
 
       <div class="shop-content">
@@ -1458,11 +1234,10 @@
   </div>
 
   <div id="inventory" class="screen">
-    <div class="inventory-wrapper">
-      <h2 style="color: var(--secondary); margin-bottom: 20px;">📦 MEUS PERSONAGENS</h2>
-      <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 11px;">Clique para selecionar qual personagem usar em combate</p>
+    <h2 style="color: var(--secondary); margin: 0 0 16px 0; font-size: 20px; letter-spacing: 1px;">📦 Seus Personagens</h2>
+    <div style="flex: 1; overflow-y: auto; padding: 0;">
       <div class="inventory-grid" id="charInventory"></div>
-      <button class="btn-secondary" style="margin-top: 20px;" onclick="game.goLobby()">← Voltar</button>
+      <button type="button" class="btn-secondary" style="margin: 24px 0; width: 100%;" onclick="game.goLobby()">← Voltar</button>
     </div>
   </div>
 
@@ -1471,24 +1246,24 @@
 
     <div class="combat-hud">
       <div class="hud-card">
-        <div class="hud-name">🧙 Voce</div>
-        <div class="hp-bar"><div class="hp-fill" id="playerHpBar" style="width: 100%;">100/100</div></div>
+        <div class="hud-name">🧙 Você</div>
+        <div class="hp-bar"><div class="hp-fill" id="playerHpBar">100/100</div></div>
         <div class="hud-stats">
-          <div class="hud-stat">⚔️ ATK<br><span id="playerAtkDisplay">10</span></div>
-          <div class="hud-stat">🛡️ DEF<br><span id="playerDefDisplay">0</span></div>
-          <div class="hud-stat">📊 LVL<br><span id="playerLvlDisplay">1</span></div>
-          <div class="hud-stat">💥 CRIT<br><span id="playerCritDisplay">15%</span></div>
+          <div class="hud-stat">⚔️ <span id="playerAtkDisplay">10</span></div>
+          <div class="hud-stat">🛡️ <span id="playerDefDisplay">0</span></div>
+          <div class="hud-stat">📊 <span id="playerLvlDisplay">1</span></div>
+          <div class="hud-stat">💥 <span id="playerCritDisplay">15%</span></div>
         </div>
       </div>
 
       <div class="hud-card">
         <div class="hud-name" id="enemyName">🧟 Inimigo</div>
-        <div class="hp-bar"><div class="hp-fill" id="enemyHpBar" style="background: linear-gradient(90deg, #ff6600, #ff0000); width: 100%;">100/100</div></div>
+        <div class="hp-bar"><div class="hp-fill" id="enemyHpBar">100/100</div></div>
         <div class="hud-stats">
-          <div class="hud-stat">⚔️ ATK<br><span id="enemyAtkDisplay">10</span></div>
-          <div class="hud-stat">🛡️ DEF<br><span id="enemyDefDisplay">0</span></div>
-          <div class="hud-stat">🌊 WAVE<br><span id="waveDisplay">1</span></div>
-          <div class="hud-stat">💥 CRIT<br><span id="enemyCritDisplay">10%</span></div>
+          <div class="hud-stat">⚔️ <span id="enemyAtkDisplay">10</span></div>
+          <div class="hud-stat">🛡️ <span id="enemyDefDisplay">0</span></div>
+          <div class="hud-stat">🌊 <span id="waveDisplay">1</span></div>
+          <div class="hud-stat">💥 <span id="enemyCritDisplay">10%</span></div>
         </div>
       </div>
     </div>
@@ -1500,101 +1275,26 @@
     </div>
 
     <div class="combat-buttons">
-      <button class="action-btn" onclick="game.attack()">⚔️ Atacar</button>
-      <button class="action-btn" id="specialBtn" onclick="game.special()">✨ Especial</button>
-      <button class="action-btn" onclick="game.defend()">🛡️ Defender</button>
-      <button class="action-btn" onclick="game.heal()">💚 Curar</button>
+      <button type="button" class="action-btn" onclick="game.attack()">⚔️ Atacar</button>
+      <button type="button" class="action-btn" id="specialBtn" onclick="game.special()">✨ Especial</button>
+      <button type="button" class="action-btn" onclick="game.defend()">🛡️ Defender</button>
+      <button type="button" class="action-btn" onclick="game.heal()">💚 Curar</button>
     </div>
   </div>
 
   <div id="achievements" class="screen">
-    <div class="achievements-wrapper">
-      <h2 style="color: var(--secondary); margin-bottom: 20px;">🏆 ACHIEVEMENTS</h2>
+    <h2 style="color: var(--secondary); margin: 0 0 16px 0; font-size: 20px; letter-spacing: 1px;">🏆 Achievements</h2>
+    <div style="flex: 1; overflow-y: auto; padding: 0;">
       <div class="achievements-grid" id="achievementsGrid"></div>
-      <button class="btn-secondary" style="margin-top: 20px;" onclick="game.goLobby()">← Voltar</button>
-    </div>
-  </div>
-
-  <div id="quests" class="screen">
-    <div class="quests-wrapper">
-      <h2 style="color: var(--secondary); margin-bottom: 20px;">📋 QUESTS</h2>
-      <div class="quests-tabs">
-        <button class="quest-tab active" onclick="game.switchQuestTab('normal')">Normal</button>
-        <button class="quest-tab" onclick="game.switchQuestTab('daily')">📅 Diarias (7h)</button>
-        <button class="quest-tab" onclick="game.switchQuestTab('weekly')">📆 Semanais (Sexta)</button>
-      </div>
-      <div id="questsList"></div>
-      <button class="btn-secondary" style="margin-top: 20px;" onclick="game.goLobby()">← Voltar</button>
-    </div>
-  </div>
-
-  <div id="skills" class="screen">
-    <div class="skills-wrapper">
-      <h2 style="color: var(--secondary); margin-bottom: 20px;">🌳 HABILIDADES</h2>
-      <div class="skills-grid" id="skillsGrid"></div>
-      <button class="btn-secondary" style="margin-top: 20px;" onclick="game.goLobby()">← Voltar</button>
-    </div>
-  </div>
-
-  <div id="guild" class="screen">
-    <div class="guild-wrapper">
-      <h2 style="color: var(--secondary); margin-bottom: 20px;">👥 GUILD</h2>
-      <div class="guild-info">
-        <h3 style="color: var(--info); margin-bottom: 10px;">Informacoes da Guild</h3>
-        <div style="font-size: 12px; line-height: 1.8;">
-          <div>Nome: <strong>Dragon Slayers</strong></div>
-          <div>Lider: <strong>Admin</strong></div>
-          <div>Membros: <strong id="memberCount">5/50</strong></div>
-          <div>Level: <strong id="guildLevel">5</strong></div>
-        </div>
-      </div>
-      <h3 style="color: var(--secondary); margin: 20px 0 15px 0;">Membros</h3>
-      <div class="guild-members" id="guildMembers"></div>
-      <button class="btn-secondary" style="margin-top: 20px;" onclick="game.goLobby()">← Voltar</button>
-    </div>
-  </div>
-
-  <div id="pvp" class="screen">
-    <div class="pvp-wrapper">
-      <h2 style="color: var(--secondary); margin-bottom: 20px;">⚔️ PVP BATTLES</h2>
-      <div class="matchmaking-container">
-        <h3 style="color: var(--info); margin-bottom: 15px;">Escolha seu Oponente</h3>
-        <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 15px;" id="pvpStats"></p>
-        <div class="opponent-list" id="opponentList"></div>
-      </div>
-      <button class="btn-secondary" style="margin-top: 20px;" onclick="game.goLobby()">← Voltar</button>
-    </div>
-  </div>
-
-  <div id="dailyRewards" class="screen">
-    <div class="rewards-wrapper">
-      <h2 style="color: var(--secondary); margin-bottom: 20px;">🎁 RECOMPENSAS DIARIAS</h2>
-      <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 12px;">Volte a cada 24 horas para coletar suas recompensas!</p>
-      <div class="daily-grid" id="dailyGrid"></div>
-      <button class="btn-secondary" style="margin-top: 20px;" onclick="game.goLobby()">← Voltar</button>
-    </div>
-  </div>
-
-  <div id="leaderboard" class="screen">
-    <div class="leaderboard-wrapper">
-      <h2 style="color: var(--secondary); margin-bottom: 20px;">🏆 RANKING GLOBAL</h2>
-      <div class="leaderboard-table">
-        <div class="leaderboard-row header">
-          <div style="text-align: center; font-weight: bold; color: var(--secondary);">#</div>
-          <div style="font-weight: bold; color: var(--secondary);">Jogador</div>
-          <div style="text-align: center; font-weight: bold; color: var(--secondary);">Level</div>
-          <div style="text-align: center; font-weight: bold; color: var(--secondary);">Vitorias</div>
-          <div style="text-align: center; font-weight: bold; color: var(--secondary);">Ouro</div>
-        </div>
-        <div id="leaderboardBody"></div>
-      </div>
-      <button class="btn-secondary" style="margin-top: 20px;" onclick="game.goLobby()">← Voltar</button>
+      <button type="button" class="btn-secondary" style="margin: 24px 0; width: 100%;" onclick="game.goLobby()">← Voltar</button>
     </div>
   </div>
 
   <div class="battle-result" id="battleResult"></div>
 
   <script>
+    const BLOCKED_NAMES = ['admin', 'moderator', 'staff', 'bot', 'teste', 'xxx', 'pipi', 'cu', 'bunda', 'puta', 'caralho'];
+
     const CHARACTER_CLASSES = {
       mago: {
         id: 'mago',
@@ -1609,6 +1309,19 @@
         rarity: 'free',
         skill: { name: 'Golpe de Magia', damage: 45, desc: 'Dá 45 de dano' }
       },
+      aprendiz: {
+        id: 'aprendiz',
+        name: 'Aprendiz de Mago',
+        emoji: '🧑‍🎓',
+        hp: 85,
+        atk: 15,
+        def: 3,
+        crit: 12,
+        desc: 'Jovem mago em treinamento',
+        cost: 50,
+        rarity: 'mid',
+        skill: { name: 'Bola de Fogo Pequena', damage: 30, desc: 'Dá 30 de dano + aprendizado' }
+      },
       cavaleiro: {
         id: 'cavaleiro',
         name: 'Cavaleiro',
@@ -1620,7 +1333,7 @@
         desc: 'Guerreiro da espada flamejante',
         cost: 2,
         rarity: 'common',
-        skill: { name: 'Golpe Flamejante', damage: 50, desc: 'Dá 50 dano + 5 extra/rodada (3x)' }
+        skill: { name: 'Golpe Flamejante', damage: 50, desc: 'Dá 50 dano + 5/rodada' }
       },
       golem_terra: {
         id: 'golem_terra',
@@ -1630,10 +1343,10 @@
         atk: 45,
         def: 25,
         crit: 5,
-        desc: 'Mestre da terra e rocha',
+        desc: 'Mestre da terra',
         cost: 4,
         rarity: 'rare',
-        skill: { name: 'Esmaga Terra', damage: 75, desc: 'Dá 75 dano, inimigo fica em fraqueza (-50% dmg)' }
+        skill: { name: 'Esmaga Terra', damage: 75, desc: 'Dá 75 dano, fraqueza' }
       },
       barbaro: {
         id: 'barbaro',
@@ -1643,10 +1356,10 @@
         atk: 55,
         def: 18,
         crit: 20,
-        desc: 'Golpe brutal devastador',
+        desc: 'Golpe brutal',
         cost: 7,
         rarity: 'rare',
-        skill: { name: 'Golpe Brutal', damage: 80, desc: 'Dá 80 dano, se inimigo < 50% HP: +30 dano' }
+        skill: { name: 'Golpe Brutal', damage: 80, desc: 'Dá 80 dano, +30 se < 50%' }
       },
       cyborg: {
         id: 'cyborg',
@@ -1656,10 +1369,10 @@
         atk: 45,
         def: 10,
         crit: 12,
-        desc: 'Máquina letal com lasers',
+        desc: 'Máquina letal',
         cost: 8,
         rarity: 'epic',
-        skill: { name: 'Olhos a Laser', damage: 100, desc: 'Dá 100 dano, anula Cavaleiro, +45 vs Terra' }
+        skill: { name: 'Olhos Laser', damage: 100, desc: 'Dá 100 dano' }
       },
       ilusionista: {
         id: 'ilusionista',
@@ -1669,10 +1382,10 @@
         atk: 35,
         def: 15,
         crit: 25,
-        desc: 'Mestre das ilusões',
+        desc: 'Mestre ilusões',
         cost: 9,
         rarity: 'epic',
-        skill: { name: 'Clone Sombrio', damage: 0, desc: 'Inimigo 50% chance de errar próximo ataque' }
+        skill: { name: 'Clone Sombrio', damage: 0, desc: '50% chance erro' }
       },
       dark_knight: {
         id: 'dark_knight',
@@ -1682,14 +1395,14 @@
         atk: 60,
         def: 10,
         crit: 18,
-        desc: 'Cavaleiro das trevas',
+        desc: 'Cavaleiro trevas',
         cost: 15,
         rarity: 'epic',
-        skill: { name: 'Espada Obsidiana', damage: 150, desc: 'Dá 150 dano, +60 vs Terra, -50 vs Tanque' }
+        skill: { name: 'Espada Obsidiana', damage: 150, desc: 'Dá 150 dano' }
       },
       golem_ferro: {
         id: 'golem_ferro',
-        name: 'Golem de Ferro',
+        name: 'Golem Ferro',
         emoji: '⚙️',
         hp: 500,
         atk: 50,
@@ -1698,7 +1411,7 @@
         desc: 'Máquina inquebrável',
         cost: 25,
         rarity: 'epic',
-        skill: { name: 'Golpe Esmaga Tudo', damage: 200, desc: 'Dá 200 dano, ataca de novo mas cansado (-50%)' }
+        skill: { name: 'Esmaga Tudo', damage: 200, desc: 'Dá 200 dano' }
       },
       killer_bunny: {
         id: 'killer_bunny',
@@ -1708,10 +1421,10 @@
         atk: 70,
         def: 25,
         crit: 40,
-        desc: 'Coelho assassino especial',
+        desc: 'Coelho assassino',
         cost: 10,
         rarity: 'special',
-        skill: { name: 'Golpe dos Ovos', damage: 23, desc: 'Dá 23 dano e regenera 30 HP sua' }
+        skill: { name: 'Golpe Ovos', damage: 23, desc: 'Dá 23 dano, +30 HP' }
       }
     };
 
@@ -1721,55 +1434,9 @@
       const days = Math.floor(ms / (1000 * 60 * 60 * 24));
       const hours = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
-      
-      if (days > 0) {
-        return `${days}d ${hours}h`;
-      }
+      if (days > 0) return `${days}d ${hours}h`;
       return `${hours}h ${minutes}m`;
     }
-
-    const ACHIEVEMENTS = [
-      { id: 'first_win', name: 'Primeira Vitoria', emoji: '🎉', desc: 'Venca 1 combate', progress: 0, target: 1 },
-      { id: 'ten_wins', name: '10 Vitorias', emoji: '🏆', desc: 'Atinja 10 vitorias', progress: 0, target: 10 },
-      { id: 'level_10', name: 'Level 10', emoji: '⭐', desc: 'Alcance level 10', progress: 0, target: 10 }
-    ];
-
-    const QUESTS = [
-      { id: 'q1', name: 'Derrotar Inimigos', emoji: '💀', desc: 'Derrote 5 inimigos', progress: 0, target: 5, reward: 500, type: 'normal' },
-      { id: 'q2', name: 'Colecionar Ouro', emoji: '💰', desc: 'Acumule 5000 ouro', progress: 0, target: 5000, reward: 1000, type: 'normal' }
-    ];
-
-    const DAILY_QUESTS = [
-      { id: 'dq1', name: 'Vitoria Diaria', emoji: '⚡', desc: 'Venca 1 combate', progress: 0, target: 1, reward: 300, type: 'daily', lastReset: 0 },
-      { id: 'dq2', name: 'Ouro Diario', emoji: '💰', desc: 'Ganhe 1000 ouro', progress: 0, target: 1000, reward: 500, type: 'daily', lastReset: 0 }
-    ];
-
-    const WEEKLY_QUESTS = [
-      { id: 'wq1', name: 'Campeao Semanal', emoji: '🏅', desc: 'Venca 10 combates', progress: 0, target: 10, reward: 2000, type: 'weekly', lastReset: 0 },
-      { id: 'wq2', name: 'Onda Suprema', emoji: '🌊', desc: 'Chegue na onda 20', progress: 0, target: 20, reward: 3000, type: 'weekly', lastReset: 0 }
-    ];
-
-    const SKILLS = [
-      { id: 's1', name: 'Fireball', emoji: '🔥', cost: 100, dmg: 50, desc: 'Magia de fogo' },
-      { id: 's2', name: 'Blizzard', emoji: '❄️', cost: 100, dmg: 50, desc: 'Magia de gelo' },
-      { id: 's3', name: 'Lightning', emoji: '⚡', cost: 150, dmg: 75, desc: 'Magia eletrica' }
-    ];
-
-    const GUILD_MEMBERS = [
-      { name: 'Admin', level: 50, role: 'Lider', emoji: '👑' },
-      { name: 'Player1', level: 45, role: 'Co-Lider', emoji: '🛡️' },
-      { name: 'Player2', level: 42, role: 'Membro', emoji: '⚔️' }
-    ];
-
-    const DAILY_REWARDS = [
-      { day: 1, reward: 100, emoji: '💰' },
-      { day: 2, reward: 200, emoji: '💰' },
-      { day: 3, reward: 300, emoji: '💰' },
-      { day: 4, reward: 500, emoji: '🎁' },
-      { day: 5, reward: 1000, emoji: '💎' },
-      { day: 6, reward: 1500, emoji: '💎' },
-      { day: 7, reward: 5000, emoji: '🏆' }
-    ];
 
     const BOSSES = [
       { name: '🧟 Zumbi Boss', hp: 150, atk: 20, def: 5, crit: 8 },
@@ -1779,6 +1446,24 @@
       { name: '👹 Deus do Caos', hp: 500, atk: 50, def: 20, crit: 20 },
       { name: '🔥 Lorde Supremo', hp: 700, atk: 60, def: 25, crit: 25 }
     ];
+
+    const ACHIEVEMENTS = [
+      { id: 'first_win', name: 'Primeira Vitoria', emoji: '🎉', desc: 'Venca 1 combate', progress: 0, target: 1 },
+      { id: 'ten_wins', name: '10 Vitorias', emoji: '🏆', desc: 'Atinja 10 vitorias', progress: 0, target: 10 },
+      { id: 'level_10', name: 'Level 10', emoji: '⭐', desc: 'Alcance level 10', progress: 0, target: 10 }
+    ];
+
+    const DAILY_QUESTS = [
+      { id: 'dq1', name: 'Vitoria Diaria', emoji: '⚡', desc: 'Venca 1 combate', progress: 0, target: 1, reward: 300, type: 'daily' },
+      { id: 'dq2', name: 'Ouro Diario', emoji: '💰', desc: 'Ganhe 1000 ouro', progress: 0, target: 1000, reward: 500, type: 'daily' }
+    ];
+
+    function isValidUsername(name) {
+      if (name.length < 3 || name.length > 20) return false;
+      if (!/^[a-zA-Z0-9_-]+$/.test(name)) return false;
+      if (BLOCKED_NAMES.some(b => name.toLowerCase().includes(b))) return false;
+      return true;
+    }
 
     class Game {
       constructor() {
@@ -1792,82 +1477,41 @@
         this.losses = 0;
         this.ownedCharacters = ['mago'];
         this.createdAt = 0;
-        this.dailyRewardsClaimed = [];
+        this.round = 1;
+        this.combatMode = 'normal';
+        this.inBattle = false;
+        this.currentFilter = 'all';
+        this.specialCooldown = 0;
         
         this.player = { ...this.character, hp: this.character.hp };
         this.enemy = { hp: 100, maxHp: 100, atk: 10, def: 0, crit: 10, name: '🧟 Inimigo' };
         this.wave = 1;
         this.bossIndex = 0;
-        this.combatMode = 'normal';
-        this.inBattle = false;
-        this.round = 1;
-        this.currentFilter = 'all';
-        this.currentQuestTab = 'normal';
-        this.specialCooldown = 0;
         
-        this.achievements = [...ACHIEVEMENTS];
-        this.quests = [...QUESTS];
+        this.achievements = JSON.parse(JSON.stringify(ACHIEVEMENTS));
         this.dailyQuests = JSON.parse(JSON.stringify(DAILY_QUESTS));
-        this.weeklyQuests = JSON.parse(JSON.stringify(WEEKLY_QUESTS));
-        this.learnedSkills = [];
-
-        this.startTimerUpdate();
       }
 
       $(id) { return document.getElementById(id); }
 
-      getNextResetDaily() {
-        const now = new Date();
-        const tomorrow = new Date(now);
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        tomorrow.setHours(7, 0, 0, 0);
-        return tomorrow;
-      }
-
-      getNextResetWeekly() {
-        const now = new Date();
-        let daysUntilFriday = (5 - now.getDay() + 7) % 7;
-        if (daysUntilFriday === 0 && now.getHours() >= 7) daysUntilFriday = 7;
-        const friday = new Date(now);
-        friday.setDate(friday.getDate() + daysUntilFriday);
-        friday.setHours(7, 0, 0, 0);
-        return friday;
-      }
-
-      getTimeUntilReset(type) {
-        const now = new Date();
-        let resetTime;
-        
-        if (type === 'daily') {
-          resetTime = this.getNextResetDaily();
-        } else if (type === 'weekly') {
-          resetTime = this.getNextResetWeekly();
-        }
-        
-        const diff = resetTime - now;
-        return { formatted: formatTime(diff), totalMs: diff };
-      }
-
-      startTimerUpdate() {
-        setInterval(() => {
-          if (this.currentQuestTab !== null) {
-            this.renderQuests();
-          }
-        }, 60000);
-      }
-
       login() {
-        const u = this.$('user').value;
+        const u = this.$('user').value.trim();
         const p = this.$('pass').value;
         const msg = this.$('msg');
 
         if (!u || !p) {
-          msg.innerText = 'Preencha todos os campos!';
+          msg.innerText = '❌ Preencha todos os campos!';
           msg.classList.add('error');
           return;
         }
 
-        msg.innerText = 'Login bem-sucedido!';
+        if (!isValidUsername(u)) {
+          msg.innerText = '❌ Nick inválido! 3-20 chars, sem palavrões';
+          msg.classList.add('error');
+          return;
+        }
+
+        msg.innerText = '✅ Login bem-sucedido!';
         msg.classList.remove('error');
         msg.classList.add('success');
 
@@ -1878,21 +1522,27 @@
           this.showScreen('lobby');
           document.getElementById('headerContainer').style.display = 'flex';
           this.updateUI();
-        }, 500);
+        }, 300);
       }
 
       register() {
-        const u = this.$('user').value;
+        const u = this.$('user').value.trim();
         const p = this.$('pass').value;
         const msg = this.$('msg');
 
         if (!u || !p) {
-          msg.innerText = 'Preencha todos os campos!';
+          msg.innerText = '❌ Preencha todos os campos!';
           msg.classList.add('error');
           return;
         }
 
-        msg.innerText = 'Conta criada com sucesso!';
+        if (!isValidUsername(u)) {
+          msg.innerText = '❌ Nick inválido! 3-20 chars';
+          msg.classList.add('error');
+          return;
+        }
+
+        msg.innerText = '✅ Conta criada!';
         msg.classList.remove('error');
         msg.classList.add('success');
       }
@@ -1908,14 +1558,11 @@
 
       goLobby() {
         this.showScreen('lobby');
-        this.currentQuestTab = null;
         this.updateUI();
       }
 
       updateUI() {
-        this.$('welcomeMsg').innerText = `Bem-vindo, ${this.username}! Voce eh um ${this.character.name}`;
-        this.$('selectedChar').innerText = this.character.name;
-        
+        this.$('welcomeMsg').innerText = `Bem-vindo, ${this.username}! Jogando com ${this.character.name}`;
         this.$('currentCharEmoji').innerText = this.character.emoji;
         this.$('currentCharName').innerText = this.character.name;
         this.$('charDisplayHP').innerText = this.character.hp;
@@ -1929,7 +1576,6 @@
         this.$('statLvl').innerText = this.level;
         
         this.$('goldDisplay').innerText = `💰 Ouro: ${this.gold}`;
-        
         this.$('playerName').innerText = this.username;
         this.$('playerGold').innerText = this.gold;
         this.$('playerExp').innerText = this.exp;
@@ -1957,35 +1603,29 @@
 
         const grid = this.$('shopGrid');
         grid.innerHTML = chars.map(char => `
-          <div class="item-card" onclick="game.buyCharacter('${char.id}')">
+          <div class="item-card" onclick="event.stopPropagation(); game.buyCharacter('${char.id}')">
             <div class="item-emoji">${char.emoji}</div>
             <div class="item-name">${char.name}</div>
-            <div class="item-type">${char.rarity.toUpperCase()}</div>
-            <div class="item-stats">
-              <div>❤️${char.hp} ⚔️${char.atk}</div>
-              <div>🛡️${char.def}</div>
-            </div>
-            <div class="item-rarity rarity-${char.rarity}">${char.rarity}</div>
-            ${char.cost > 0 ? `<div class="item-cost">💎 ${char.cost} Vidas</div>` : `<div class="item-cost" style="color: var(--success);">GRATIS!</div>`}
+            <div class="item-rarity rarity-${char.rarity}">${char.rarity.toUpperCase()}</div>
+            <div class="item-stats">❤️${char.hp} ⚔️${char.atk}</div>
+            ${char.cost > 0 ? `<div class="item-cost">💎 ${char.cost} moedas</div>` : `<div class="item-cost" style="color: var(--success);">GRATIS!</div>`}
           </div>
         `).join('');
       }
 
       buyCharacter(charId) {
         if (this.ownedCharacters.includes(charId)) {
-          alert('❌ Voce ja possui este personagem!');
+          alert('❌ Já possui!');
           return;
         }
 
         const char = CHARACTER_CLASSES[charId];
         if (char.cost > 0 && this.gold < char.cost) {
-          alert('❌ Ouro insuficiente!');
+          alert(`❌ Precisa de ${char.cost} moedas! Você tem ${this.gold}`);
           return;
         }
 
-        if (char.cost > 0) {
-          this.gold -= char.cost;
-        }
+        if (char.cost > 0) this.gold -= char.cost;
         this.ownedCharacters.push(charId);
         alert(`✅ ${char.name} desbloqueado!`);
         this.updateUI();
@@ -1994,20 +1634,16 @@
 
       showInventory() {
         this.showScreen('inventory');
-        this.renderInventory();
-      }
-
-      renderInventory() {
         const grid = this.$('charInventory');
         grid.innerHTML = this.ownedCharacters.map(charId => {
           const char = CHARACTER_CLASSES[charId];
           const isSelected = this.currentCharacterId === charId;
           return `
-            <div class="inventory-item" onclick="game.selectCharacterForCombat('${charId}')" style="${isSelected ? 'border: 2px solid var(--success); background: rgba(0, 255, 0, 0.1);' : ''}">
+            <div class="inventory-item" onclick="event.stopPropagation(); game.selectCharacterForCombat('${charId}')" style="${isSelected ? 'border: 2px solid var(--success); background: linear-gradient(135deg, rgba(0, 255, 0, 0.2), rgba(0, 255, 0, 0.05)); box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);' : ''}">
               <div class="inv-emoji">${char.emoji}</div>
               <div class="inv-name">${char.name}</div>
-              <div style="font-size: 8px; color: #ffff00;">❤️${char.hp} ⚔️${char.atk}</div>
-              ${isSelected ? '<div style="font-size: 8px; color: var(--success); margin-top: 4px;">✓ SELECIONADO</div>' : ''}
+              <div style="font-size: 9px; color: #ffff00; margin-top: 4px;">❤️${char.hp} ⚔️${char.atk}</div>
+              ${isSelected ? '<div style="font-size: 9px; color: var(--success); margin-top: 6px; font-weight: 700;">✓ SELECIONADO</div>' : ''}
             </div>
           `;
         }).join('');
@@ -2017,8 +1653,8 @@
         this.currentCharacterId = charId;
         this.character = CHARACTER_CLASSES[charId];
         this.player = { ...this.character, hp: this.character.hp };
-        this.renderInventory();
-        alert(`✅ ${this.character.name} selecionado para combate!`);
+        this.showInventory();
+        alert(`✅ ${this.character.name} selecionado!`);
         this.updateUI();
       }
 
@@ -2042,7 +1678,6 @@
 
       generateEnemy() {
         let enemy;
-
         if (this.combatMode === 'boss') {
           enemy = { ...BOSSES[this.bossIndex] };
         } else {
@@ -2053,7 +1688,6 @@
             { name: '🐲 Dragao', hp: 200, atk: 22, def: 12, crit: 15 },
             { name: '💀 Esqueleto', hp: 90, atk: 14, def: 3, crit: 18 }
           ];
-
           const base = enemies[Math.floor(Math.random() * enemies.length)];
           const scaling = this.wave > 1 ? this.wave * 0.6 : 1;
           enemy = {
@@ -2064,73 +1698,42 @@
             crit: base.crit
           };
         }
-
-        this.enemy = {
-          ...enemy,
-          maxHp: enemy.hp,
-          hp: enemy.hp
-        };
+        this.enemy = { ...enemy, maxHp: enemy.hp };
       }
 
       updateCombatUI() {
         this.$('playerSprite').innerText = this.character.emoji;
-        const playerHpPercent = (this.player.hp / this.character.hp) * 100;
+        const pHp = Math.max(0, this.player.hp);
+        const playerHpPercent = (pHp / this.character.hp) * 100;
         this.$('playerHpBar').style.width = playerHpPercent + '%';
-        this.$('playerHpBar').innerText = `${this.player.hp}/${this.character.hp}`;
-        this.$('playerAtkDisplay').innerText = this.character.atk;
-        this.$('playerDefDisplay').innerText = this.character.def;
-        this.$('playerLvlDisplay').innerText = this.level;
-        this.$('playerCritDisplay').innerText = this.character.crit + '%';
+        this.$('playerHpBar').innerText = `${pHp}/${this.character.hp}`;
 
         this.$('enemyName').innerText = this.enemy.name;
         this.$('enemySprite').innerText = this.enemy.name.charAt(0);
-        const enemyHpPercent = (this.enemy.hp / this.enemy.maxHp) * 100;
+        const eHp = Math.max(0, this.enemy.hp);
+        const enemyHpPercent = (eHp / this.enemy.maxHp) * 100;
         this.$('enemyHpBar').style.width = enemyHpPercent + '%';
-        this.$('enemyHpBar').innerText = `${this.enemy.hp}/${this.enemy.maxHp}`;
-        this.$('enemyAtkDisplay').innerText = this.enemy.atk;
-        this.$('enemyDefDisplay').innerText = this.enemy.def;
-        this.$('waveDisplay').innerText = this.combatMode === 'boss' ? (this.bossIndex + 1) + '/6' : this.wave;
-        this.$('enemyCritDisplay').innerText = this.enemy.crit + '%';
+        this.$('enemyHpBar').innerText = `${eHp}/${this.enemy.maxHp}`;
 
         this.$('combatRound').innerText = `Rodada: ${this.round}`;
-
         this.$('specialBtn').disabled = this.specialCooldown > 0;
-        if (this.specialCooldown > 0) {
-          this.$('specialBtn').innerText = `Especial (${this.specialCooldown}x)`;
-        } else {
-          this.$('specialBtn').innerText = '✨ Especial';
-        }
+        this.$('specialBtn').innerText = this.specialCooldown > 0 ? `✨ (${this.specialCooldown}x)` : '✨ Especial';
       }
 
       attack() {
         if (this.inBattle) return;
         this.inBattle = true;
-
-        const isCrit = Math.random() * 100 < this.character.crit;
-        let damage = this.character.atk + (Math.random() - 0.5) * 4;
-        
-        if (isCrit) {
-          damage *= 1.5;
-        }
-        
-        damage = Math.max(1, Math.round(damage * (1 - this.enemy.def * 0.1)));
+        const damage = Math.max(1, Math.round(this.character.atk + Math.random() * 5 - this.enemy.def * 0.1));
         this.enemy.hp -= damage;
-
         this.$('playerSprite').classList.add('attack');
         setTimeout(() => this.$('playerSprite').classList.remove('attack'), 500);
-
         if (this.enemy.hp <= 0) {
           this.victory();
         } else {
           if (Math.random() > 0.2) {
             setTimeout(() => { this.round++; this.enemyTurn(); }, 600);
           } else {
-            setTimeout(() => {
-              this.inBattle = false;
-              this.round++;
-              alert('⚠️ Inimigo errou!');
-              this.updateCombatUI();
-            }, 600);
+            setTimeout(() => { this.inBattle = false; this.round++; alert('⚠️ Inimigo errou!'); this.updateCombatUI(); }, 600);
           }
         }
         this.updateCombatUI();
@@ -2140,31 +1743,23 @@
         if (this.inBattle || this.specialCooldown > 0) return;
         this.inBattle = true;
         this.specialCooldown = 2;
-
         const damage = Math.floor(this.character.atk * 2);
         this.enemy.hp -= damage;
-
         this.$('playerSprite').classList.add('attack');
         setTimeout(() => this.$('playerSprite').classList.remove('attack'), 500);
-
-        this.createDamageNumber(damage, this.$('enemySprite').getBoundingClientRect(), true);
-
         if (this.enemy.hp <= 0) {
           this.victory();
         } else {
           setTimeout(() => { this.round++; this.enemyTurn(); }, 600);
         }
-
         this.updateCountdown();
         this.updateCombatUI();
       }
 
       updateCountdown() {
         if (this.specialCooldown <= 0) return;
-        
         this.specialCooldown--;
         this.updateCombatUI();
-        
         if (this.specialCooldown > 0) {
           setTimeout(() => this.updateCountdown(), 1000);
         }
@@ -2173,11 +1768,9 @@
       defend() {
         if (this.inBattle) return;
         this.inBattle = true;
-
         setTimeout(() => {
           const damage = Math.max(1, Math.floor(this.enemy.atk * 0.3));
           this.player.hp -= damage;
-
           if (this.player.hp <= 0) {
             this.defeat();
           } else {
@@ -2191,12 +1784,8 @@
       heal() {
         if (this.inBattle) return;
         this.inBattle = true;
-
         const healing = Math.floor(this.character.hp * 0.3);
         this.player.hp = Math.min(this.character.hp, this.player.hp + healing);
-
-        this.createDamageNumber(healing, this.$('playerSprite').getBoundingClientRect(), false, true);
-
         setTimeout(() => { this.round++; this.enemyTurn(); }, 600);
         this.updateCombatUI();
       }
@@ -2204,10 +1793,8 @@
       enemyTurn() {
         const damage = Math.max(1, Math.floor(this.enemy.atk - this.character.def + Math.random() * 3));
         this.player.hp -= damage;
-
         this.$('enemySprite').classList.add('hurt');
         setTimeout(() => this.$('enemySprite').classList.remove('hurt'), 500);
-
         if (this.player.hp <= 0) {
           this.defeat();
         } else {
@@ -2216,33 +1803,16 @@
         this.updateCombatUI();
       }
 
-      createDamageNumber(damage, rect, isCrit = false, isHeal = false) {
-        const num = document.createElement('div');
-        num.className = 'damage-number';
-        num.innerText = Math.round(damage);
-        num.style.left = (rect.left + rect.width / 2) + 'px';
-        num.style.top = (rect.top - 30) + 'px';
-        num.style.color = isHeal ? '#00ff00' : (isCrit ? '#ffff00' : '#ff6600');
-        document.body.appendChild(num);
-        setTimeout(() => num.remove(), 800);
-      }
-
       victory() {
         let reward = 100 + this.wave * 50;
-
-        if (this.combatMode === 'boss') {
-          reward = 500 + this.bossIndex * 200;
-        }
-
+        if (this.combatMode === 'boss') reward = 500 + this.bossIndex * 200;
         this.gold += reward;
         this.wins++;
         this.exp += 50 * this.wave;
-
         if (this.exp >= 100 * this.level) {
           this.exp = 0;
           this.level++;
         }
-
         if (this.combatMode === 'wave') {
           this.wave++;
         } else if (this.combatMode === 'boss') {
@@ -2251,20 +1821,18 @@
 
         const result = this.$('battleResult');
         result.className = 'battle-result victory';
-        result.innerHTML = `
-          <h2>🎉 VITORIA 🎉</h2>
+        result.innerHTML = `<h2>🎉 VITORIA 🎉</h2>
           <div class="result-text">
-            <div>Personagem: ${this.character.name} ${this.character.emoji}</div>
-            <div>Rodadas: ${this.round}</div>
-            <div>💰 +${reward} Ouro</div>
+            <div>⚔️ Personagem: ${this.character.name}</div>
+            <div>🎯 Rodadas: ${this.round}</div>
+            <div>💰 +${reward} Moedas</div>
             <div>⭐ +50 EXP</div>
-            <div>👤 Total: ${this.wins} Vitorias</div>
+            <div>👤 Vitorias: ${this.wins}</div>
           </div>
           <div class="result-buttons">
-            <button onclick="game.${(this.combatMode === 'wave' || this.combatMode === 'boss') ? 'initCombat' : 'goLobby'}()" class="btn-success">Continuar</button>
-            <button onclick="game.goLobby()" class="btn-secondary">Lobby</button>
-          </div>
-        `;
+            <button type="button" onclick="game.${(this.combatMode === 'wave' || this.combatMode === 'boss') ? 'initCombat' : 'goLobby'}()" class="btn-success">Continuar</button>
+            <button type="button" onclick="game.goLobby()" class="btn-secondary">Lobby</button>
+          </div>`;
         result.style.display = 'block';
         this.updateUI();
       }
@@ -2273,29 +1841,22 @@
         this.losses++;
         const result = this.$('battleResult');
         result.className = 'battle-result defeat';
-        result.innerHTML = `
-          <h2>💀 DERROTA 💀</h2>
+        result.innerHTML = `<h2>💀 DERROTA 💀</h2>
           <div class="result-text">
-            <div>Personagem: ${this.character.name} ${this.character.emoji}</div>
-            <div>Rodadas: ${this.round}</div>
-            <div>Wave: ${this.combatMode === 'boss' ? (this.bossIndex + 1) + '/6' : this.wave}</div>
-            <div>Total: ${this.losses} Derrotas</div>
+            <div>⚔️ Inimigo: ${this.enemy.name}</div>
+            <div>🎯 Rodadas: ${this.round}</div>
+            <div>👤 Total Derrotas: ${this.losses}</div>
           </div>
           <div class="result-buttons">
-            <button onclick="game.initCombat()" class="btn-danger">Tentar Novamente</button>
-            <button onclick="game.goLobby()" class="btn-secondary">Lobby</button>
-          </div>
-        `;
+            <button type="button" onclick="game.initCombat()" class="btn-danger">Tentar Novamente</button>
+            <button type="button" onclick="game.goLobby()" class="btn-secondary">Lobby</button>
+          </div>`;
         result.style.display = 'block';
         this.updateUI();
       }
 
       showAchievements() {
         this.showScreen('achievements');
-        this.renderAchievements();
-      }
-
-      renderAchievements() {
         const grid = this.$('achievementsGrid');
         grid.innerHTML = this.achievements.map(ach => `
           <div class="achievement-card ${ach.progress >= ach.target ? 'unlocked' : 'locked'}">
@@ -2307,236 +1868,40 @@
         `).join('');
       }
 
-      showQuests() {
-        this.showScreen('quests');
-        this.currentQuestTab = 'normal';
-        this.renderQuests();
-      }
-
       showDailyQuests() {
-        this.showScreen('quests');
-        this.currentQuestTab = 'daily';
-        this.renderQuests();
+        alert('🎯 Sistema de missões em construção!');
       }
 
       showWeeklyQuests() {
-        this.showScreen('quests');
-        this.currentQuestTab = 'weekly';
-        this.renderQuests();
+        alert('📅 Sistema semanal em construção!');
       }
 
-      switchQuestTab(tab) {
-        this.currentQuestTab = tab;
-        document.querySelectorAll('.quest-tab').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
-        this.renderQuests();
-      }
-
-      renderQuests() {
-        const list = this.$('questsList');
-        let quests = [];
-
-        if (this.currentQuestTab === 'normal') {
-          quests = this.quests;
-        } else if (this.currentQuestTab === 'daily') {
-          quests = this.dailyQuests;
-        } else if (this.currentQuestTab === 'weekly') {
-          quests = this.weeklyQuests;
-        }
-
-        list.innerHTML = quests.map(quest => {
-          let timerText = '';
-          let timerClass = '';
-
-          if (this.currentQuestTab === 'daily') {
-            const reset = this.getTimeUntilReset('daily');
-            timerText = `Reseta em ${reset.formatted}`;
-            timerClass = reset.totalMs < 3600000 ? 'resetting' : '';
-          } else if (this.currentQuestTab === 'weekly') {
-            const reset = this.getTimeUntilReset('weekly');
-            timerText = `Reseta em ${reset.formatted}`;
-            timerClass = reset.totalMs < 86400000 ? 'resetting' : '';
-          }
-
-          return `
-            <div class="quest-card ${quest.progress >= quest.target ? 'completed' : ''}">
-              <div class="quest-header">
-                <div class="quest-title">${quest.emoji} ${quest.name}</div>
-                <div class="quest-reward">+${quest.reward}</div>
-              </div>
-              <div class="quest-desc">${quest.desc}</div>
-              <div class="quest-progress">
-                <div class="quest-progress-bar" style="width: ${(quest.progress / quest.target) * 100}%"></div>
-              </div>
-              <div style="font-size: 10px; color: var(--info);">${quest.progress}/${quest.target}</div>
-              ${timerText ? `<div class="quest-timer ${timerClass}">${timerText}</div>` : ''}
-            </div>
-          `;
-        }).join('');
-      }
-
-      showSkills() {
-        this.showScreen('skills');
-        this.renderSkills();
-      }
-
-      renderSkills() {
-        const grid = this.$('skillsGrid');
-        grid.innerHTML = SKILLS.map(skill => `
-          <div class="skill-card ${this.learnedSkills.includes(skill.id) ? 'learned' : ''}" onclick="game.learnSkill('${skill.id}')">
-            <div class="skill-emoji">${skill.emoji}</div>
-            <div class="skill-name">${skill.name}</div>
-            <div class="skill-cost">${skill.cost}</div>
-            <div style="font-size: 9px; color: ${skill.dmg > 0 ? 'var(--danger)' : 'var(--success)'};">${skill.dmg > 0 ? '+' + skill.dmg + ' DMG' : skill.dmg + ' Heal'}</div>
-          </div>
-        `).join('');
-      }
-
-      learnSkill(skillId) {
-        if (this.learnedSkills.includes(skillId)) {
-          alert('❌ Ja aprendeu!');
-          return;
-        }
-
-        const skill = SKILLS.find(s => s.id === skillId);
-        if (this.gold < skill.cost) {
-          alert('❌ Ouro insuficiente!');
-          return;
-        }
-
-        this.gold -= skill.cost;
-        this.learnedSkills.push(skillId);
-        alert(`✅ Aprendeu ${skill.name}!`);
-        this.renderSkills();
-        this.updateUI();
-      }
-
-      showGuild() {
-        this.showScreen('guild');
-        this.renderGuild();
-      }
-
-      renderGuild() {
-        this.$('memberCount').innerText = GUILD_MEMBERS.length + '/50';
-        const members = this.$('guildMembers');
-        members.innerHTML = GUILD_MEMBERS.map(member => `
-          <div class="member-card">
-            <div style="font-size: 24px; margin-bottom: 8px;">${member.emoji}</div>
-            <div class="member-name">${member.name}</div>
-            <div class="member-level">Level ${member.level}</div>
-            <div class="member-role" style="margin-top: 6px; color: var(--info);">${member.role}</div>
-          </div>
-        `).join('');
-      }
-
-      showPvp() {
-        this.showScreen('pvp');
-        this.renderPvp();
-      }
-
-      renderPvp() {
-        const opponents = [
-          { name: 'Easy', level: 3, wins: 5, difficulty: 'easy', emoji: '🟢' },
-          { name: 'Medium', level: 8, wins: 25, difficulty: 'medium', emoji: '🟡' },
-          { name: 'Hard', level: 15, wins: 50, difficulty: 'hard', emoji: '🔴' },
-          { name: 'VeryHard', level: 25, wins: 100, difficulty: 'hard', emoji: '⚫' }
-        ];
-
-        this.$('pvpStats').innerText = `Level ${this.level} ATK${this.character.atk} DEF${this.character.def}`;
-
-        const list = this.$('opponentList');
-        list.innerHTML = opponents.map(opp => `
-          <div class="opponent-card" onclick="alert('🎮 PvP contra ${opp.name}')">
-            <div style="font-size: 32px; margin-bottom: 8px;">${opp.emoji}</div>
-            <div class="opponent-name">${opp.name}</div>
-            <div class="opponent-level">Level ${opp.level}</div>
-            <div class="difficulty-badge difficulty-${opp.difficulty}">${opp.difficulty.toUpperCase()}</div>
-            <button style="width: 100%;">⚔️ Desafiar</button>
-          </div>
-        `).join('');
-      }
-
-      showDailyRewards() {
-        this.showScreen('dailyRewards');
-        this.renderDailyRewards();
-      }
-
-      renderDailyRewards() {
-        const grid = this.$('dailyGrid');
-        grid.innerHTML = DAILY_REWARDS.map((reward, index) => {
-          const claimed = this.dailyRewardsClaimed.includes(index);
-          const timeSinceCreated = Date.now() - this.createdAt;
-          const daysPassed = Math.floor(timeSinceCreated / (24 * 60 * 60 * 1000));
-          const canClaim = daysPassed >= index && !claimed;
-
-          return `
-            <div class="reward-day ${claimed ? 'claimed' : canClaim ? '' : 'locked'}" 
-                 onclick="${canClaim ? `game.claimReward(${index})` : 'alert("Volte em 24 horas!")'}">
-              <div class="reward-day-num">Dia ${reward.day}</div>
-              <div class="reward-emoji">${reward.emoji}</div>
-              <div class="reward-amount">${reward.reward}</div>
-              ${!claimed && !canClaim ? `<div class="reward-timer">em ${24 - Math.floor((timeSinceCreated % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000))}h</div>` : ''}
-              ${claimed ? '<div class="reward-timer">✓ Recebido</div>' : ''}
-            </div>
-          `;
-        }).join('');
-      }
-
-      claimReward(day) {
-        if (this.dailyRewardsClaimed.includes(day)) {
-          alert('❌ Ja recebeu!');
-          return;
-        }
-
-        const timeSinceCreated = Date.now() - this.createdAt;
-        const daysPassed = Math.floor(timeSinceCreated / (24 * 60 * 60 * 1000));
-
-        if (daysPassed < day) {
-          alert('❌ Volte em 24 horas!');
-          return;
-        }
-
-        const reward = DAILY_REWARDS[day];
-        this.gold += reward.reward;
-        this.dailyRewardsClaimed.push(day);
-        alert(`✅ +${reward.reward} Ouro!`);
-        this.renderDailyRewards();
-        this.updateUI();
-      }
-
-      showLeaderboard() {
-        this.showScreen('leaderboard');
-        this.renderLeaderboard();
-      }
-
-      renderLeaderboard() {
-        const players = [
-          { name: 'Voce', level: this.level, wins: this.wins, gold: this.gold },
-          { name: 'Master', level: 50, wins: 500, gold: 1000000 },
-          { name: 'Ninja', level: 48, wins: 480, gold: 950000 },
-          { name: 'Mage', level: 45, wins: 450, gold: 900000 },
-          { name: 'Knight', level: 42, wins: 420, gold: 850000 }
-        ];
-
-        players.sort((a, b) => (b.level + b.wins * 10) - (a.level + a.wins * 10));
-
-        const body = this.$('leaderboardBody');
-        body.innerHTML = players.map((player, index) => `
-          <div class="leaderboard-row">
-            <div style="text-align: center; font-weight: bold;">${index + 1}</div>
-            <div>${player.name}</div>
-            <div style="text-align: center; color: var(--info);">${player.level}</div>
-            <div style="text-align: center; color: var(--success);">${player.wins}</div>
-            <div style="text-align: center; color: #ffd700;">${player.gold.toLocaleString()}</div>
-          </div>
-        `).join('');
+      showQuests() {
+        alert('📋 Sistema de quests em construção!');
       }
     }
 
     const game = new Game();
 
-    window.addEventListener('load', () => {
-      game.updateUI();
+    document.addEventListener('DOMContentLoaded', () => {
+      const userInput = document.getElementById('user');
+      if (userInput) {
+        userInput.addEventListener('input', (e) => {
+          const hint = document.getElementById('userHint');
+          const val = e.target.value;
+          if (val.length < 3) {
+            hint.innerText = '⚠️ Mínimo 3 caracteres';
+          } else if (val.length > 20) {
+            hint.innerText = '⚠️ Máximo 20 caracteres';
+          } else if (!/^[a-zA-Z0-9_-]+$/.test(val)) {
+            hint.innerText = '⚠️ Apenas letras, números, - e _';
+          } else if (BLOCKED_NAMES.some(b => val.toLowerCase().includes(b))) {
+            hint.innerText = '⚠️ Nome não permitido';
+          } else {
+            hint.innerText = '✅ Nick válido!';
+          }
+        });
+      }
     });
 
     document.addEventListener('keypress', (e) => {
@@ -2546,4 +1911,4 @@
     });
   </script>
 </body>
-</html>
+              </html>
