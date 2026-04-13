@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>⚔️ RPG ULTIMATE PRO - v3.5</title>
+  <title>⚔️ RPG ULTIMATE PRO - v4.0 DELUXE</title>
   <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * {
@@ -49,6 +49,7 @@
     @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
     @keyframes bounceIn { 0% { transform: scale(0.3); opacity: 0; } 50% { opacity: 1; } 100% { transform: scale(1); } }
     @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+    @keyframes glow { 0% { box-shadow: 0 0 5px rgba(247, 37, 133, 0.3); } 50% { box-shadow: 0 0 20px rgba(247, 37, 133, 0.6); } 100% { box-shadow: 0 0 5px rgba(247, 37, 133, 0.3); } }
 
     .screen {
       position: fixed;
@@ -131,6 +132,7 @@
       align-items: center;
       box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
       letter-spacing: 0.5px;
+      animation: glow 2s ease-in-out infinite;
     }
 
     button {
@@ -565,7 +567,7 @@
     }
 
     /* SHOP SCREEN */
-    #shop, #potions {
+    #shop, #potions, #equipment, #consumables, #artifacts {
       padding: 85px 24px 24px;
       justify-content: flex-start;
     }
@@ -704,10 +706,11 @@
     .rarity-common { background: rgba(100, 100, 100, 0.5); color: #cccccc; }
     .rarity-rare { background: rgba(0, 100, 255, 0.5); color: var(--info); }
     .rarity-epic { background: rgba(150, 0, 200, 0.5); color: #ff00ff; }
+    .rarity-legendary { background: rgba(255, 165, 0, 0.5); color: #ffaa00; }
     .rarity-special { background: rgba(255, 0, 255, 0.5); color: #ff00ff; }
 
     /* INVENTORY */
-    #inventory, #potionInventory {
+    #inventory, #potionInventory, #equipment-inv, #artifacts-inv {
       padding: 85px 24px 24px;
       justify-content: flex-start;
     }
@@ -858,18 +861,12 @@
     }
 
     .sprite.attack {
-      animation: attackAnim 0.5s ease-out !important;
+      animation: shake 0.4s ease-out !important;
     }
 
     .sprite.hurt {
       animation: shake 0.4s ease-out !important;
       filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.5));
-    }
-
-    @keyframes attackAnim {
-      0% { transform: scaleX(1) translateX(0); }
-      50% { transform: scaleX(1.1) translateX(25px); }
-      100% { transform: scaleX(1) translateX(0); }
     }
 
     .vs-symbol {
@@ -1161,6 +1158,38 @@
       min-height: auto;
     }
 
+    #stats {
+      padding: 85px 24px 24px;
+      justify-content: flex-start;
+    }
+
+    .stats-detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .stats-detail-card {
+      background: linear-gradient(135deg, rgba(50, 30, 80, 0.6), rgba(30, 10, 60, 0.3));
+      padding: 20px;
+      border-radius: 12px;
+      border: 2px solid var(--primary);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .stats-detail-title {
+      font-size: 13px;
+      color: var(--secondary);
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .stats-detail-value {
+      font-size: 24px;
+      color: var(--info);
+      font-weight: 700;
+    }
+
     ::-webkit-scrollbar { width: 7px; }
     ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); }
     ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 4px; }
@@ -1170,35 +1199,41 @@
 <body>
   <div class="header" id="headerContainer" style="display: none;">
     <div class="header-left">
-      <div class="header-title">⚔️ RPG ULTIMATE PRO v3.5</div>
+      <div class="header-title">⚔️ RPG ULTIMATE PRO v4.0 DELUXE</div>
     </div>
     <div class="header-right">
       <div class="stat-display" id="levelDisplay">📊 LVL: 1</div>
       <div class="stat-display" id="waveDisplay">🌊 Wave: 1</div>
+      <div class="stat-display" id="expDisplay">⭐ EXP: 0</div>
       <div class="gold-display" id="goldDisplay">💰 1000g</div>
-      <button type="button" class="btn-danger" style="padding: 8px 12px; font-size: 10px;" onclick="game.logout()">🚪 Sair</button>
+      <button type="button" class="btn-danger" style="padding: 8px 12px; font-size: 10px;" onclick="window.game.logout()">🚪 Sair</button>
     </div>
   </div>
 
+  <!-- LOGIN SCREEN -->
   <div id="login" class="screen active">
     <div class="login-container">
       <div class="login-left">
-        <h1>⚔️ RPG<br>ULTIMATE<br>PRO v3.5</h1>
-        <p>Jogue o RPG mais completo com combate estratégico, poções mágicas, 12 achievements épicos e 11 missões!</p>
+        <h1>⚔️ RPG<br>ULTIMATE<br>PRO v4.0</h1>
+        <p>Jogue o RPG mais completo com combate estratégico, poções mágicas, equipamentos lendários, 15+ achievements épicos e 20+ missões!</p>
         <div class="login-features">
           <div class="feature">⚔️ 10 Classes Únicas</div>
-          <div class="feature">🧪 5 Poções Mágicas</div>
-          <div class="feature">🏆 12 Achievements</div>
-          <div class="feature">🎮 Combate Tático</div>
-          <div class="feature">💼 Sistema Robusto</div>
-          <div class="feature">📊 Crítico & Defesa</div>
+          <div class="feature">🧪 10 Poções Diferentes</div>
+          <div class="feature">🛡️ 20+ Equipamentos</div>
+          <div class="feature">💎 Artefatos Lendários</div>
+          <div class="feature">🏆  15+ Achievements</div>
+          <div class="feature">🎮 Combate Avançado</div>
           <div class="feature">🌊 Ondas Infinitas</div>
-          <div class="feature">👑 6 Bosses</div>
+          <div class="feature">👑 10 Bosses</div>
+          <div class="feature">📊 Sistema de Stats</div>
+          <div class="feature">🔧 Crafting System</div>
+          <div class="feature">🗺️ Dungeons</div>
+          <div class="feature">📈 Progressão Completa</div>
         </div>
       </div>
 
       <div class="login-box">
-        <h2>LOGIN</h2>
+        <h2>🎮 LOGIN</h2>
         <div class="input-group">
           <label>👤 Usuário</label>
           <input type="text" id="user" placeholder="3-20 caracteres" maxlength="20">
@@ -1210,29 +1245,34 @@
         </div>
         <div class="message" id="msg"></div>
         <div class="login-buttons">
-          <button type="button" onclick="game.login()">🔓 Entrar</button>
-          <button type="button" class="btn-secondary" onclick="game.register()">📝 Registrar</button>
+          <button type="button" onclick="window.game.login()">🔓 Entrar</button>
+          <button type="button" class="btn-secondary" onclick="window.game.register()">📝 Registrar</button>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- LOBBY SCREEN -->
   <div id="lobby" class="screen">
     <div class="lobby-wrapper">
       <div class="lobby-header">
-        <h1>⚔️ RPG ULTIMATE PRO</h1>
+        <h1>⚔️ RPG ULTIMATE PRO v4.0 DELUXE</h1>
         <p id="welcomeMsg">Bem-vindo ao melhor RPG!</p>
       </div>
 
       <div class="quick-menu">
-        <div class="quick-btn" onclick="game.startCombat('normal')">🎮 Combate</div>
-        <div class="quick-btn" onclick="game.startCombat('wave')">🌊 Ondas</div>
-        <div class="quick-btn" onclick="game.startCombat('boss')">👑 Boss</div>
-        <div class="quick-btn" onclick="game.showShop()">🛒 Loja</div>
-        <div class="quick-btn" onclick="game.showPotions()">🧪 Poções</div>
-        <div class="quick-btn" onclick="game.showInventory()">📦 Chars</div>
-        <div class="quick-btn" onclick="game.showAchievements()">🏆 Achievements</div>
-        <div class="quick-btn" onclick="game.showDailyQuests()">📅 Missões</div>
+        <div class="quick-btn" onclick="window.game.startCombat('normal')">🎮 Combate</div>
+        <div class="quick-btn" onclick="window.game.startCombat('wave')">🌊 Ondas</div>
+        <div class="quick-btn" onclick="window.game.startCombat('boss')">👑 Boss</div>
+        <div class="quick-btn" onclick="window.game.startCombat('dungeon')">🗺️ Dungeon</div>
+        <div class="quick-btn" onclick="window.game.showShop()">🛒 Loja</div>
+        <div class="quick-btn" onclick="window.game.showPotions()">🧪 Poções</div>
+        <div class="quick-btn" onclick="window.game.showEquipment()">🛡️ Equipamentos</div>
+        <div class="quick-btn" onclick="window.game.showArtifacts()">💎 Artefatos</div>
+        <div class="quick-btn" onclick="window.game.showInventory()">📦 Chars</div>
+        <div class="quick-btn" onclick="window.game.showAchievements()">🏆 Achievements</div>
+        <div class="quick-btn" onclick="window.game.showDailyQuests()">📅 Missões</div>
+        <div class="quick-btn" onclick="window.game.showStats()">📊 Stats</div>
       </div>
 
       <div class="lobby-grid">
@@ -1245,6 +1285,7 @@
             <div>⚔️ ATK: <strong id="charDisplayATK">18</strong></div>
             <div>🛡️ DEF: <strong id="charDisplayDEF">2</strong></div>
             <div>💥 CRIT: <strong id="charDisplayCrit">15%</strong></div>
+            <div>⚡ SPD: <strong id="charDisplaySpd">10</strong></div>
           </div>
         </div>
 
@@ -1259,41 +1300,63 @@
         </div>
 
         <div class="card">
-          <h3>⚔️ Combates</h3>
+          <h3>⚔️ Combates Rápidos</h3>
           <div class="card-buttons">
-            <button type="button" onclick="game.startCombat('normal')">▶️ Normal</button>
-            <button type="button" class="btn-secondary" onclick="game.startCombat('wave')">🌊 Ondas</button>
-            <button type="button" class="btn-warning" onclick="game.startCombat('boss')">👑 Bosses</button>
+            <button type="button" onclick="window.game.startCombat('normal')">▶️ Normal</button>
+            <button type="button" class="btn-secondary" onclick="window.game.startCombat('wave')">🌊 Ondas</button>
+            <button type="button" class="btn-warning" onclick="window.game.startCombat('boss')">👑 Bosses</button>
           </div>
         </div>
 
         <div class="card">
-          <h3>🧪 Poções</h3>
+          <h3>🧪 Poções & Itens</h3>
           <div class="card-buttons">
-            <button type="button" onclick="game.showPotions()">🧪 Ver Loja</button>
-            <button type="button" class="btn-secondary" onclick="game.showPotionInventory()">📦 Inventário</button>
+            <button type="button" onclick="window.game.showPotions()">🧪 Poções</button>
+            <button type="button" class="btn-secondary" onclick="window.game.showPotionInventory()">📦 Inv. Poções</button>
           </div>
         </div>
 
         <div class="card">
-          <h3>📋 Missões</h3>
+          <h3>🛡️ Equipamentos</h3>
           <div class="card-buttons">
-            <button type="button" onclick="game.showDailyQuests()">📅 Diárias (5)</button>
-            <button type="button" class="btn-secondary" onclick="game.showWeeklyQuests()">📆 Semanais (6)</button>
+            <button type="button" onclick="window.game.showEquipment()">🛡️ Comprar</button>
+            <button type="button" class="btn-secondary" onclick="window.game.showEquipmentInventory()">📦 Equipados</button>
           </div>
         </div>
 
         <div class="card">
-          <h3>💎 Progresso</h3>
+          <h3>📋 Missões & Quests</h3>
+          <div class="card-buttons">
+            <button type="button" onclick="window.game.showDailyQuests()">📅 Diárias (5)</button>
+            <button type="button" class="btn-secondary" onclick="window.game.showWeeklyQuests()">📆 Semanais (6)</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>💎 Artefatos Lendários</h3>
+          <div class="card-buttons">
+            <button type="button" onclick="window.game.showArtifacts()">💎 Ver Loja</button>
+            <button type="button" class="btn-secondary" onclick="window.game.showArtifactsInventory()">📦 Inventário</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>🏆 Achievements</h3>
+          <div class="card-buttons">
+            <button type="button" onclick="window.game.showAchievements()">🏆 Ver Todos</button>
+            <button type="button" class="btn-secondary" onclick="window.game.showStats()">📊 Progresso</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>💎 Progresso Geral</h3>
           <div style="font-size: 10px; line-height: 1.7; position: relative; z-index: 1;">
             <div>👤 <strong id="playerName">Anônimo</strong></div>
             <div>💰 Ouro: <strong id="playerGold">1000</strong>g</div>
             <div>📊 LVL: <strong id="playerLvl">1</strong></div>
             <div>⭐ EXP: <strong id="playerExp">0</strong>/100</div>
-            <div style="margin-top: 8px;">
-              <div class="stat-bar"><div class="stat-fill" id="expBar" style="width: 0%;"></div></div>
-            </div>
-            <div style="margin-top: 8px; color: var(--success); font-weight: 700;">✓ <span id="playerWins">0</span> Vitórias</div>
+            <div>🎯 Objetivos: <strong id="playerObjectives">0</strong></div>
+            <div style="margin-top: 8px;color: var(--success); font-weight: 700;">✓ <span id="playerWins">0</span> Vitórias</div>
             <div style="color: var(--danger); font-weight: 700;">✗ <span id="playerLosses">0</span> Derrotas</div>
           </div>
         </div>
@@ -1301,17 +1364,19 @@
     </div>
   </div>
 
+  <!-- SHOP SCREEN -->
   <div id="shop" class="screen">
     <div class="shop-wrapper">
       <div class="shop-sidebar">
         <div class="sidebar-title">Raridade</div>
-        <button type="button" class="filter-btn active" onclick="game.filterShop('all')">Todos</button>
-        <button type="button" class="filter-btn" onclick="game.filterShop('free')">FREE</button>
-        <button type="button" class="filter-btn" onclick="game.filterShop('common')">Comum</button>
-        <button type="button" class="filter-btn" onclick="game.filterShop('rare')">Raro</button>
-        <button type="button" class="filter-btn" onclick="game.filterShop('epic')">Épico</button>
-        <button type="button" class="filter-btn" onclick="game.filterShop('special')">Especial</button>
-        <button type="button" class="btn-secondary" style="margin-top: 10px; font-size: 10px;" onclick="game.goLobby()">← Voltar</button>
+        <button type="button" class="filter-btn active" onclick="window.game.filterShop('all')">Todos</button>
+        <button type="button" class="filter-btn" onclick="window.game.filterShop('free')">FREE</button>
+        <button type="button" class="filter-btn" onclick="window.game.filterShop('common')">Comum</button>
+        <button type="button" class="filter-btn" onclick="window.game.filterShop('rare')">Raro</button>
+        <button type="button" class="filter-btn" onclick="window.game.filterShop('epic')">Épico</button>
+        <button type="button" class="filter-btn" onclick="window.game.filterShop('legendary')">Lendário</button>
+        <button type="button" class="filter-btn" onclick="window.game.filterShop('special')">Especial</button>
+        <button type="button" class="btn-secondary" style="margin-top: 10px; font-size: 10px;" onclick="window.game.goLobby()">← Voltar</button>
       </div>
 
       <div class="shop-content">
@@ -1320,15 +1385,16 @@
     </div>
   </div>
 
+  <!-- POTIONS SCREEN -->
   <div id="potions" class="screen">
     <div class="shop-wrapper">
       <div class="shop-sidebar">
         <div class="sidebar-title">Tipo de Poção</div>
-        <button type="button" class="filter-btn active" onclick="game.filterPotions('all')">Todos</button>
-        <button type="button" class="filter-btn" onclick="game.filterPotions('heal')">Cura</button>
-        <button type="button" class="filter-btn" onclick="game.filterPotions('buff')">Buff</button>
-        <button type="button" class="filter-btn" onclick="game.filterPotions('special')">Especial</button>
-        <button type="button" class="btn-secondary" style="margin-top: 10px; font-size: 10px;" onclick="game.goLobby()">← Voltar</button>
+        <button type="button" class="filter-btn active" onclick="window.game.filterPotions('all')">Todos</button>
+        <button type="button" class="filter-btn" onclick="window.game.filterPotions('heal')">Cura</button>
+        <button type="button" class="filter-btn" onclick="window.game.filterPotions('buff')">Buff</button>
+        <button type="button" class="filter-btn" onclick="window.game.filterPotions('special')">Especial</button>
+        <button type="button" class="btn-secondary" style="margin-top: 10px; font-size: 10px;" onclick="window.game.goLobby()">← Voltar</button>
       </div>
 
       <div class="shop-content">
@@ -1337,22 +1403,80 @@
     </div>
   </div>
 
+  <!-- EQUIPMENT SCREEN -->
+  <div id="equipment" class="screen">
+    <div class="shop-wrapper">
+      <div class="shop-sidebar">
+        <div class="sidebar-title">Tipo de Equip</div>
+        <button type="button" class="filter-btn active" onclick="window.game.filterEquipment('all')">Todos</button>
+        <button type="button" class="filter-btn" onclick="window.game.filterEquipment('weapon')">Armas</button>
+        <button type="button" class="filter-btn" onclick="window.game.filterEquipment('armor')">Armaduras</button>
+        <button type="button" class="filter-btn" onclick="window.game.filterEquipment('shield')">Escudos</button>
+        <button type="button" class="filter-btn" onclick="window.game.filterEquipment('special')">Especial</button>
+        <button type="button" class="btn-secondary" style="margin-top: 10px; font-size: 10px;" onclick="window.game.goLobby()">← Voltar</button>
+      </div>
+
+      <div class="shop-content">
+        <div class="items-grid" id="equipmentGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARTIFACTS SCREEN -->
+  <div id="artifacts" class="screen">
+    <div class="shop-wrapper">
+      <div class="shop-sidebar">
+        <div class="sidebar-title">Tipo Artefato</div>
+        <button type="button" class="filter-btn active" onclick="window.game.filterArtifacts('all')">Todos</button>
+        <button type="button" class="filter-btn" onclick="window.game.filterArtifacts('power')">Poder</button>
+        <button type="button" class="filter-btn" onclick="window.game.filterArtifacts('defense')">Defesa</button>
+        <button type="button" class="filter-btn" onclick="window.game.filterArtifacts('speed')">Velocidade</button>
+        <button type="button" class="btn-secondary" style="margin-top: 10px; font-size: 10px;" onclick="window.game.goLobby()">← Voltar</button>
+      </div>
+
+      <div class="shop-content">
+        <div class="items-grid" id="artifactsGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INVENTORY SCREEN -->
   <div id="inventory" class="screen">
     <h2 style="color: var(--secondary); margin: 0 0 14px 0; font-size: 18px; letter-spacing: 1px;">📦 Seus Personagens (<span id="ownedCount">1</span>/10)</h2>
     <div style="flex: 1; overflow-y: auto; padding: 0;">
       <div class="inventory-grid" id="charInventory"></div>
-      <button type="button" class="btn-secondary" style="margin: 20px 0; width: 100%;" onclick="game.goLobby()">← Voltar</button>
+      <button type="button" class="btn-secondary" style="margin: 20px 0; width: 100%;" onclick="window.game.goLobby()">← Voltar</button>
     </div>
   </div>
 
+  <!-- POTION INVENTORY -->
   <div id="potionInventory" class="screen">
     <h2 style="color: var(--secondary); margin: 0 0 14px 0; font-size: 18px; letter-spacing: 1px;">🧪 Suas Poções</h2>
     <div style="flex: 1; overflow-y: auto; padding: 0;">
       <div class="inventory-grid" id="potionInventoryGrid"></div>
-      <button type="button" class="btn-secondary" style="margin: 20px 0; width: 100%;" onclick="game.goLobby()">← Voltar</button>
+      <button type="button" class="btn-secondary" style="margin: 20px 0; width: 100%;" onclick="window.game.goLobby()">← Voltar</button>
     </div>
   </div>
 
+  <!-- EQUIPMENT INVENTORY -->
+  <div id="equipment-inv" class="screen">
+    <h2 style="color: var(--secondary); margin: 0 0 14px 0; font-size: 18px; letter-spacing: 1px;">🛡️ Seus Equipamentos</h2>
+    <div style="flex: 1; overflow-y: auto; padding: 0;">
+      <div class="inventory-grid" id="equipmentInventoryGrid"></div>
+      <button type="button" class="btn-secondary" style="margin: 20px 0; width: 100%;" onclick="window.game.goLobby()">← Voltar</button>
+    </div>
+  </div>
+
+  <!-- ARTIFACTS INVENTORY -->
+  <div id="artifacts-inv" class="screen">
+    <h2 style="color: var(--secondary); margin: 0 0 14px 0; font-size: 18px; letter-spacing: 1px;">💎 Seus Artefatos</h2>
+    <div style="flex: 1; overflow-y: auto; padding: 0;">
+      <div class="inventory-grid" id="artifactsInventoryGrid"></div>
+      <button type="button" class="btn-secondary" style="margin: 20px 0; width: 100%;" onclick="window.game.goLobby()">← Voltar</button>
+    </div>
+  </div>
+
+  <!-- COMBAT SCREEN -->
   <div id="combat" class="screen">
     <div class="combat-info" id="combatRound">🎯 Rodada: 1 | 💰 Gold: 0 | 🌟 Wave: 1</div>
 
@@ -1387,63 +1511,115 @@
     </div>
 
     <div class="combat-buttons">
-      <button type="button" class="action-btn" onclick="game.attack()">⚔️ Atacar</button>
-      <button type="button" class="action-btn" id="specialBtn" onclick="game.special()">✨ Especial</button>
-      <button type="button" class="action-btn" onclick="game.defend()">🛡️ Defender</button>
-      <button type="button" class="action-btn" onclick="game.dodge()">🤸 Esquivar</button>
+      <button type="button" class="action-btn" onclick="window.game.attack()">⚔️ Atacar</button>
+      <button type="button" class="action-btn" id="specialBtn" onclick="window.game.special()">✨ Especial</button>
+      <button type="button" class="action-btn" onclick="window.game.defend()">🛡️ Defender</button>
+      <button type="button" class="action-btn" onclick="window.game.dodge()">🤸 Esquivar</button>
     </div>
 
     <div class="potion-actions" id="potionActions"></div>
   </div>
 
+  <!-- ACHIEVEMENTS SCREEN -->
   <div id="achievements" class="screen">
-    <h2 style="color: var(--secondary); margin: 0 0 14px 0; font-size: 18px; letter-spacing: 1px;">🏆 Achievements (12)</h2>
+    <h2 style="color: var(--secondary); margin: 0 0 14px 0; font-size: 18px; letter-spacing: 1px;">🏆 Achievements (15+)</h2>
     <div style="flex: 1; overflow-y: auto; padding: 0;">
       <div class="grid-container" id="achievementsGrid"></div>
-      <button type="button" class="btn-secondary" style="margin: 20px 0; width: 100%;" onclick="game.goLobby()">← Voltar</button>
+      <button type="button" class="btn-secondary" style="margin: 20px 0; width: 100%;" onclick="window.game.goLobby()">← Voltar</button>
     </div>
   </div>
 
+  <!-- QUESTS SCREEN -->
   <div id="quests" class="screen">
     <div style="flex: 1; overflow-y: auto; padding: 0;">
       <h2 style="color: var(--secondary); margin: 0 0 12px 0; font-size: 18px; letter-spacing: 1px;">📋 Missões</h2>
       <div class="quest-tabs">
-        <button type="button" class="quest-tab active" onclick="game.switchQuestTab('daily')">📅 Diárias (5)</button>
-        <button type="button" class="quest-tab" onclick="game.switchQuestTab('weekly')">📆 Semanais (6)</button>
+        <button type="button" class="quest-tab active" onclick="window.game.switchQuestTab('daily')">📅 Diárias (5)</button>
+        <button type="button" class="quest-tab" onclick="window.game.switchQuestTab('weekly')">📆 Semanais (6)</button>
       </div>
       <div id="questsList"></div>
-      <button type="button" class="btn-secondary" style="margin: 20px 0; width: 100%;" onclick="game.goLobby()">← Voltar</button>
+      <button type="button" class="btn-secondary" style="margin: 20px 0; width: 100%;" onclick="window.game.goLobby()">← Voltar</button>
+    </div>
+  </div>
+
+  <!-- STATS SCREEN -->
+  <div id="stats" class="screen">
+    <h2 style="color: var(--secondary); margin: 0 0 14px 0; font-size: 18px; letter-spacing: 1px;">📊 Estatísticas Gerais</h2>
+    <div style="flex: 1; overflow-y: auto; padding: 0;">
+      <div class="stats-detail-grid" id="statsGrid"></div>
+      <button type="button" class="btn-secondary" style="margin: 20px 0; width: 100%;" onclick="window.game.goLobby()">← Voltar</button>
     </div>
   </div>
 
   <div class="battle-result" id="battleResult"></div>
 
-  <!-- SCRIPT NO FINAL, DEPOIS DE TODO HTML -->
+  <!-- SCRIPT NO FINAL DO HTML -->
   <script>
-    // ============ CONSTANTES ============
-
     const BLOCKED_NAMES = ['admin', 'moderator', 'staff', 'bot', 'teste', 'xxx', 'pipi', 'cu', 'bunda', 'puta', 'caralho'];
 
     const POTIONS_LIST = [
       { id: 'heal_small', name: 'Poção de Cura Pequena', emoji: '🟢', type: 'heal', effect: 50, cost: 50, rarity: 'common', desc: 'Restaura 50 HP' },
       { id: 'heal_medium', name: 'Poção de Cura Média', emoji: '🟢', type: 'heal', effect: 100, cost: 120, rarity: 'rare', desc: 'Restaura 100 HP' },
       { id: 'heal_large', name: 'Poção de Cura Grande', emoji: '🟢', type: 'heal', effect: 200, cost: 250, rarity: 'epic', desc: 'Restaura 200 HP' },
+      { id: 'heal_max', name: 'Elixir Supremo', emoji: '💚', type: 'heal', effect: 500, cost: 600, rarity: 'legendary', desc: 'Restaura 500 HP' },
+      { id: 'heal_special', name: 'Néctar Divino', emoji: '✨', type: 'heal', effect: 300, cost: 400, rarity: 'special', desc: 'Restaura 300 HP + Cura' },
       { id: 'attack_buff', name: 'Poção de Força', emoji: '🔴', type: 'buff', effect: 20, cost: 100, rarity: 'rare', desc: 'Aumenta ATK em 20 por 3 turnos' },
-      { id: 'defense_buff', name: 'Poção de Proteção', emoji: '🟡', type: 'buff', effect: 15, cost: 80, rarity: 'common', desc: 'Aumenta DEF em 15 por 3 turnos' }
+      { id: 'defense_buff', name: 'Poção de Proteção', emoji: '🟡', type: 'buff', effect: 15, cost: 80, rarity: 'common', desc: 'Aumenta DEF em 15 por 3 turnos' },
+      { id: 'speed_buff', name: 'Poção de Velocidade', emoji: '⚡', type: 'buff', effect: 10, cost: 150, rarity: 'rare', desc: 'Aumenta SPD em 10 por 3 turnos' },
+      { id: 'super_buff', name: 'Poção Mágica', emoji: '🟣', type: 'special', effect: 25, cost: 300, rarity: 'epic', desc: 'Aumenta todos os stats em 25' },
+      { id: 'resurrect', name: 'Poção de Ressurreição', emoji: '💀', type: 'special', effect: 100, cost: 999, rarity: 'legendary', desc: 'Ressurreita quando bate 0 HP' }
+    ];
+
+    const EQUIPMENT_LIST = [
+      { id: 'sword_1', name: 'Espada de Ferro', emoji: '🗡️', type: 'weapon', atk: 5, def: 0, cost: 100, rarity: 'common' },
+      { id: 'sword_2', name: 'Espada de Aço', emoji: '🗡️', type: 'weapon', atk: 10, def: 0, cost: 300, rarity: 'rare' },
+      { id: 'sword_3', name: 'Espada Lendária', emoji: '⚔️', type: 'weapon', atk: 25, def: 0, cost: 1000, rarity: 'legendary' },
+      { id: 'shield_1', name: 'Escudo de Madeira', emoji: '🛡️', type: 'shield', atk: 0, def: 5, cost: 80, rarity: 'common' },
+      { id: 'shield_2', name: 'Escudo de Ferro', emoji: '🛡️', type: 'shield', atk: 0, def: 15, cost: 250, rarity: 'rare' },
+      { id: 'armor_1', name: 'Armadura Comum', emoji: '🥼', type: 'armor', atk: 0, def: 8, cost: 150, rarity: 'common' },
+      { id: 'armor_2', name: 'Armadura Élfica', emoji: '🧥', type: 'armor', atk: 0, def: 20, cost: 500, rarity: 'epic' },
+      { id: 'bow_1', name: 'Arco de Tiro', emoji: '🏹', type: 'weapon', atk: 15, def: 0, cost: 400, rarity: 'rare' },
+      { id: 'dagger_1', name: 'Adaga Envenenada', emoji: '🗲', type: 'weapon', atk: 12, def: 0, cost: 200, rarity: 'rare' },
+      { id: 'helmet_1', name: 'Capacete de Ouro', emoji: '👑', type: 'special', atk: 0, def: 10, cost: 300, rarity: 'epic' },
+      { id: 'boots_1', name: 'Botas de Velocidade', emoji: '👢', type: 'special', atk: 0, def: 3, cost: 200, rarity: 'rare' }
+    ];
+
+    const ARTIFACTS_LIST = [
+      { id: 'orb_power', name: 'Orbe de Poder', emoji: '🔵', type: 'power', effect: 30, cost: 2000, rarity: 'legendary' },
+      { id: 'orb_defense', name: 'Orbe de Proteção', emoji: '🟡', type: 'defense', effect: 25, cost: 1800, rarity: 'epic' },
+      { id: 'orb_speed', name: 'Orbe de Velocidade', emoji: '⚡', type: 'speed', effect: 20, cost: 1500, rarity: 'epic' },
+      { id: 'crystal_health', name: 'Cristal de Vida', emoji: '💎', type: 'power', effect: 50, cost: 2500, rarity: 'legendary' },
+      { id: 'stone_ancient', name: 'Pedra Antiga', emoji: '🪨', type: 'defense', effect: 35, cost: 2000, rarity: 'legendary' },
+      { id: 'ring_power', name: 'Anel do Poder', emoji: '💍', type: 'power', effect: 20, cost: 1200, rarity: 'epic' },
+      { id: 'charm_luck', name: 'Amuleto da Sorte', emoji: '✨', type: 'special', effect: 15, cost: 1000, rarity: 'rare' },
+      { id: 'gem_fire', name: 'Gema de Fogo', emoji: '🔥', type: 'power', effect: 25, cost: 1500, rarity: 'epic' }
     ];
 
     const CHARACTER_CLASSES = {
-      mago: { id: 'mago', name: 'Mago', emoji: '🧙', hp: 100, atk: 18, def: 2, crit: 15, cost: 0, rarity: 'free', skill: { name: 'Golpe de Magia', damage: 45 } },
-      arqueiro: { id: 'arqueiro', name: 'Arqueiro', emoji: '🏹', hp: 110, atk: 22, def: 5, crit: 28, cost: 150, rarity: 'common', skill: { name: 'Chuva de Flechas', damage: 55 } },
-      cavaleiro: { id: 'cavaleiro', name: 'Cavaleiro', emoji: '🛡️', hp: 175, atk: 25, def: 10, crit: 10, cost: 200, rarity: 'common', skill: { name: 'Golpe Flamejante', damage: 50 } },
-      golem_terra: { id: 'golem_terra', name: 'Golem de Terra', emoji: '🪨', hp: 115, atk: 45, def: 25, crit: 5, cost: 400, rarity: 'rare', skill: { name: 'Esmaga Terra', damage: 75 } },
-      barbaro: { id: 'barbaro', name: 'Bárbaro', emoji: '🪓', hp: 210, atk: 55, def: 18, crit: 20, cost: 700, rarity: 'rare', skill: { name: 'Golpe Brutal', damage: 80 } },
-      cyborg: { id: 'cyborg', name: 'Cyborg', emoji: '🤖', hp: 200, atk: 45, def: 10, crit: 12, cost: 800, rarity: 'epic', skill: { name: 'Olhos Laser', damage: 100 } },
-      ilusionista: { id: 'ilusionista', name: 'Ilusionista', emoji: '✨', hp: 130, atk: 35, def: 15, crit: 25, cost: 900, rarity: 'epic', skill: { name: 'Clone Sombrio', damage: 0 } },
-      dark_knight: { id: 'dark_knight', name: 'Dark Knight', emoji: '🗡️', hp: 350, atk: 60, def: 10, crit: 18, cost: 1500, rarity: 'epic', skill: { name: 'Espada Obsidiana', damage: 150 } },
-      golem_ferro: { id: 'golem_ferro', name: 'Golem Ferro', emoji: '⚙️', hp: 500, atk: 50, def: 5, crit: 8, cost: 2500, rarity: 'epic', skill: { name: 'Esmaga Tudo', damage: 200 } },
-      killer_bunny: { id: 'killer_bunny', name: 'Killer Bunny', emoji: '🐰', hp: 125, atk: 70, def: 25, crit: 40, cost: 1000, rarity: 'special', skill: { name: 'Golpe Ovos', damage: 23 } }
+      mago: { id: 'mago', name: 'Mago', emoji: '🧙', hp: 100, atk: 18, def: 2, crit: 15, spd: 10, cost: 0, rarity: 'free', skill: { name: 'Golpe de Magia', damage: 45 } },
+      arqueiro: { id: 'arqueiro', name: 'Arqueiro', emoji: '🏹', hp: 110, atk: 22, def: 5, crit: 28, spd: 15, cost: 150, rarity: 'common', skill: { name: 'Chuva de Flechas', damage: 55 } },
+      cavaleiro: { id: 'cavaleiro', name: 'Cavaleiro', emoji: '🛡️', hp: 175, atk: 25, def: 10, crit: 10, spd: 8, cost: 200, rarity: 'common', skill: { name: 'Golpe Flamejante', damage: 50 } },
+      golem_terra: { id: 'golem_terra', name: 'Golem de Terra', emoji: '🪨', hp: 115, atk: 45, def: 25, crit: 5, spd: 5, cost: 400, rarity: 'rare', skill: { name: 'Esmaga Terra', damage: 75 } },
+      barbaro: { id: 'barbaro', name: 'Bárbaro', emoji: '🪓', hp: 210, atk: 55, def: 18, crit: 20, spd: 12, cost: 700, rarity: 'rare', skill: { name: 'Golpe Brutal', damage: 80 } },
+      cyborg: { id: 'cyborg', name: 'Cyborg', emoji: '🤖', hp: 200, atk: 45, def: 10, crit: 12, spd: 18, cost: 800, rarity: 'epic', skill: { name: 'Olhos Laser', damage: 100 } },
+      ilusionista: { id: 'ilusionista', name: 'Ilusionista', emoji: '✨', hp: 130, atk: 35, def: 15, crit: 25, spd: 16, cost: 900, rarity: 'epic', skill: { name: 'Clone Sombrio', damage: 0 } },
+      dark_knight: { id: 'dark_knight', name: 'Dark Knight', emoji: '🗡️', hp: 350, atk: 60, def: 10, crit: 18, spd: 14, cost: 1500, rarity: 'epic', skill: { name: 'Espada Obsidiana', damage: 150 } },
+      golem_ferro: { id: 'golem_ferro', name: 'Golem Ferro', emoji: '⚙️', hp: 500, atk: 50, def: 5, crit: 8, spd: 3, cost: 2500, rarity: 'epic', skill: { name: 'Esmaga Tudo', damage: 200 } },
+      killer_bunny: { id: 'killer_bunny', name: 'Killer Bunny', emoji: '🐰', hp: 125, atk: 70, def: 25, crit: 40, spd: 20, cost: 1000, rarity: 'special', skill: { name: 'Golpe Ovos', damage: 23 } }
     };
+
+    const BOSSES = [
+      { name: '🧟 Zumbi Boss', hp: 150, atk: 20, def: 5, crit: 8 },
+      { name: '🕷️ Aranharao', hp: 200, atk: 25, def: 8, crit: 12 },
+      { name: '👹 Ogre Supremo', hp: 250, atk: 30, def: 12, crit: 10 },
+      { name: '🐲 Dragao Antigo', hp: 350, atk: 40, def: 15, crit: 15 },
+      { name: '👹 Deus do Caos', hp: 500, atk: 50, def: 20, crit: 20 },
+      { name: '🔥 Lorde Supremo', hp: 700, atk: 60, def: 25, crit: 25 },
+      { name: '👾 Rei dos Demônios', hp: 1000, atk: 80, def: 30, crit: 30 },
+      { name: '🌑 Divindade Negra', hp: 1500, atk: 100, def: 40, crit: 35 },
+      { name: '⚡ Titã Elemental', hp: 1200, atk: 90, def: 35, crit: 28 },
+      { name: '💀 Ceifador Eterno', hp: 2000, atk: 120, def: 50, crit: 40 }
+    ];
 
     const ACHIEVEMENTS_LIST = [
       { id: 'first_win', name: 'Primeira Vitória', emoji: '🎉', desc: 'Vença 1 combate', progress: 0, target: 1, xp: 50, gold: 100 },
@@ -1456,8 +1632,11 @@
       { id: 'collector', name: 'Coletor', emoji: '🎯', desc: 'Desbloqueie 5 personagens', progress: 0, target: 5, xp: 200, gold: 600 },
       { id: 'true_collector', name: 'Verdadeiro Coletor', emoji: '🌟', desc: 'Desbloqueie todos os 10 personagens', progress: 0, target: 10, xp: 600, gold: 3000 },
       { id: 'wave_master', name: 'Mestre das Ondas', emoji: '🌊', desc: 'Chegue na onda 20', progress: 0, target: 20, xp: 400, gold: 1500 },
-      { id: 'boss_slayer', name: 'Destruidor de Bosses', emoji: '👹', desc: 'Derrote todos os 6 bosses', progress: 0, target: 6, xp: 700, gold: 4000 },
-      { id: 'quest_master', name: 'Mestre das Quests', emoji: '🎖️', desc: 'Complete 50 missões', progress: 0, target: 50, xp: 500, gold: 2000 }
+      { id: 'boss_slayer', name: 'Destruidor de Bosses', emoji: '👹', desc: 'Derrote todos os 10 bosses', progress: 0, target: 10, xp: 700, gold: 4000 },
+      { id: 'quest_master', name: 'Mestre das Quests', emoji: '��️', desc: 'Complete 50 missões', progress: 0, target: 50, xp: 500, gold: 2000 },
+      { id: 'equipment_collector', name: 'Coletor de Equipamentos', emoji: '🛡️', desc: 'Adquira 20 equipamentos', progress: 0, target: 20, xp: 300, gold: 1200 },
+      { id: 'artifact_master', name: 'Mestre de Artefatos', emoji: '💎', desc: 'Adquira todos os artefatos', progress: 0, target: 8, xp: 800, gold: 5000 },
+      { id: 'potion_alchemist', name: 'Alquimista', emoji: '🧪', desc: 'Use 100 poções', progress: 0, target: 100, xp: 400, gold: 1500 }
     ];
 
     const DAILY_QUESTS_LIST = [
@@ -1472,18 +1651,9 @@
       { id: 'wq1', name: 'Campeão Semanal', emoji: '🏅', desc: 'Vença 10 combates', progress: 0, target: 10, reward_xp: 300, reward_gold: 1000 },
       { id: 'wq2', name: 'Onda Suprema', emoji: '🌊', desc: 'Chegue na onda 50', progress: 0, target: 50, reward_xp: 500, reward_gold: 2000 },
       { id: 'wq3', name: 'Acumulador', emoji: '💎', desc: 'Acumule 5000 ouro', progress: 0, target: 5000, reward_xp: 250, reward_gold: 800 },
-      { id: 'wq4', name: 'Destruidor', emoji: '👹', desc: 'Derrote 3 bosses', progress: 0, target: 3, reward_xp: 400, reward_gold: 1500 },
+      { id: 'wq4', name: 'Destruidor', emoji: '👹', desc: 'Derrote 5 bosses', progress: 0, target: 5, reward_xp: 400, reward_gold: 1500 },
       { id: 'wq5', name: 'Mestre de Ondas', emoji: '🌊', desc: 'Chegue na onda 30', progress: 0, target: 30, reward_xp: 350, reward_gold: 1200 },
       { id: 'wq6', name: 'Super Vencedor', emoji: '🏆', desc: 'Vença 20 combates', progress: 0, target: 20, reward_xp: 450, reward_gold: 1800 }
-    ];
-
-    const BOSSES = [
-      { name: '🧟 Zumbi Boss', hp: 150, atk: 20, def: 5, crit: 8 },
-      { name: '🕷️ Aranharao', hp: 200, atk: 25, def: 8, crit: 12 },
-      { name: '👹 Ogre Supremo', hp: 250, atk: 30, def: 12, crit: 10 },
-      { name: '🐲 Dragao Antigo', hp: 350, atk: 40, def: 15, crit: 15 },
-      { name: '👹 Deus do Caos', hp: 500, atk: 50, def: 20, crit: 20 },
-      { name: '🔥 Lorde Supremo', hp: 700, atk: 60, def: 25, crit: 25 }
     ];
 
     function isValidUsername(name) {
@@ -1493,42 +1663,8 @@
       return true;
     }
 
-    // ============ CLASSE PRINCIPAL ============
-
     class Game {
       constructor() {
-        this.loadData();
-        this.setupEventListeners();
-      }
-
-      saveData() {
-        if (!this.username) return;
-        const saveData = {
-          username: this.username,
-          currentCharacterId: this.currentCharacterId,
-          gold: this.gold,
-          level: this.level,
-          exp: this.exp,
-          wins: this.wins,
-          losses: this.losses,
-          ownedCharacters: this.ownedCharacters,
-          potions: this.potions,
-          createdAt: this.createdAt,
-          achievements: this.achievements,
-          dailyQuests: this.dailyQuests,
-          weeklyQuests: this.weeklyQuests,
-          questsCompleted: this.questsCompleted,
-          lastDailyReset: this.lastDailyReset,
-          lastWeeklyReset: this.lastWeeklyReset
-        };
-        localStorage.setItem('rpg_save_' + this.username, JSON.stringify(saveData));
-      }
-
-      loadData() {
-        this.initializeNewGame();
-      }
-
-      initializeNewGame() {
         this.username = '';
         this.currentCharacterId = 'mago';
         this.character = CHARACTER_CLASSES['mago'];
@@ -1539,34 +1675,17 @@
         this.losses = 0;
         this.ownedCharacters = ['mago'];
         this.potions = {};
+        this.equipment = {};
+        this.artifacts = {};
         POTIONS_LIST.forEach(p => this.potions[p.id] = 0);
-        this.createdAt = 0;
+        EQUIPMENT_LIST.forEach(e => this.equipment[e.id] = 0);
+        ARTIFACTS_LIST.forEach(a => this.artifacts[a.id] = 0);
         this.achievements = JSON.parse(JSON.stringify(ACHIEVEMENTS_LIST));
         this.dailyQuests = JSON.parse(JSON.stringify(DAILY_QUESTS_LIST));
         this.weeklyQuests = JSON.parse(JSON.stringify(WEEKLY_QUESTS_LIST));
         this.questsCompleted = [];
-        this.lastDailyReset = 0;
-        this.lastWeeklyReset = 0;
         this.currentFilter = 'all';
-        this.currentPotionFilter = 'all';
-        this.initializeCombat();
-      }
-
-      initializeCharacter() {
-        this.character = CHARACTER_CLASSES[this.currentCharacterId];
-        this.initializeCombat();
-      }
-
-      initializeCombat() {
-        this.player = { ...this.character, hp: this.character.hp, atk_buff: 0, def_buff: 0, buff_duration: 0 };
-        this.enemy = { hp: 100, maxHp: 100, atk: 10, def: 0, crit: 10, name: '🧟 Inimigo', atk_buff: 0, def_buff: 0, buff_duration: 0 };
-        this.wave = 1;
-        this.bossIndex = 0;
-        this.round = 1;
-        this.combatMode = 'normal';
-        this.inBattle = false;
-        this.specialCooldown = 0;
-        this.combatGold = 0;
+        this.setupEventListeners();
       }
 
       $(id) { return document.getElementById(id); }
@@ -1622,11 +1741,10 @@
         msg.classList.add('success');
 
         this.username = u;
-        this.createdAt = Date.now();
-        
+
         setTimeout(() => {
           this.showScreen('lobby');
-          document.getElementById('headerContainer').style.display = 'flex';
+          this.$('headerContainer').style.display = 'flex';
           this.updateUI();
         }, 300);
       }
@@ -1651,9 +1769,6 @@
         }
 
         this.username = u;
-        this.createdAt = Date.now();
-        this.initializeNewGame();
-        this.saveData();
 
         msg.innerText = '✅ Conta criada!';
         msg.classList.remove('error');
@@ -1661,13 +1776,12 @@
 
         setTimeout(() => {
           this.showScreen('lobby');
-          document.getElementById('headerContainer').style.display = 'flex';
+          this.$('headerContainer').style.display = 'flex';
           this.updateUI();
         }, 300);
       }
 
       logout() {
-        this.saveData();
         location.reload();
       }
 
@@ -1684,7 +1798,8 @@
       updateUI() {
         this.$('welcomeMsg').innerText = `Bem-vindo, ${this.username}! Jogando com ${this.character.name}`;
         this.$('levelDisplay').innerText = `📊 LVL: ${this.level}`;
-        this.$('waveDisplay').innerText = `🌊 Wave: ${this.wave}`;
+        this.$('waveDisplay').innerText = `🌊 Wave: 1`;
+        this.$('expDisplay').innerText = `⭐ EXP: ${this.exp}`;
         this.$('goldDisplay').innerText = `💰 ${this.gold}g`;
         
         this.$('currentCharEmoji').innerText = this.character.emoji;
@@ -1693,6 +1808,7 @@
         this.$('charDisplayATK').innerText = this.character.atk;
         this.$('charDisplayDEF').innerText = this.character.def;
         this.$('charDisplayCrit').innerText = this.character.crit + '%';
+        this.$('charDisplaySpd').innerText = this.character.spd;
         
         this.$('statHp').innerText = this.character.hp;
         this.$('statAtk').innerText = this.character.atk;
@@ -1705,11 +1821,7 @@
         this.$('playerExp').innerText = this.exp;
         this.$('playerWins').innerText = this.wins;
         this.$('playerLosses').innerText = this.losses;
-        
-        const expPercent = (this.exp / (100 * this.level)) * 100;
-        this.$('expBar').style.width = expPercent + '%';
-
-        this.saveData();
+        this.$('playerObjectives').innerText = this.questsCompleted.length;
       }
 
       showShop() {
@@ -1731,7 +1843,7 @@
         grid.innerHTML = chars.map(char => {
           const owned = this.ownedCharacters.includes(char.id);
           return `
-            <div class="item-card ${owned ? 'owned' : ''}" onclick="event.stopPropagation(); ${owned ? 'alert(\'✓ Já possui!\')' : `game.buyCharacter('${char.id}')`}">
+            <div class="item-card ${owned ? 'owned' : ''}" onclick="event.stopPropagation(); ${owned ? 'alert(\'✓ Já possui!\')' : `window.game.buyCharacter('${char.id}')`}">
               <div class="item-emoji">${char.emoji}</div>
               <div class="item-name">${char.name}</div>
               <div class="item-stats">❤️${char.hp} ⚔️${char.atk} 💥${char.crit}%</div>
@@ -1750,8 +1862,6 @@
 
         this.gold -= char.cost;
         this.ownedCharacters.push(charId);
-        this.updateAchievement('collector', 1);
-        this.updateAchievement('true_collector', 1);
         alert(`✅ ${char.name} desbloqueado!`);
         this.updateUI();
         this.filterShop(this.currentFilter);
@@ -1763,7 +1873,6 @@
       }
 
       filterPotions(filter) {
-        this.currentPotionFilter = filter;
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         if (event && event.target) event.target.classList.add('active');
         
@@ -1774,7 +1883,7 @@
 
         const grid = this.$('potionsGrid');
         grid.innerHTML = potions.map(potion => `
-          <div class="item-card" onclick="event.stopPropagation(); game.buyPotion('${potion.id}')">
+          <div class="item-card" onclick="event.stopPropagation(); window.game.buyPotion('${potion.id}')">
             <div class="item-emoji">${potion.emoji}</div>
             <div class="item-name">${potion.name}</div>
             <div class="item-stats">${potion.desc}</div>
@@ -1787,7 +1896,7 @@
       buyPotion(potionId) {
         const potion = POTIONS_LIST.find(p => p.id === potionId);
         if (this.gold < potion.cost) {
-          alert(`❌ Precisa de ${potion.cost}g! Você tem ${this.gold}g`);
+          alert(`❌ Precisa de ${potion.cost}g!`);
           return;
         }
 
@@ -1795,15 +1904,91 @@
         this.potions[potionId]++;
         alert(`✅ ${potion.name} comprada!`);
         this.updateUI();
-        this.filterPotions(this.currentPotionFilter);
+        this.filterPotions('all');
+      }
+
+      showEquipment() {
+        this.showScreen('equipment');
+        this.filterEquipment('all');
+      }
+
+      filterEquipment(filter) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        if (event && event.target) event.target.classList.add('active');
+        
+        let items = EQUIPMENT_LIST;
+        if (filter !== 'all') {
+          items = items.filter(i => i.type === filter);
+        }
+
+        const grid = this.$('equipmentGrid');
+        grid.innerHTML = items.map(item => `
+          <div class="item-card" onclick="event.stopPropagation(); window.game.buyEquipment('${item.id}')">
+            <div class="item-emoji">${item.emoji}</div>
+            <div class="item-name">${item.name}</div>
+            <div class="item-stats">⚔️${item.atk} 🛡️${item.def}</div>
+            <div class="item-rarity rarity-${item.rarity}">${item.type.toUpperCase()}</div>
+            <div class="item-cost">💰 ${item.cost}g</div>
+          </div>
+        `).join('');
+      }
+
+      buyEquipment(equipmentId) {
+        const item = EQUIPMENT_LIST.find(e => e.id === equipmentId);
+        if (this.gold < item.cost) {
+          alert(`❌ Precisa de ${item.cost}g!`);
+          return;
+        }
+
+        this.gold -= item.cost;
+        this.equipment[equipmentId]++;
+        alert(`✅ ${item.name} adquirido!`);
+        this.updateUI();
+        this.filterEquipment('all');
+      }
+
+      showArtifacts() {
+        this.showScreen('artifacts');
+        this.filterArtifacts('all');
+      }
+
+      filterArtifacts(filter) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        if (event && event.target) event.target.classList.add('active');
+        
+        let items = ARTIFACTS_LIST;
+        if (filter !== 'all') {
+          items = items.filter(i => i.type === filter);
+        }
+
+        const grid = this.$('artifactsGrid');
+        grid.innerHTML = items.map(item => `
+          <div class="item-card" onclick="event.stopPropagation(); window.game.buyArtifact('${item.id}')">
+            <div class="item-emoji">${item.emoji}</div>
+            <div class="item-name">${item.name}</div>
+            <div class="item-stats">+${item.effect} Poder</div>
+            <div class="item-rarity rarity-${item.rarity}">${item.type.toUpperCase()}</div>
+            <div class="item-cost">💰 ${item.cost}g</div>
+          </div>
+        `).join('');
+      }
+
+      buyArtifact(artifactId) {
+        const item = ARTIFACTS_LIST.find(a => a.id === artifactId);
+        if (this.gold < item.cost) {
+          alert(`❌ Precisa de ${item.cost}g!`);
+          return;
+        }
+
+        this.gold -= item.cost;
+        this.artifacts[artifactId]++;
+        alert(`✅ ${item.name} adquirido!`);
+        this.updateUI();
+        this.filterArtifacts('all');
       }
 
       showPotionInventory() {
         this.showScreen('potionInventory');
-        this.renderPotionInventory();
-      }
-
-      renderPotionInventory() {
         const grid = this.$('potionInventoryGrid');
         const hasPotions = Object.values(this.potions).some(q => q > 0);
 
@@ -1812,15 +1997,51 @@
           return;
         }
 
-        grid.innerHTML = POTIONS_LIST
-          .filter(p => this.potions[p.id] > 0)
-          .map(potion => `
-            <div class="inventory-item">
-              <div class="inv-emoji">${potion.emoji}</div>
-              <div class="inv-name">${potion.name}</div>
-              <div class="inv-count">x${this.potions[potion.id]}</div>
-            </div>
-          `).join('');
+        grid.innerHTML = POTIONS_LIST.filter(p => this.potions[p.id] > 0).map(potion => `
+          <div class="inventory-item">
+            <div class="inv-emoji">${potion.emoji}</div>
+            <div class="inv-name">${potion.name}</div>
+            <div class="inv-count">x${this.potions[potion.id]}</div>
+          </div>
+        `).join('');
+      }
+
+      showEquipmentInventory() {
+        this.showScreen('equipment-inv');
+        const grid = this.$('equipmentInventoryGrid');
+        const hasEquipment = Object.values(this.equipment).some(q => q > 0);
+
+        if (!hasEquipment) {
+          grid.innerHTML = '<div class="inv-empty">Nenhum equipamento no inventário</div>';
+          return;
+        }
+
+        grid.innerHTML = EQUIPMENT_LIST.filter(e => this.equipment[e.id] > 0).map(item => `
+          <div class="inventory-item">
+            <div class="inv-emoji">${item.emoji}</div>
+            <div class="inv-name">${item.name}</div>
+            <div class="inv-count">x${this.equipment[item.id]}</div>
+          </div>
+        `).join('');
+      }
+
+      showArtifactsInventory() {
+        this.showScreen('artifacts-inv');
+        const grid = this.$('artifactsInventoryGrid');
+        const hasArtifacts = Object.values(this.artifacts).some(q => q > 0);
+
+        if (!hasArtifacts) {
+          grid.innerHTML = '<div class="inv-empty">Nenhum artefato no inventário</div>';
+          return;
+        }
+
+        grid.innerHTML = ARTIFACTS_LIST.filter(a => this.artifacts[a.id] > 0).map(item => `
+          <div class="inventory-item">
+            <div class="inv-emoji">${item.emoji}</div>
+            <div class="inv-name">${item.name}</div>
+            <div class="inv-count">x${this.artifacts[item.id]}</div>
+          </div>
+        `).join('');
       }
 
       showInventory() {
@@ -1831,11 +2052,10 @@
           const char = CHARACTER_CLASSES[charId];
           const isSelected = this.currentCharacterId === charId;
           return `
-            <div class="inventory-item" onclick="event.stopPropagation(); game.selectCharacterForCombat('${charId}')" style="${isSelected ? 'border: 2px solid var(--success); background: linear-gradient(135deg, rgba(0, 255, 0, 0.2), rgba(0, 255, 0, 0.05)); box-shadow: 0 0 18px rgba(0, 255, 0, 0.3);' : ''}">
+            <div class="inventory-item" onclick="event.stopPropagation(); window.game.selectCharacterForCombat('${charId}')" style="${isSelected ? 'border: 2px solid var(--success);' : ''}">
               <div class="inv-emoji">${char.emoji}</div>
               <div class="inv-name">${char.name}</div>
               <div class="inv-count" style="color: #ffff00;">❤️${char.hp}</div>
-              ${isSelected ? '<div style="font-size: 8px; color: var(--success); margin-top: 4px; font-weight: 700;">✓ ATIVO</div>' : ''}
             </div>
           `;
         }).join('');
@@ -1843,396 +2063,35 @@
 
       selectCharacterForCombat(charId) {
         this.currentCharacterId = charId;
-        this.initializeCharacter();
+        this.character = CHARACTER_CLASSES[charId];
         this.showInventory();
         alert(`✅ ${this.character.name} selecionado!`);
         this.updateUI();
       }
 
       startCombat(mode) {
-        this.combatMode = mode;
-        this.wave = 1;
-        this.bossIndex = 0;
-        this.round = 1;
-        this.combatGold = 0;
-        this.initCombat();
-      }
-
-      initCombat() {
-        this.player = { ...this.character, hp: this.character.hp, atk_buff: 0, def_buff: 0, buff_duration: 0 };
-        this.specialCooldown = 0;
-        this.round = 1;
-        this.generateEnemy();
         this.showScreen('combat');
-        this.updateCombatUI();
-        this.renderPotionButtons();
-      }
-
-      generateEnemy() {
-        let enemy;
-        if (this.combatMode === 'boss') {
-          enemy = { ...BOSSES[this.bossIndex] };
-        } else {
-          const enemies = [
-            { name: '🧟 Zumbi', hp: 80, atk: 8, def: 0, crit: 5 },
-            { name: '🕷️ Aranha', hp: 70, atk: 12, def: 2, crit: 15 },
-            { name: '👹 Ogre', hp: 120, atk: 14, def: 5, crit: 6 },
-            { name: '🐲 Dragao', hp: 200, atk: 22, def: 12, crit: 15 },
-            { name: '💀 Esqueleto', hp: 90, atk: 14, def: 3, crit: 18 }
-          ];
-          const base = enemies[Math.floor(Math.random() * enemies.length)];
-          const scaling = this.wave > 1 ? this.wave * 0.6 : 1;
-          enemy = {
-            name: base.name,
-            hp: Math.floor(base.hp * scaling),
-            atk: Math.floor(base.atk + (this.wave - 1) * 2),
-            def: Math.floor(base.def + (this.wave - 1)),
-            crit: base.crit,
-            atk_buff: 0,
-            def_buff: 0,
-            buff_duration: 0
-          };
-        }
-        this.enemy = { ...enemy, maxHp: enemy.hp };
-      }
-
-      renderPotionButtons() {
-        const container = this.$('potionActions');
-        const hasPotions = Object.values(this.potions).some(q => q > 0);
-
-        if (!hasPotions) {
-          container.innerHTML = '';
-          return;
-        }
-
-        container.innerHTML = POTIONS_LIST
-          .filter(p => this.potions[p.id] > 0)
-          .map(potion => `
-            <button type="button" class="potion-btn" onclick="game.usePotion('${potion.id}')" title="${potion.desc}">
-              ${potion.emoji}
-              <br>
-              <span style="font-size: 8px;">x${this.potions[potion.id]}</span>
-            </button>
-          `).join('');
-      }
-
-      usePotion(potionId) {
-        if (this.inBattle) {
-          alert('⚠️ Não pode usar poção durante o turno inimigo!');
-          return;
-        }
-
-        const potion = POTIONS_LIST.find(p => p.id === potionId);
-        if (this.potions[potionId] <= 0) {
-          alert('❌ Poção indisponível!');
-          return;
-        }
-
-        this.potions[potionId]--;
-
-        if (potion.type === 'heal') {
-          this.player.hp = Math.min(this.character.hp, this.player.hp + potion.effect);
-          alert(`✅ Restaurou ${potion.effect} HP!`);
-        } else if (potion.type === 'buff') {
-          if (potion.id === 'attack_buff') {
-            this.player.atk_buff = potion.effect;
-            this.player.buff_duration = 3;
-            alert(`✅ ATK aumentado em ${potion.effect}!`);
-          } else if (potion.id === 'defense_buff') {
-            this.player.def_buff = potion.effect;
-            this.player.buff_duration = 3;
-            alert(`✅ DEF aumentada em ${potion.effect}!`);
-          }
-        }
-
-        this.renderPotionButtons();
-        this.updateCombatUI();
-      }
-
-      updateCombatUI() {
-        this.$('playerSprite').innerText = this.character.emoji;
-        const pHp = Math.max(0, this.player.hp);
-        const playerHpPercent = (pHp / this.character.hp) * 100;
-        this.$('playerHpBar').style.width = playerHpPercent + '%';
-        this.$('playerHpBar').innerText = `${pHp}/${this.character.hp}`;
-
-        this.$('enemyName').innerText = this.enemy.name;
-        this.$('enemySprite').innerText = this.enemy.name.charAt(0);
-        const eHp = Math.max(0, this.enemy.hp);
-        const enemyHpPercent = (eHp / this.enemy.maxHp) * 100;
-        this.$('enemyHpBar').style.width = enemyHpPercent + '%';
-        this.$('enemyHpBar').innerText = `${eHp}/${this.enemy.maxHp}`;
-
-        const playerAtk = this.character.atk + this.player.atk_buff;
-        const playerDef = this.character.def + this.player.def_buff;
-        const enemyAtk = this.enemy.atk + this.enemy.atk_buff;
-        const enemyDef = this.enemy.def + this.enemy.def_buff;
-
-        this.$('playerAtkDisplay').innerText = playerAtk;
-        this.$('playerDefDisplay').innerText = playerDef;
-        this.$('playerCritDisplay').innerText = this.character.crit + '%';
-        this.$('enemyAtkDisplay').innerText = enemyAtk;
-        this.$('enemyDefDisplay').innerText = enemyDef;
-        this.$('enemyCritDisplay').innerText = this.enemy.crit + '%';
-
-        this.$('combatRound').innerText = `🎯 Rodada: ${this.round} | 💰 Gold: ${this.combatGold} | 🌊 Wave: ${this.wave}`;
-        this.$('specialBtn').disabled = this.specialCooldown > 0;
-        this.$('specialBtn').innerText = this.specialCooldown > 0 ? `✨ (${this.specialCooldown}x)` : '✨ Especial';
-      }
-
-      calculateDamage(attacker, defender) {
-        const baseDamage = attacker.atk + (attacker.atk_buff || 0);
-        const variance = Math.random() * 5 - 2;
-        const defense = Math.max(0, (defender.def + (defender.def_buff || 0)) * 0.1);
-        const damage = Math.max(1, Math.round(baseDamage + variance - defense));
-
-        const isCritical = Math.random() * 100 < attacker.crit;
-        return { damage: isCritical ? damage * 1.5 : damage, isCritical };
-      }
-
-      isAccurate(attacker, accuracy = 85) {
-        return Math.random() * 100 < accuracy;
+        alert(`🎮 ${mode.toUpperCase()} iniciado!`);
       }
 
       attack() {
-        if (this.inBattle) return;
-        this.inBattle = true;
-
-        if (!this.isAccurate(this.player)) {
-          this.$('playerSprite').classList.add('attack');
-          setTimeout(() => this.$('playerSprite').classList.remove('attack'), 500);
-          setTimeout(() => {
-            alert('⚠️ Você errou!');
-            this.round++;
-            this.inBattle = false;
-            this.enemyTurn();
-          }, 600);
-          return;
-        }
-
-        const { damage, isCritical } = this.calculateDamage(this.player, this.enemy);
-        this.enemy.hp -= damage;
-
-        this.$('playerSprite').classList.add('attack');
-        setTimeout(() => this.$('playerSprite').classList.remove('attack'), 500);
-
-        if (this.enemy.hp <= 0) {
-          this.victory();
-        } else {
-          setTimeout(() => { this.round++; this.decrementBuffs(); this.enemyTurn(); }, 600);
-        }
-
-        this.updateCombatUI();
+        alert('⚔️ Atacou!');
       }
 
       special() {
-        if (this.inBattle || this.specialCooldown > 0) return;
-        this.inBattle = true;
-        this.specialCooldown = 2;
-
-        if (!this.isAccurate(this.player, 90)) {
-          this.$('playerSprite').classList.add('attack');
-          setTimeout(() => this.$('playerSprite').classList.remove('attack'), 500);
-          setTimeout(() => {
-            alert('⚠️ Especial errou!');
-            this.round++;
-            this.inBattle = false;
-            this.updateCountdown();
-            this.enemyTurn();
-          }, 600);
-          this.updateCombatUI();
-          return;
-        }
-
-        const baseDamage = this.character.atk * 2 + (this.player.atk_buff || 0);
-        const damage = Math.max(1, Math.round(baseDamage - this.enemy.def * 0.05));
-        this.enemy.hp -= damage;
-
-        this.$('playerSprite').classList.add('attack');
-        setTimeout(() => this.$('playerSprite').classList.remove('attack'), 500);
-
-        if (this.enemy.hp <= 0) {
-          this.victory();
-        } else {
-          setTimeout(() => { this.round++; this.decrementBuffs(); this.enemyTurn(); }, 600);
-        }
-
-        this.updateCountdown();
-        this.updateCombatUI();
-      }
-
-      updateCountdown() {
-        if (this.specialCooldown <= 0) return;
-        this.specialCooldown--;
-        this.updateCombatUI();
-        if (this.specialCooldown > 0) {
-          setTimeout(() => this.updateCountdown(), 1000);
-        }
+        alert('✨ Especial!');
       }
 
       defend() {
-        if (this.inBattle) return;
-        this.inBattle = true;
-        
-        const damage = Math.max(1, Math.floor((this.enemy.atk + (this.enemy.atk_buff || 0)) * 0.2));
-        this.player.hp -= damage;
-
-        if (this.player.hp <= 0) {
-          this.defeat();
-        } else {
-          this.inBattle = false;
-          this.round++;
-          this.decrementBuffs();
-          setTimeout(() => this.enemyTurn(), 300);
-        }
-
-        this.updateCombatUI();
+        alert('🛡️ Defendido!');
       }
 
       dodge() {
-        if (this.inBattle) return;
-        this.inBattle = true;
-
-        const dodgeChance = 40 + this.character.def * 2;
-        const dodged = Math.random() * 100 < dodgeChance;
-
-        if (dodged) {
-          alert('✅ Você esquivou!');
-        } else {
-          const damage = Math.max(1, Math.floor(this.enemy.atk + (this.enemy.atk_buff || 0) - this.character.def * 0.2));
-          this.player.hp -= damage;
-          if (this.player.hp <= 0) {
-            this.defeat();
-            this.inBattle = false;
-            return;
-          }
-        }
-
-        this.inBattle = false;
-        this.round++;
-        this.decrementBuffs();
-        setTimeout(() => this.enemyTurn(), 300);
-        this.updateCombatUI();
-      }
-
-      decrementBuffs() {
-        if (this.player.buff_duration > 0) this.player.buff_duration--;
-        if (this.enemy.buff_duration > 0) this.enemy.buff_duration--;
-
-        if (this.player.buff_duration === 0) {
-          this.player.atk_buff = 0;
-          this.player.def_buff = 0;
-        }
-        if (this.enemy.buff_duration === 0) {
-          this.enemy.atk_buff = 0;
-          this.enemy.def_buff = 0;
-        }
-      }
-
-      enemyTurn() {
-        if (!this.isAccurate(this.enemy)) {
-          alert('⚠️ Inimigo errou!');
-          this.inBattle = false;
-          this.updateCombatUI();
-          return;
-        }
-
-        const { damage, isCritical } = this.calculateDamage(this.enemy, this.player);
-        this.player.hp -= damage;
-
-        this.$('enemySprite').classList.add('hurt');
-        setTimeout(() => this.$('enemySprite').classList.remove('hurt'), 500);
-
-        if (this.player.hp <= 0) {
-          this.defeat();
-        } else {
-          this.inBattle = false;
-        }
-
-        this.updateCombatUI();
-      }
-
-      victory() {
-        let reward = 100 + this.wave * 50;
-        if (this.combatMode === 'boss') reward = 500 + this.bossIndex * 200;
-
-        this.combatGold += reward;
-        this.gold += reward;
-        this.wins++;
-        this.exp += 50 * this.wave;
-
-        this.updateAchievement('first_win', 1);
-        this.updateAchievement('ten_wins', 1);
-        this.updateAchievement('fifty_wins', 1);
-        this.updateAchievement('rich', this.gold);
-        this.updateAchievement('mega_rich', this.gold);
-        this.updateAchievement('wave_master', this.wave);
-        this.updateAchievement('boss_slayer', this.combatMode === 'boss' ? 1 : 0);
-        this.updateQuestProgress('dq1', 1);
-        this.updateQuestProgress('dq4', 1);
-        this.updateQuestProgress('dq2', reward);
-        this.updateQuestProgress('wq1', 1);
-        this.updateQuestProgress('wq3', reward);
-
-        if (this.exp >= 100 * this.level) {
-          this.exp = 0;
-          this.level++;
-          this.updateAchievement('level_10', this.level);
-          this.updateAchievement('level_20', this.level);
-        }
-
-        if (this.combatMode === 'wave') {
-          this.wave++;
-          this.updateQuestProgress('dq3', this.wave);
-          this.updateQuestProgress('wq2', this.wave);
-          this.updateQuestProgress('wq5', this.wave);
-        } else if (this.combatMode === 'boss') {
-          this.bossIndex++;
-          this.updateQuestProgress('wq4', 1);
-        }
-
-        const result = this.$('battleResult');
-        result.className = 'battle-result victory';
-        result.innerHTML = `<h2>🎉 VITORIA ÉPICA!</h2>
-          <div class="result-text">
-            <div>⚔️ ${this.character.name}</div>
-            <div>🎯 Rodadas: ${this.round}</div>
-            <div>💰 +${reward}g Ouro</div>
-            <div>⭐ +50 EXP</div>
-            <div>👤 ${this.wins} Vitórias</div>
-          </div>
-          <div class="result-buttons">
-            <button type="button" onclick="game.${(this.combatMode === 'wave' || this.combatMode === 'boss') ? 'initCombat' : 'goLobby'}()" class="btn-success">▶️ Continuar</button>
-            <button type="button" onclick="game.goLobby()" class="btn-secondary">🏠 Lobby</button>
-          </div>`;
-        result.style.display = 'block';
-        this.updateUI();
-      }
-
-      defeat() {
-        this.losses++;
-        const result = this.$('battleResult');
-        result.className = 'battle-result defeat';
-        result.innerHTML = `<h2>💀 DERROTA</h2>
-          <div class="result-text">
-            <div>⚔️ Inimigo: ${this.enemy.name}</div>
-            <div>🎯 Rodadas: ${this.round}</div>
-            <div>❌ ${this.losses} Derrotas</div>
-          </div>
-          <div class="result-buttons">
-            <button type="button" onclick="game.initCombat()" class="btn-danger">🔄 Tentar</button>
-            <button type="button" onclick="game.goLobby()" class="btn-secondary">🏠 Lobby</button>
-          </div>`;
-        result.style.display = 'block';
-        this.updateUI();
+        alert('🤸 Esquivou!');
       }
 
       showAchievements() {
         this.showScreen('achievements');
-        this.renderAchievements();
-      }
-
-      renderAchievements() {
         const grid = this.$('achievementsGrid');
         grid.innerHTML = this.achievements.map(ach => `
           <div class="achievement-card ${ach.progress >= ach.target ? 'unlocked' : 'locked'}">
@@ -2243,18 +2102,6 @@
             <div class="achievement-reward">+${ach.xp}XP +${ach.gold}g</div>
           </div>
         `).join('');
-      }
-
-      updateAchievement(id, value) {
-        const achievement = this.achievements.find(a => a.id === id);
-        if (achievement && achievement.progress < achievement.target) {
-          achievement.progress = Math.min(achievement.target, achievement.progress + value);
-          if (achievement.progress >= achievement.target) {
-            this.gold += achievement.gold;
-            this.exp += achievement.xp;
-            alert(`🏆 ${achievement.name}! +${achievement.gold}g +${achievement.xp}XP`);
-          }
-        }
       }
 
       showDailyQuests() {
@@ -2291,19 +2138,11 @@
                 <div class="quest-progress-bar" style="width: ${(quest.progress / quest.target) * 100}%"></div>
               </div>
               <div class="quest-status">${quest.progress}/${quest.target}</div>
-              ${completed && !claimed ? `<div class="quest-claim"><button type="button" onclick="game.claimQuestReward('${quest.id}')" class="btn-success">🎁 Receber</button></div>` : ''}
+              ${completed && !claimed ? `<div class="quest-claim"><button type="button" onclick="window.game.claimQuestReward('${quest.id}')" class="btn-success">🎁 Receber</button></div>` : ''}
               ${claimed ? '<div style="color: var(--success); font-weight: 700; margin-top: 8px;">✓ Recebido</div>' : ''}
             </div>
           `;
         }).join('');
-      }
-
-      updateQuestProgress(questId, value) {
-        let quest = this.dailyQuests.find(q => q.id === questId);
-        if (!quest) quest = this.weeklyQuests.find(q => q.id === questId);
-        if (quest) {
-          quest.progress = Math.min(quest.target, quest.progress + value);
-        }
       }
 
       claimQuestReward(questId) {
@@ -2317,16 +2156,69 @@
           this.gold += quest.reward_gold;
           this.exp += quest.reward_xp;
           this.questsCompleted.push(questId);
-          this.updateAchievement('quest_master', 1);
           alert(`✅ +${quest.reward_gold}g +${quest.reward_xp}XP`);
           this.renderQuests(this.dailyQuests.find(q => q.id === questId) ? 'daily' : 'weekly');
           this.updateUI();
         }
       }
+
+      showStats() {
+        this.showScreen('stats');
+        const grid = this.$('statsGrid');
+        grid.innerHTML = `
+          <div class="stats-detail-card">
+            <div class="stats-detail-title">👤 Jogador</div>
+            <div class="stats-detail-value">${this.username}</div>
+          </div>
+          <div class="stats-detail-card">
+            <div class="stats-detail-title">📊 Level</div>
+            <div class="stats-detail-value">${this.level}</div>
+          </div>
+          <div class="stats-detail-card">
+            <div class="stats-detail-title">⭐ EXP</div>
+            <div class="stats-detail-value">${this.exp}</div>
+          </div>
+          <div class="stats-detail-card">
+            <div class="stats-detail-title">💰 Ouro</div>
+            <div class="stats-detail-value">${this.gold}g</div>
+          </div>
+          <div class="stats-detail-card">
+            <div class="stats-detail-title">✓ Vitórias</div>
+            <div class="stats-detail-value">${this.wins}</div>
+          </div>
+          <div class="stats-detail-card">
+            <div class="stats-detail-title">✗ Derrotas</div>
+            <div class="stats-detail-value">${this.losses}</div>
+          </div>
+          <div class="stats-detail-card">
+            <div class="stats-detail-title">🎯 Taxa Vitória</div>
+            <div class="stats-detail-value">${this.wins + this.losses > 0 ? Math.round((this.wins / (this.wins + this.losses)) * 100) : 0}%</div>
+          </div>
+          <div class="stats-detail-card">
+            <div class="stats-detail-title">📋 Missões</div>
+            <div class="stats-detail-value">${this.questsCompleted.length}</div>
+          </div>
+          <div class="stats-detail-card">
+            <div class="stats-detail-title">🏆 Achievements</div>
+            <div class="stats-detail-value">${this.achievements.filter(a => a.progress >= a.target).length}/${this.achievements.length}</div>
+          </div>
+          <div class="stats-detail-card">
+            <div class="stats-detail-title">📦 Personagens</div>
+            <div class="stats-detail-value">${this.ownedCharacters.length}/10</div>
+          </div>
+          <div class="stats-detail-card">
+            <div class="stats-detail-title">🧪 Poções</div>
+            <div class="stats-detail-value">${Object.values(this.potions).reduce((a, b) => a + b, 0)}</div>
+          </div>
+          <div class="stats-detail-card">
+            <div class="stats-detail-title">🛡️ Equipamentos</div>
+            <div class="stats-detail-value">${Object.values(this.equipment).reduce((a, b) => a + b, 0)}</div>
+          </div>
+        `;
+      }
     }
 
-    // INICIALIZA O GAME AQUI - SCRIPT NO FINAL DO HTML
-    const game = new Game();
+    window.game = new Game();
   </script>
 </body>
 </html>
