@@ -579,7 +579,7 @@
     }
 
     @media (max-width: 768px) {
-      .shop-wrapper { grid-template-columns: 1fr; }https://github.com/MicroPixelCo/rpg-online
+      .shop-wrapper { grid-template-columns: 1fr; }
     }
 
     .shop-sidebar {
@@ -1418,6 +1418,7 @@
 
   <div class="battle-result" id="battleResult"></div>
 
+  <!-- SCRIPT NO FINAL, DEPOIS DE TODO HTML -->
   <script>
     // ============ CONSTANTES ============
 
@@ -1491,6 +1492,8 @@
       if (BLOCKED_NAMES.some(b => name.toLowerCase().includes(b))) return false;
       return true;
     }
+
+    // ============ CLASSE PRINCIPAL ============
 
     class Game {
       constructor() {
@@ -2322,7 +2325,8 @@
       }
     }
 
+    // INICIALIZA O GAME AQUI - SCRIPT NO FINAL DO HTML
     const game = new Game();
   </script>
 </body>
-                                    </html>
+</html>
