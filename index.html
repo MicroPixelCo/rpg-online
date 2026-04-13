@@ -49,8 +49,6 @@
     @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
     @keyframes bounceIn { 0% { transform: scale(0.3); opacity: 0; } 50% { opacity: 1; } 100% { transform: scale(1); } }
     @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-    @keyframes critical { 0% { transform: scale(1) rotate(0deg); color: #ffff00; } 50% { transform: scale(1.2) rotate(-5deg); color: #ff6600; } 100% { transform: scale(1) rotate(0deg); color: #ff0000; } }
-    @keyframes heal { 0% { transform: scale(0); opacity: 0; } 50% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
 
     .screen {
       position: fixed;
@@ -181,10 +179,25 @@
       cursor: not-allowed;
     }
 
-    .btn-secondary { background: linear-gradient(135deg, #0ea5e9, #06b6d4); border-color: #06b6d4; }
-    .btn-success { background: linear-gradient(135deg, #10b981, #059669); border-color: #059669; }
-    .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); border-color: #dc2626; }
-    .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); border-color: #d97706; }
+    .btn-secondary {
+      background: linear-gradient(135deg, #0ea5e9, #06b6d4) !important;
+      border-color: #06b6d4 !important;
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #10b981, #059669) !important;
+      border-color: #059669 !important;
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+      border-color: #dc2626 !important;
+    }
+
+    .btn-warning {
+      background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+      border-color: #d97706 !important;
+    }
 
     input {
       padding: 12px;
@@ -264,6 +277,7 @@
       border: 2px solid var(--primary);
       backdrop-filter: blur(10px);
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), var(--glow);
+      animation: fadeIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .login-box h2 {
@@ -286,6 +300,11 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px;
     }
 
     .input-hint {
@@ -560,7 +579,7 @@
     }
 
     @media (max-width: 768px) {
-      .shop-wrapper { grid-template-columns: 1fr; }
+      .shop-wrapper { grid-template-columns: 1fr; }https://github.com/MicroPixelCo/rpg-online
     }
 
     .shop-sidebar {
@@ -688,7 +707,7 @@
     .rarity-special { background: rgba(255, 0, 255, 0.5); color: #ff00ff; }
 
     /* INVENTORY */
-    #inventory {
+    #inventory, #potionInventory {
       padding: 85px 24px 24px;
       justify-content: flex-start;
     }
@@ -727,6 +746,7 @@
     .inv-emoji { font-size: 26px; margin: 4px 0; }
     .inv-name { font-size: 9px; font-weight: bold; }
     .inv-count { font-size: 8px; color: var(--info); margin-top: 4px; }
+    .inv-empty { color: var(--text-muted); font-size: 12px; grid-column: 1/-1; text-align: center; padding: 40px 20px; }
 
     /* COMBAT */
     #combat {
@@ -891,32 +911,12 @@
       padding: 8px;
       font-size: 10px;
       min-height: auto;
-      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-      border-color: #7c3aed;
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed) !important;
+      border-color: #7c3aed !important;
     }
 
     .potion-btn:disabled {
       opacity: 0.3;
-    }
-
-    .damage-number {
-      position: fixed;
-      font-weight: bold;
-      font-size: 26px;
-      pointer-events: none;
-      text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9);
-      animation: floatDamage 0.8s ease-out forwards;
-      z-index: 100;
-      filter: drop-shadow(0 0 4px rgba(114, 9, 183, 0.5));
-    }
-
-    .critical-number {
-      animation: critical 0.6s ease-out forwards !important;
-    }
-
-    @keyframes floatDamage {
-      0% { opacity: 1; transform: translateY(0) scale(1); }
-      100% { opacity: 0; transform: translateY(-50px) scale(0.5); }
     }
 
     .battle-result {
@@ -1180,7 +1180,6 @@
     </div>
   </div>
 
-  <!-- SCREENS AQUI -->
   <div id="login" class="screen active">
     <div class="login-container">
       <div class="login-left">
@@ -1493,8 +1492,6 @@
       return true;
     }
 
-    // ============ CLASSE PRINCIPAL ============
-
     class Game {
       constructor() {
         this.loadData();
@@ -1502,6 +1499,7 @@
       }
 
       saveData() {
+        if (!this.username) return;
         const saveData = {
           username: this.username,
           currentCharacterId: this.currentCharacterId,
@@ -1524,16 +1522,7 @@
       }
 
       loadData() {
-        const saved = localStorage.getItem('rpg_save_' + (this.username || 'temp'));
-        
-        if (saved) {
-          const data = JSON.parse(saved);
-          Object.assign(this, data);
-          this.initializeCharacter();
-          this.checkQuestReset();
-        } else {
-          this.initializeNewGame();
-        }
+        this.initializeNewGame();
       }
 
       initializeNewGame() {
@@ -1577,22 +1566,6 @@
         this.combatGold = 0;
       }
 
-      checkQuestReset() {
-        const now = Date.now();
-        const dayMs = 24 * 60 * 60 * 1000;
-        const weekMs = 7 * dayMs;
-
-        if (now - this.lastDailyReset > dayMs) {
-          this.dailyQuests = JSON.parse(JSON.stringify(DAILY_QUESTS_LIST));
-          this.lastDailyReset = now;
-        }
-
-        if (now - this.lastWeeklyReset > weekMs) {
-          this.weeklyQuests = JSON.parse(JSON.stringify(WEEKLY_QUESTS_LIST));
-          this.lastWeeklyReset = now;
-        }
-      }
-
       $(id) { return document.getElementById(id); }
 
       setupEventListeners() {
@@ -1629,12 +1602,14 @@
 
         if (!u || !p) {
           msg.innerText = '❌ Preencha todos os campos!';
+          msg.classList.remove('success');
           msg.classList.add('error');
           return;
         }
 
         if (!isValidUsername(u)) {
           msg.innerText = '❌ Nick inválido!';
+          msg.classList.remove('success');
           msg.classList.add('error');
           return;
         }
@@ -1645,7 +1620,6 @@
 
         this.username = u;
         this.createdAt = Date.now();
-        this.loadData();
         
         setTimeout(() => {
           this.showScreen('lobby');
@@ -1661,12 +1635,14 @@
 
         if (!u || !p) {
           msg.innerText = '❌ Preencha todos os campos!';
+          msg.classList.remove('success');
           msg.classList.add('error');
           return;
         }
 
         if (!isValidUsername(u)) {
           msg.innerText = '❌ Nick inválido!';
+          msg.classList.remove('success');
           msg.classList.add('error');
           return;
         }
@@ -1733,8 +1709,6 @@
         this.saveData();
       }
 
-      // ============ LOJA DE PERSONAGENS ============
-
       showShop() {
         this.showScreen('shop');
         this.filterShop('all');
@@ -1743,7 +1717,7 @@
       filterShop(filter) {
         this.currentFilter = filter;
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
+        if (event && event.target) event.target.classList.add('active');
         
         let chars = Object.values(CHARACTER_CLASSES);
         if (filter !== 'all') {
@@ -1754,7 +1728,7 @@
         grid.innerHTML = chars.map(char => {
           const owned = this.ownedCharacters.includes(char.id);
           return `
-            <div class="item-card ${owned ? 'owned' : ''}" onclick="event.stopPropagation(); ${owned ? 'alert("✓ Já possui!")' : `game.buyCharacter('${char.id}')`}">
+            <div class="item-card ${owned ? 'owned' : ''}" onclick="event.stopPropagation(); ${owned ? 'alert(\'✓ Já possui!\')' : `game.buyCharacter('${char.id}')`}">
               <div class="item-emoji">${char.emoji}</div>
               <div class="item-name">${char.name}</div>
               <div class="item-stats">❤️${char.hp} ⚔️${char.atk} 💥${char.crit}%</div>
@@ -1780,8 +1754,6 @@
         this.filterShop(this.currentFilter);
       }
 
-      // ============ LOJA DE POÇÕES ============
-
       showPotions() {
         this.showScreen('potions');
         this.filterPotions('all');
@@ -1790,7 +1762,7 @@
       filterPotions(filter) {
         this.currentPotionFilter = filter;
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
+        if (event && event.target) event.target.classList.add('active');
         
         let potions = POTIONS_LIST;
         if (filter !== 'all') {
@@ -1848,8 +1820,6 @@
           `).join('');
       }
 
-      // ============ INVENTÁRIO ============
-
       showInventory() {
         this.showScreen('inventory');
         this.$('ownedCount').innerText = this.ownedCharacters.length;
@@ -1875,8 +1845,6 @@
         alert(`✅ ${this.character.name} selecionado!`);
         this.updateUI();
       }
-
-      // ============ COMBATE ============
 
       startCombat(mode) {
         this.combatMode = mode;
@@ -2256,8 +2224,6 @@
         this.updateUI();
       }
 
-      // ============ ACHIEVEMENTS ============
-
       showAchievements() {
         this.showScreen('achievements');
         this.renderAchievements();
@@ -2288,8 +2254,6 @@
         }
       }
 
-      // ============ QUESTS ============
-
       showDailyQuests() {
         this.showScreen('quests');
         this.switchQuestTab('daily');
@@ -2302,7 +2266,7 @@
 
       switchQuestTab(tab) {
         document.querySelectorAll('.quest-tab').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
+        if (event && event.target) event.target.classList.add('active');
         this.renderQuests(tab);
       }
 
@@ -2361,4 +2325,4 @@
     const game = new Game();
   </script>
 </body>
-   </html>
+                                    </html>
