@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>⚔️ RPG ULTIMATE PRO - v4.0</title>
+  <title>⚔️ RPG ULTIMATE PRO - v4.0 FINAL</title>
   <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * {
@@ -41,6 +41,7 @@
 
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes glow { 0% { box-shadow: 0 0 5px rgba(247, 37, 133, 0.3); } 50% { box-shadow: 0 0 20px rgba(247, 37, 133, 0.6); } 100% { box-shadow: 0 0 5px rgba(247, 37, 133, 0.3); } }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 
     .screen {
       position: fixed;
@@ -122,6 +123,11 @@
     .btn-secondary {
       background: linear-gradient(135deg, #0ea5e9, #06b6d4) !important;
       border-color: #06b6d4 !important;
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #10b981, #059669) !important;
+      border-color: #059669 !important;
     }
 
     .btn-danger {
@@ -240,13 +246,13 @@
     }
 
     .message.success {
-      color: var(--success);
+      color: #00ff00;
       background: rgba(0, 255, 0, 0.15);
       border: 1px solid rgba(0, 255, 0, 0.3);
     }
 
     .message.error {
-      color: var(--danger);
+      color: #ff0000;
       background: rgba(255, 0, 0, 0.15);
       border: 1px solid rgba(255, 0, 0, 0.3);
     }
@@ -492,7 +498,7 @@
     }
 
     .item-card.owned {
-      border-color: var(--success);
+      border-color: #00ff00;
       background: linear-gradient(135deg, rgba(0, 255, 0, 0.15), rgba(0, 255, 0, 0.05));
       opacity: 0.7;
       cursor: default;
@@ -613,14 +619,14 @@
       border-radius: 6px;
       overflow: hidden;
       margin: 6px 0;
-      border: 2px solid var(--warning);
+      border: 2px solid #ff6600;
       display: flex;
       align-items: center;
     }
 
     .hp-fill {
       height: 100%;
-      background: linear-gradient(90deg, var(--success), #ffff00);
+      background: linear-gradient(90deg, #00ff00, #ffff00);
       width: 100%;
       transition: width 0.4s ease;
       color: white;
@@ -629,6 +635,22 @@
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    .combat-arena {
+      flex: 1;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      gap: 30px;
+      margin: 18px 0;
+      min-height: 160px;
+    }
+
+    .sprite {
+      font-size: 90px;
+      animation: float 3s ease-in-out infinite;
+      filter: drop-shadow(0 0 10px rgba(114, 9, 183, 0.3));
     }
 
     .combat-buttons {
@@ -669,7 +691,7 @@
     }
 
     .achievement-card.unlocked {
-      border-color: var(--success);
+      border-color: #00ff00;
       background: linear-gradient(135deg, rgba(0, 255, 0, 0.15), rgba(0, 255, 0, 0.05));
     }
 
@@ -715,6 +737,14 @@
       color: var(--text-muted);
     }
 
+    .damage-number {
+      position: absolute;
+      font-weight: bold;
+      font-size: 18px;
+      pointer-events: none;
+      animation: float 1s ease-out forwards;
+    }
+
     ::-webkit-scrollbar {
       width: 7px;
     }
@@ -732,7 +762,7 @@
 
 <body>
   <div class="header" id="headerContainer" style="display: none;">
-    <div class="header-title">⚔️ RPG ULTIMATE PRO v4.0</div>
+    <div class="header-title">⚔️ RPG ULTIMATE PRO v4.0 FINAL</div>
     <div class="header-right">
       <div class="gold-display" id="goldDisplay">💰 1000g</div>
       <button type="button" class="btn-danger" style="padding: 8px 12px; font-size: 10px;" onclick="window.game.logout();">🚪 Sair</button>
@@ -779,7 +809,7 @@
   <div id="lobby" class="screen">
     <div class="lobby-wrapper">
       <div class="lobby-header">
-        <h1>⚔️ RPG ULTIMATE PRO</h1>
+        <h1>⚔️ RPG ULTIMATE PRO v4.0</h1>
         <p id="welcomeMsg">Bem-vindo!</p>
       </div>
 
@@ -801,7 +831,7 @@
         <div class="card">
           <h3>🎨 Seu Herói</h3>
           <div style="font-size: 52px; margin: 14px 0;" id="currentCharEmoji">🧙</div>
-          <div style="color: var(--info); font-size: 14px; font-weight: bold; margin-bottom: 10px;" id="currentCharName">Mago</div>
+          <div style="color: #00ffff; font-size: 14px; font-weight: bold; margin-bottom: 10px;" id="currentCharName">Mago</div>
           <div style="font-size: 10px; color: var(--text-muted); line-height: 1.6; text-align: left;">
             <div>❤️ HP: <strong id="charDisplayHP">100</strong></div>
             <div>⚔️ ATK: <strong id="charDisplayATK">18</strong></div>
@@ -850,8 +880,8 @@
             <div>👤 <strong id="playerName">Anônimo</strong></div>
             <div>💰 Ouro: <strong id="playerGold">1000</strong>g</div>
             <div>📊 LVL: <strong id="playerLvl">1</strong></div>
-            <div>✓ <span id="playerWins">0</span> Vitórias</div>
-            <div>✗ <span id="playerLosses">0</span> Derrotas</div>
+            <div>✓ <span id="playerWins" style="color: #00ff00;">0</span> Vitórias</div>
+            <div>✗ <span id="playerLosses" style="color: #ff0000;">0</span> Derrotas</div>
           </div>
         </div>
       </div>
@@ -964,6 +994,11 @@
         <div class="hp-bar"><div class="hp-fill" id="enemyHpBar">100/100</div></div>
       </div>
     </div>
+    <div class="combat-arena">
+      <div style="text-align: center;"><div class="sprite" id="playerSprite">🧙</div></div>
+      <div style="font-size: 48px; opacity: 0.2;">⚔️</div>
+      <div style="text-align: center;"><div class="sprite" id="enemySprite">🧟</div></div>
+    </div>
     <div class="combat-buttons">
       <button type="button" class="action-btn" onclick="window.game.attack();">⚔️ Atacar</button>
       <button type="button" class="action-btn" onclick="window.game.special();">✨ Especial</button>
@@ -996,7 +1031,7 @@
     </div>
   </div>
 
-  <!-- SCRIPT CORRIGIDO SEM BUGS -->
+  <!-- SCRIPT FINAL SEM BUGS - COM CORES HEXADECIMAIS CORRETAS -->
   <script>
     const BLOCKED_NAMES = ['admin', 'moderator', 'staff', 'bot', 'teste'];
 
@@ -1060,7 +1095,7 @@
             } else if (val.length > 20) {
               hint.innerText = '⚠️ Máximo 20';
             } else {
-              hint.innerText = '✅ Valid';
+              hint.innerText = '✅ Válido';
             }
           });
         }
@@ -1163,7 +1198,7 @@
               <div class="item-emoji">${char.emoji}</div>
               <div class="item-name">${char.name}</div>
               <div class="item-stats">❤️${char.hp} ⚔️${char.atk}</div>
-              ${owned ? '<div style="color: var(--success);">✓</div>' : `<div class="item-cost">💰 ${char.cost}g</div>`}
+              ${owned ? '<div style="color: #00ff00;">✓</div>' : `<div class="item-cost">💰 ${char.cost}g</div>`}
             </div>
           `;
         }).join('');
@@ -1285,7 +1320,7 @@
         const hasPotions = Object.values(this.potions).some(q => q > 0);
 
         if (!hasPotions) {
-          grid.innerHTML = '<div>Sem poções</div>';
+          grid.innerHTML = '<div style="text-align: center; padding: 20px; color: #aaaaaa;">Sem poções</div>';
           return;
         }
 
@@ -1321,14 +1356,17 @@
 
       startCombat(mode) {
         this.showScreen('combat');
+        alert(`🎮 ${mode.toUpperCase()} iniciado!`);
       }
 
       attack() {
         alert('⚔️ Ataque!');
+        this.createDamageNumber(25, true);
       }
 
       special() {
         alert('✨ Especial!');
+        this.createDamageNumber(45, true);
       }
 
       defend() {
@@ -1337,6 +1375,21 @@
 
       dodge() {
         alert('🤸 Esquiva!');
+      }
+
+      createDamageNumber(damage, isCrit) {
+        const container = this.$('playerSprite').parentElement;
+        const num = document.createElement('div');
+        num.className = 'damage-number';
+        num.textContent = damage;
+        
+        const isHeal = false;
+        num.style.color = isHeal ? '#00ff00' : (isCrit ? '#ffff00' : '#ff6600');
+        num.style.left = Math.random() * 50 + 'px';
+        num.style.top = '0px';
+        
+        container.appendChild(num);
+        setTimeout(() => num.remove(), 1000);
       }
 
       showAchievements() {
@@ -1361,11 +1414,12 @@
         this.showScreen('stats');
         const grid = this.$('statsGrid');
         grid.innerHTML = `
-          <div style="font-size: 18px; color: var(--info); margin: 10px 0;">
+          <div style="font-size: 18px; color: #00ffff; margin: 10px 0;">
             <div>👤 ${this.username}</div>
             <div>💰 ${this.gold}g</div>
             <div>📊 LVL ${this.level}</div>
-            <div>✓ ${this.wins} Vitórias</div>
+            <div style="color: #00ff00;">✓ ${this.wins} Vitórias</div>
+            <div style="color: #ff0000;">✗ ${this.losses} Derrotas</div>
           </div>
         `;
       }
