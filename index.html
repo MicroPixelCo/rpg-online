@@ -75,8 +75,8 @@
       font-size: 18px;
       font-weight: 700;
       background: linear-gradient(135deg, var(--secondary), var(--primary));
-      -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .header-right {
@@ -173,6 +173,7 @@
       font-weight: 700;
       margin-bottom: 20px;
       background: linear-gradient(135deg, var(--secondary), var(--primary));
+      background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -1985,7 +1986,8 @@
                 </div>
               </div>
             </div>
-          `;}).join('');
+          `;
+        }).join('');
       }
 
       showWeeklyQuests() {
