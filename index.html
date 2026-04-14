@@ -1508,6 +1508,20 @@
           }
         }
       }
+
+      loadUserData(data) {
+        if (!data) return;
+        
+        // Map server data structure to client structure
+        if (data.gold) this.gold = data.gold;
+        if (data.level) this.level = data.level;
+        if (data.stats) {
+          this.wins = data.stats.wins || 0;
+          this.losses = data.stats.losses || 0;
+        }
+        // Character is already set by default
+        this.saveGame();
+      }
       
       // CALCULATE TOTAL STATS
       getTotalStats() {
