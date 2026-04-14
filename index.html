@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>⚔️ RPG ULTIMATE PRO - v4.0 FINAL</title>
-  <link rel="stylesheet" href="/styles.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&display=swap');
 
@@ -1234,12 +1233,6 @@
         GAME_DATA.rareItems.forEach(r => this.rareItems[r.id] = 0);
         GAME_DATA.achievements.forEach(a => this.achievements[a.id] = false);
         GAME_DATA.quests.forEach(q => this.quests[q.id] = { ...q, progress: 0 });
-        
-        // Initialize modules
-        this.ui = new UIModule(this);
-        this.shop = new ShopModule(this);
-        this.combat = new CombatModule(this);
-        this.player = new PlayerModule(this);
         
         this.loadGame();
         this.setupEventListeners();
