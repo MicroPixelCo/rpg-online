@@ -39,6 +39,7 @@
     @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
     @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
     @keyframes damageFloat { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-50px); opacity: 0; } }
 
     .screen {
@@ -1174,7 +1175,7 @@
         necromante: { id: 'necromante', name: 'Necromante', emoji: '💀', hp: 95, atk: 24, def: 4, crit: 20, cost: 400 },
         druida: { id: 'druida', name: 'Druida', emoji: '🌿', hp: 120, atk: 19, def: 7, crit: 18, cost: 450 },
         monge: { id: 'monge', name: 'Monge', emoji: '🥋', hp: 105, atk: 26, def: 6, crit: 25, cost: 500 },
-        caçador: { id: 'cacador', name: 'Caçador', emoji: '🏹', hp: 115, atk: 23, def: 6, crit: 30, cost: 550 }
+        cacador: { id: 'cacador', name: 'Caçador', emoji: '🏹', hp: 115, atk: 23, def: 6, crit: 30, cost: 550 }
       },
       enemies: {
         slime: { name: 'Slime', emoji: '🟢', hp: 50, atk: 8, def: 2, crit: 5, gold: 20, isBoss: false },
@@ -1668,14 +1669,25 @@
         this.playerCurrentHp = this.getTotalStats().hp;
         this.enemyCurrentHp = this.currentEnemy.hp;
         
-        this.updateCombatUI();
         this.showCombatMessage(`🎮 Combate contra ${this.currentEnemy.name} iniciado!`);
+        this.$('enemyName').innerText = `${this.currentEnemy.emoji} ${this.currentEnemy.name}`;
+        this.$('playerSprite').innerText = this.character.emoji;
+        this.$('enemySprite').innerText = this.currentEnemy.emoji;
+        
+        // Update HP bars
+        const playerHpPercent = (this.playerCurrentHp / this.getTotalStats().hp) * 100;
+        const enemyHpPercent = (this.enemyCurrentHp / this.currentEnemy.hp) * 100;
+        
+        this.$('playerHpBar').style.width = playerHpPercent + '%';
+        this.$('playerHpBar').innerText = `${this.playerCurrentHp}/${this.getTotalStats().hp}`;
+        this.$('enemyHpBar').style.width = enemyHpPercent + '%';
+        this.$('enemyHpBar').innerText = `${this.enemyCurrentHp}/${this.currentEnemy.hp}`;
       }
       
       updateCombatUI() {
         const stats = this.getTotalStats();
         
-        this.$('combatRound').innerText = `🎯 Rodada: ${this.combatRound}`;
+        this.$('combatRound').innerText = `🔁 Rodada: ${this.combatRound}`;
         this.$('enemyName').innerText = `${this.currentEnemy.emoji} ${this.currentEnemy.name}`;
         this.$('playerSprite').innerText = this.character.emoji;
         this.$('enemySprite').innerText = this.currentEnemy.emoji;
