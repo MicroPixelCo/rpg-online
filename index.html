@@ -1618,18 +1618,13 @@
         .then(data => {
           if (data.ok) {
             this.username = u;
-            this.loadUserData(data.data);
-            msg.innerText = '✅ Registro OK!';
+            // Initialize with default values since server doesn't return data
+            this.loadUserData({});
+            msg.innerText = '✅ Registro OK! Faça login agora.';
             msg.classList.remove('error');
             msg.classList.add('success');
-
-            setTimeout(() => {
-              this.showScreen('lobby');
-              this.$('headerContainer').style.display = 'flex';
-              this.updateUI();
-            }, 500);
           } else {
-            msg.innerText = '❌ ' + (data.message || 'Erro no registro');
+            msg.innerText = '❌ ' + (data.msg || data.message || 'Erro no registro');
             msg.classList.add('error');
           }
         })
