@@ -499,14 +499,62 @@ app.use((err, req, res, next) => {
   res.status(500).json({ ok: false, msg: "Erro interno do servidor" });
 });
 
-app.get("*", (req, res) => {
-  res.status(404).json({ ok: false, msg: "Rota não encontrada" });
+// ===== CSS SERVING =====
+app.get("/styles.css", (req, res) => {
+  const css = `
+    .lobby-header h1 {
+      font-size: 38px;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, var(--secondary), var(--primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .quick-menu {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      margin-bottom: 28px;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(114, 9, 183, 0.1));
+      padding: 16px;
+      border-radius: 12px;
+      border: 2px solid var(--primary);
+    }
+
+    .quick-btn {
+      padding: 12px;
+      text-align: center;
+      font-size: 11px;
+      background: linear-gradient(135deg, rgba(114, 9, 183, 0.3), rgba(114, 9, 183, 0.1));
+      border: 2px solid var(--primary);
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Pixelify Sans', sans-serif;
+    }
+
+    .quick-btn:hover {
+      background: linear-gradient(135deg, rgba(114, 9, 183, 0.5), rgba(114, 9, 183, 0.2));
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(114, 9, 183, 0.3);
+    }
+
+    .quick-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 6px rgba(114, 9, 183, 0.2);
+    }
+  `;
+  
+  res.setHeader('Content-Type', 'text/css');
+  res.send(css);
+  log("INFO", "CSS servido dinamicamente");
 });
 
 // ===== HEALTH CHECK =====
 app.get("/", (req, res) => {
   res.json({
-    status: "🔥 RPG SERVER ONLINE",
+    status: "?? RPG SERVER ONLINE",
     version: "2.0",
     users: getUserCount(),
     timestamp: new Date().toISOString()
