@@ -67,7 +67,7 @@ function createNewUser(pass, email = "") {
   return {
     pass,
     email,
-    gold: 1000,
+    gold: 50,
     hp: 100,
     maxHP: 100,
     dmg: 10,

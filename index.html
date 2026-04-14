@@ -352,6 +352,12 @@
       box-shadow: 0 6px 20px rgba(236, 72, 153, 0.3);
     }
 
+    @media (max-width: 1366px) {
+      .lobby-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
     @media (max-width: 1200px) {
       .lobby-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -439,6 +445,24 @@
       
       .card {
         padding: 16px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .quick-menu {
+        grid-template-columns: 1fr;
+      }
+      
+      .combat-buttons {
+        grid-template-columns: 1fr;
+      }
+      
+      .login-left h1 {
+        font-size: 24px;
+      }
+      
+      .login-features {
+        grid-template-columns: 1fr;
       }
     }
 
@@ -796,6 +820,86 @@
       padding: 12px;
       font-size: 11px;
       min-height: 48px;
+    }
+
+    .card-hand {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+      padding: 10px;
+    }
+
+    .game-card {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(236, 72, 153, 0.1));
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 16px;
+      border-radius: 12px;
+      border: 2px solid var(--glass-border);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .game-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--secondary);
+      box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4);
+    }
+
+    .card-emoji {
+      font-size: 36px;
+      margin-bottom: 8px;
+    }
+
+    .card-name {
+      font-size: 12px;
+      font-weight: bold;
+      color: var(--secondary);
+      margin-bottom: 4px;
+    }
+
+    .card-desc {
+      font-size: 9px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .card-rarity {
+      font-size: 8px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .card-rarity.common {
+      background: rgba(128, 128, 128, 0.3);
+      color: #a0a0a0;
+    }
+
+    .card-rarity.uncommon {
+      background: rgba(16, 185, 129, 0.3);
+      color: #10b981;
+    }
+
+    .card-rarity.rare {
+      background: rgba(59, 130, 246, 0.3);
+      color: #3b82f6;
+    }
+
+    .card-rarity.legendary {
+      background: rgba(245, 158, 11, 0.3);
+      color: #f59e0b;
+      animation: glow 2s ease-in-out infinite;
     }
 
     #achievements, #quests, #stats {
@@ -1196,12 +1300,7 @@
       <div style="text-align: center;"><div class="sprite" id="enemySprite">🧟</div></div>
     </div>
     <div class="combat-log" id="combatLog"></div>
-    <div class="combat-buttons">
-      <button type="button" class="action-btn" onclick="window.game.attack();">⚔️ Atacar</button>
-      <button type="button" class="action-btn" onclick="window.game.special();">✨ Especial</button>
-      <button type="button" class="action-btn" onclick="window.game.defend();">🛡️ Defender</button>
-      <button type="button" class="action-btn" onclick="window.game.dodge();">🤸 Esquivar</button>
-    </div>
+    <div class="card-hand" id="cardHand"></div>
   </div>
 
   <div id="achievements" class="screen">
@@ -1301,7 +1400,28 @@
         { id: 'daily_1', name: 'Treinamento Diário', desc: 'Vença 3 combates', type: 'daily', target: 3, progress: 0, reward: 100 },
         { id: 'daily_2', name: 'Caçador de Tesouros', desc: 'Ganhe 200 de ouro', type: 'daily', target: 200, progress: 0, reward: 150 },
         { id: 'weekly_1', name: 'Guerreiro Semanal', desc: 'Vença 15 combates', type: 'weekly', target: 15, progress: 0, reward: 500 }
-      ]
+      ],
+      cards: {
+        // Basic cards (always available)
+        basic_attack: { id: 'basic_attack', name: 'Ataque Básico', emoji: '⚔️', type: 'attack', power: 1.0, rarity: 'common', description: 'Ataque normal' },
+        heavy_attack: { id: 'heavy_attack', name: 'Ataque Pesado', emoji: '💥', type: 'attack', power: 1.5, rarity: 'common', description: '+50% dano' },
+        quick_attack: { id: 'quick_attack', name: 'Ataque Rápido', emoji: '⚡', type: 'attack', power: 0.8, critBonus: 15, rarity: 'common', description: '+15% crítico' },
+        defend: { id: 'defend', name: 'Defesa', emoji: '🛡️', type: 'defense', damageReduction: 0.5, rarity: 'common', description: '-50% dano recebido' },
+        dodge: { id: 'dodge', name: 'Esquiva', emoji: '🤸', type: 'defense', dodgeChance: 30, rarity: 'common', description: '30% chance de esquiva' },
+        heal_small: { id: 'heal_small', name: 'Cura Pequena', emoji: '💚', type: 'heal', healAmount: 30, rarity: 'common', description: 'Restaura 30 HP' },
+        heal_medium: { id: 'heal_medium', name: 'Cura Média', emoji: '💚', type: 'heal', healAmount: 60, rarity: 'uncommon', description: 'Restaura 60 HP' },
+        regen: { id: 'regen', name: 'Regeneração', emoji: '🌱', type: 'heal', healAmount: 20, regenTurns: 2, rarity: 'uncommon', description: 'Cura 20 HP por 2 turnos' },
+
+        // Rare cards (unlock from rare items)
+        obsidian_strike: { id: 'obsidian_strike', name: 'Golpe de Obsidiana', emoji: '🗡️', type: 'attack', power: 2.0, critBonus: 10, rarity: 'rare', requiredItem: 'obsidian_knife', description: '+100% dano, +10% crítico' },
+        dragon_breath: { id: 'dragon_breath', name: 'Sopro de Dragão', emoji: '🔥', type: 'attack', power: 1.8, burnDamage: 15, rarity: 'rare', requiredItem: 'dragon_heart', description: '+80% dano, queima 15 HP/turno' },
+        phoenix_rise: { id: 'phoenix_rise', name: 'Ressurreição', emoji: '🪶', type: 'heal', healAmount: 100, revive: true, rarity: 'legendary', requiredItem: 'phoenix_feather', description: 'Cura 100 HP, revive se morto' },
+        shadow_step: { id: 'shadow_step', name: 'Passo das Sombras', emoji: '🥷', type: 'defense', dodgeChance: 50, counterAttack: true, rarity: 'rare', requiredItem: 'shadow_cloak', description: '50% esquiva + contra-ataque' },
+        thunder_smash: { id: 'thunder_smash', name: 'Impacto Trovão', emoji: '🔨', type: 'attack', power: 2.2, stunChance: 20, rarity: 'rare', requiredItem: 'thunder_hammer', description: '+120% dano, 20% atordoa' },
+        crystal_power: { id: 'crystal_power', name: 'Poder do Cristal', emoji: '💀', type: 'attack', power: 1.7, atkBoost: 25, rarity: 'rare', requiredItem: 'crystal_skull', description: '+70% dano, +25 ATK temporário' },
+        frost_strike: { id: 'frost_strike', name: 'Golpe de Gelo', emoji: '🧊', type: 'attack', power: 1.5, freezeChance: 25, rarity: 'rare', requiredItem: 'frost_blade', description: '+50% dano, 25% congela' },
+        demon_wings: { id: 'demon_wings', name: 'Asas Demoníacas', emoji: '🦇', type: 'special', extraAction: true, rarity: 'rare', requiredItem: 'demon_wings', description: 'Ação extra neste turno' }
+      }
     };
 
     // UTILITY FUNCTIONS
@@ -1330,6 +1450,13 @@
         this.enemyCurrentHp = 0;
         this.combatRound = 1;
         this.equippedItems = { weapon: null, armor: null, artifact: null };
+        
+        // Card system
+        this.cardHand = [];
+        this.enemyCardHand = [];
+        this.playerEffects = { regen: 0, burn: 0, frozen: false, stunned: false, atkBoost: 0 };
+        this.enemyEffects = { regen: 0, burn: 0, frozen: false, stunned: false, atkBoost: 0 };
+        this.extraAction = false;
         
         // Initialize inventories
         GAME_DATA.potions.forEach(p => this.potions[p.id] = 0);
@@ -1477,61 +1604,31 @@
           return;
         }
 
-        this.username = u;
-        msg.innerText = '✅ Login OK!';
-        msg.classList.remove('error');
-        msg.classList.add('success');
+        // Limpar localStorage antes de fazer login
+        localStorage.removeItem('rpgUltimateSave');
 
-        setTimeout(() => {
-          this.showScreen('lobby');
-          this.$('headerContainer').style.display = 'flex';
-          this.updateUI();
-        }, 300);
-      }
+        // Fazer login no servidor
+        fetch('/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user: u, pass: p })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.ok) {
+            this.username = u;
+            this.loadUserData(data.data);
+            msg.innerText = '✅ Login OK!';
+            msg.classList.remove('error');
+            msg.classList.add('success');
 
-      register() {
-        const u = this.$('user').value.trim();
-        const p = this.$('pass').value;
-        const msg = this.$('msg');
-
-        if (!u || !p) {
-          msg.innerText = '❌ Preencha tudo!';
-          msg.classList.add('error');
-          return;
-        }
-
-        if (u.length < 3 || u.length > 20) {
-          msg.innerText = '❌ Usuário deve ter 3-20 caracteres!';
-          msg.classList.add('error');
-          return;
-        }
-
-        if (p.length < 4) {
-          msg.innerText = '❌ Senha deve ter pelo menos 4 caracteres!';
-          msg.classList.add('error');
-          return;
-        }
-
-        if (BLOCKED_NAMES.includes(u.toLowerCase())) {
-          msg.innerText = '❌ Nome de usuário não permitido!';
-          msg.classList.add('error');
-          return;
-        }
-
-        this.username = u;
-        msg.innerText = '✅ Conta criada!';
-        msg.classList.remove('error');
-        msg.classList.add('success');
-
-        setTimeout(() => {
-          this.showScreen('lobby');
-          this.$('headerContainer').style.display = 'flex';
-          this.updateUI();
-        }, 300);
-      }
-
-      logout() {
-        location.reload();
+            setTimeout(() => {
+              this.showScreen('lobby');
+              this.$('headerContainer').style.display = 'flex';
+              this.updateUI();
+            }, 500);
+          }
+        });
       }
 
       showScreen(id) {
@@ -1743,10 +1840,188 @@
         this.updateUI();
       }
 
+      // CARD SYSTEM METHODS
+      getAvailableCards() {
+        const available = [];
+        
+        // Add basic cards (always available)
+        const basicCards = ['basic_attack', 'heavy_attack', 'quick_attack', 'defend', 'dodge', 'heal_small', 'heal_medium', 'regen'];
+        basicCards.forEach(cardId => {
+          available.push({ ...GAME_DATA.cards[cardId] });
+        });
+        
+        // Add rare cards if player owns the required item
+        Object.values(GAME_DATA.cards).forEach(card => {
+          if (card.requiredItem && this.rareItems[card.requiredItem] > 0) {
+            available.push({ ...card });
+          }
+        });
+        
+        return available;
+      }
+      
+      drawCard() {
+        const availableCards = this.getAvailableCards();
+        if (availableCards.length === 0) return null;
+        const randomIndex = Math.floor(Math.random() * availableCards.length);
+        return availableCards[randomIndex];
+      }
+      
+      drawInitialHand() {
+        this.cardHand = [];
+        this.enemyCardHand = [];
+        this.playerEffects = { regen: 0, burn: 0, frozen: false, stunned: false, atkBoost: 0 };
+        this.enemyEffects = { regen: 0, burn: 0, frozen: false, stunned: false, atkBoost: 0 };
+        this.extraAction = false;
+        
+        // Draw 3 cards for player
+        for (let i = 0; i < 3; i++) {
+          const card = this.drawCard();
+          if (card) this.cardHand.push(card);
+        }
+        
+        // Draw 3 cards for enemy
+        for (let i = 0; i < 3; i++) {
+          const card = this.drawCard();
+          if (card) this.enemyCardHand.push(card);
+        }
+      }
+      
+      useCard(cardIndex) {
+        if (!this.inCombat || cardIndex < 0 || cardIndex >= this.cardHand.length) return;
+        
+        const card = this.cardHand[cardIndex];
+        this.showCombatMessage(`🃏 Usou: ${card.emoji} ${card.name}`);
+        
+        // Apply card effect
+        this.applyCardEffect(card, true);
+        
+        // Remove used card and draw new one
+        this.cardHand.splice(cardIndex, 1);
+        const newCard = this.drawCard();
+        if (newCard) this.cardHand.push(newCard);
+        
+        // Update UI
+        this.updateCardUI();
+        this.updateCombatUI();
+        
+        // Check win/lose conditions
+        if (this.enemyCurrentHp <= 0) {
+          this.victory();
+        } else {
+          // Enemy turn
+          this.enemyTurn();
+        }
+      }
+      
+      applyCardEffect(card, isPlayer) {
+        const stats = this.getTotalStats();
+        const effects = isPlayer ? this.playerEffects : this.enemyEffects;
+        const targetStats = isPlayer ? stats : this.currentEnemy;
+        const enemyStats = isPlayer ? this.currentEnemy : stats;
+        
+        switch (card.type) {
+          case 'attack':
+            const atkPower = targetStats.atk * (card.power || 1.0) + (isPlayer ? effects.atkBoost : 0);
+            const critBonus = card.critBonus || 0;
+            const critChance = targetStats.crit + critBonus;
+            const result = this.calculateDamage(atkPower, enemyStats.def, critChance);
+            
+            if (isPlayer) {
+              this.enemyCurrentHp = Math.max(0, this.enemyCurrentHp - result.damage);
+              this.createDamageNumber(result.damage, result.isCrit, false);
+              
+              // Apply special effects
+              if (card.burnDamage) {
+                this.enemyEffects.burn = card.burnDamage;
+                this.showCombatMessage(`🔥 Queimando por ${card.burnDamage} HP/turno!`);
+              }
+              if (card.stunChance && Math.random() * 100 < card.stunChance) {
+                this.enemyEffects.stunned = true;
+                this.showCombatMessage(`💥 Inimigo atordoado!`);
+              }
+              if (card.freezeChance && Math.random() * 100 < card.freezeChance) {
+                this.enemyEffects.frozen = true;
+                this.showCombatMessage(`🧊 Inimigo congelado!`);
+              }
+              if (card.atkBoost) {
+                this.playerEffects.atkBoost += card.atkBoost;
+                this.showCombatMessage(`⬆️ ATK +${card.atkBoost} temporário!`);
+              }
+            } else {
+              this.playerCurrentHp = Math.max(0, this.playerCurrentHp - result.damage);
+              this.createDamageNumber(result.damage, result.isCrit, true);
+            }
+            break;
+            
+          case 'defense':
+            if (card.damageReduction) {
+              effects.damageReduction = card.damageReduction;
+              this.showCombatMessage(`🛡️ Redução de dano ativa!`);
+            }
+            if (card.dodgeChance) {
+              effects.dodgeChance = card.dodgeChance;
+              this.showCombatMessage(`🤸 Chance de esquiva aumentada!`);
+            }
+            if (card.counterAttack) {
+              effects.counterAttack = true;
+              this.showCombatMessage(`⚔️ Contra-ataque preparado!`);
+            }
+            break;
+            
+          case 'heal':
+            const healAmount = card.healAmount || 0;
+            const maxHp = isPlayer ? stats.hp : this.currentEnemy.hp;
+            if (isPlayer) {
+              this.playerCurrentHp = Math.min(maxHp, this.playerCurrentHp + healAmount);
+              this.createDamageNumber(healAmount, false, true);
+            } else {
+              this.enemyCurrentHp = Math.min(this.currentEnemy.hp, this.enemyCurrentHp + healAmount);
+            }
+            
+            if (card.regen) {
+              effects.regen = card.healAmount;
+              effects.regenTurns = card.regenTurns || 2;
+              this.showCombatMessage(`🌱 Regeneração por ${card.healAmount} HP por ${card.regenTurns} turnos!`);
+            }
+            if (card.revive) {
+              if (isPlayer && this.playerCurrentHp <= 0) {
+                this.playerCurrentHp = Math.floor(maxHp * 0.5);
+                this.showCombatMessage(`🪶 Reviveu!`);
+              }
+            }
+            break;
+            
+          case 'special':
+            if (card.extraAction) {
+              this.extraAction = true;
+              this.showCombatMessage(`🦇 Ação extra ativada!`);
+            }
+            break;
+        }
+      }
+      
+      updateCardUI() {
+        const cardContainer = this.$('cardHand');
+        if (!cardContainer) return;
+        
+        cardContainer.innerHTML = this.cardHand.map((card, index) => `
+          <div class="game-card" onclick="window.game.useCard(${index});">
+            <div class="card-emoji">${card.emoji}</div>
+            <div class="card-name">${card.name}</div>
+            <div class="card-desc">${card.description}</div>
+            <div class="card-rarity ${card.rarity}">${card.rarity}</div>
+          </div>
+        `).join('');
+      }
+
       startCombat(mode) {
         this.showScreen('combat');
         this.inCombat = true;
         this.combatRound = 1;
+        
+        // Initialize card system
+        this.drawInitialHand();
         
         // Select enemy based on mode
         const enemyKeys = Object.keys(GAME_DATA.enemies);
@@ -1780,6 +2055,9 @@
         this.$('playerHpBar').innerText = `${this.playerCurrentHp}/${this.getTotalStats().hp}`;
         this.$('enemyHpBar').style.width = enemyHpPercent + '%';
         this.$('enemyHpBar').innerText = `${this.enemyCurrentHp}/${this.currentEnemy.hp}`;
+        
+        // Update card UI
+        this.updateCardUI();
       }
       
       updateCombatUI() {
@@ -1894,24 +2172,109 @@
         if (!this.inCombat || this.enemyCurrentHp <= 0) return;
         
         setTimeout(() => {
-          const damage = this.calculateDamage(this.currentEnemy.atk, this.getTotalStats().def, this.currentEnemy.crit);
-          let finalDamage = damage.damage;
-          
-          if (this.defending) {
-            finalDamage = Math.floor(finalDamage * 0.5);
-            this.defending = false;
-            this.showCombatMessage('🛡️ Dano reduzido pela defesa!');
-          }
-          
-          this.playerCurrentHp = Math.max(0, this.playerCurrentHp - finalDamage);
-          this.createDamageNumber(finalDamage, damage.isCrit, true);
-          
-          if (this.playerCurrentHp <= 0) {
-            this.defeat();
+          // AI Card Selection Logic
+          if (this.enemyCardHand.length > 0) {
+            const bestCardIndex = this.selectBestEnemyCard();
+            if (bestCardIndex !== -1) {
+              const card = this.enemyCardHand[bestCardIndex];
+              this.showCombatMessage(`🤖 Inimigo usou: ${card.emoji} ${card.name}`);
+              
+              // Apply card effect
+              this.applyCardEffect(card, false);
+              
+              // Remove used card and draw new one
+              this.enemyCardHand.splice(bestCardIndex, 1);
+              const newCard = this.drawCard();
+              if (newCard) this.enemyCardHand.push(newCard);
+              
+              // Check win/lose conditions
+              if (this.playerCurrentHp <= 0) {
+                this.defeat();
+                return;
+              }
+            }
+          } else {
+            // Fallback to basic attack if no cards
+            const damage = this.calculateDamage(this.currentEnemy.atk, this.getTotalStats().def, this.currentEnemy.crit);
+            let finalDamage = damage.damage;
+            
+            if (this.defending) {
+              finalDamage = Math.floor(finalDamage * 0.5);
+              this.defending = false;
+              this.showCombatMessage('🛡️ Dano reduzido pela defesa!');
+            }
+            
+            this.playerCurrentHp = Math.max(0, this.playerCurrentHp - finalDamage);
+            this.createDamageNumber(finalDamage, damage.isCrit, true);
+            
+            if (this.playerCurrentHp <= 0) {
+              this.defeat();
+            }
           }
           
           this.updateCombatUI();
         }, 1000);
+      }
+      
+      selectBestEnemyCard() {
+        if (this.enemyCardHand.length === 0) return -1;
+        
+        const enemyHpPercent = (this.enemyCurrentHp / this.currentEnemy.hp) * 100;
+        const playerHpPercent = (this.playerCurrentHp / this.getTotalStats().hp) * 100;
+        
+        let bestCardIndex = 0;
+        let bestScore = -Infinity;
+        
+        this.enemyCardHand.forEach((card, index) => {
+          let score = 0;
+          
+          // Score based on card type and situation
+          switch (card.type) {
+            case 'attack':
+              // Prioritize attack when player HP is low
+              score += (100 - playerHpPercent) * 1.5;
+              // Higher power cards get bonus
+              score += (card.power || 1.0) * 20;
+              // Crit bonus adds value
+              score += (card.critBonus || 0) * 2;
+              break;
+              
+            case 'defense':
+              // Prioritize defense when enemy HP is low
+              score += (100 - enemyHpPercent) * 1.2;
+              // Dodge chance adds value
+              score += (card.dodgeChance || 0) * 0.5;
+              // Damage reduction adds value
+              score += (card.damageReduction || 0) * 50;
+              break;
+              
+            case 'heal':
+              // Prioritize heal when enemy HP is low
+              score += (100 - enemyHpPercent) * 2.5;
+              // Higher heal amount is better
+              score += (card.healAmount || 0) * 0.5;
+              // Regen is valuable for sustained healing
+              if (card.regen) score += 30;
+              // Revive is extremely valuable if dead
+              if (card.revive && enemyHpPercent <= 0) score += 1000;
+              break;
+              
+            case 'special':
+              // Extra action is always valuable
+              if (card.extraAction) score += 50;
+              break;
+          }
+          
+          // Add some randomness to make AI less predictable
+          score += Math.random() * 10;
+          
+          if (score > bestScore) {
+            bestScore = score;
+            bestCardIndex = index;
+          }
+        });
+        
+        return bestCardIndex;
       }
       
       // LOOT DROP SYSTEM
