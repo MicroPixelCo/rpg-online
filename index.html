@@ -4,27 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>⚔️ RPG ULTIMATE PRO - v4.0 FINAL</title>
-  <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      -webkit-user-select: none;
-      user-select: none;
-    }
+    @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&display=swap');
 
     :root {
       --primary: #7209b7;
       --secondary: #f72585;
-      --success: #00ff00;
-      --danger: #ff0000;
-      --warning: #ff6600;
-      --info: #00ffff;
-      --dark: #0f0f1a;
-      --darker: #1a1a2e;
+      --success: #06ffa5;
+      --danger: #ff006e;
+      --warning: #ffbe0b;
+      --info: #3a86ff;
+      --dark: #1a1a2e;
+      --light: #f8f9fa;
       --text: #ffffff;
-      --text-muted: #aaaaaa;
+      --text-muted: #b8bcc8;
     }
 
     html, body {
@@ -280,32 +274,14 @@
 
     .lobby-wrapper {
       width: 100%;
-      max-width: 1400px;
+      max-width: 1200px;
       margin: 0 auto;
     }
 
-    .lobby-header {
-      text-align: center;
-      margin-bottom: 28px;
-    }
-
-    .lobby-header h1 {
-      font-size: 38px;
-      margin-bottom: 10px;
-      background: linear-gradient(135deg, var(--secondary), var(--primary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .quick-menu {
+    .lobby-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 10px;
-      margin-bottom: 28px;
-      background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(114, 9, 183, 0.1));
-      padding: 16px;
-      border-radius: 12px;
-      border: 2px solid var(--primary);
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
     }
 
     .quick-btn {
@@ -326,12 +302,6 @@
     .quick-btn:hover {
       border-color: var(--secondary);
       transform: translateY(-2px);
-    }
-
-    .lobby-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
     }
 
     @media (max-width: 1200px) {
@@ -397,7 +367,7 @@
         min-height: 36px;
       }
     }
-    
+
     @media (max-width: 480px) {
       .quick-menu {
         grid-template-columns: repeat(2, 1fr);
@@ -1263,6 +1233,12 @@
         GAME_DATA.achievements.forEach(a => this.achievements[a.id] = false);
         GAME_DATA.quests.forEach(q => this.quests[q.id] = { ...q, progress: 0 });
         
+        // Initialize modules
+        this.ui = new UIModule(this);
+        this.shop = new ShopModule(this);
+        this.combat = new CombatModule(this);
+        this.player = new PlayerModule(this);
+        
         this.loadGame();
         this.setupEventListeners();
       }
@@ -1367,7 +1343,7 @@
 
         document.addEventListener('keypress', (e) => {
           if (e.key === 'Enter' && document.activeElement.id === 'pass') {
-            this.login();
+            window.game.login();
           }
         });
       }
@@ -1471,7 +1447,7 @@
       updateUI() {
         const stats = this.getTotalStats();
         this.$('welcomeMsg').innerText = `Bem-vindo, ${this.username}!`;
-        this.$('goldDisplay').innerText = `💰 ${this.gold}g`;
+        this.$('goldDisplay').innerText = `?? ${this.gold}g`;
         this.$('currentCharEmoji').innerText = this.character.emoji;
         this.$('currentCharName').innerText = this.character.name;
         this.$('charDisplayHP').innerText = stats.hp;
@@ -1998,19 +1974,18 @@
 
           return `
             <div class="quest-card ${completed ? 'completed' : ''}">
-              <div class="quest-title">${quest.name} ${completed ? '✅' : ''}</div>
+              <div class="quest-title">${quest.name} ${completed ? '??' : ''}</div>
               <div class="quest-desc">${quest.desc}</div>
               <div style="margin-top: 8px;">
                 <div style="background: rgba(255,255,255,0.1); border-radius: 4px; height: 8px; overflow: hidden;">
-                  <div style="background: linear-gradient(90deg, #00ff00, #00aa00); width: ${progressPercent}%; height: 100%;"></div>
+                  <div style="background: linear-gradient(90deg, #00ffff, #0088aa); width: ${progressPercent}%; height: 100%;"></div>
                 </div>
                 <div style="font-size: 8px; margin-top: 4px; color: #aaaaaa;">
                   Progress: ${progress}/${quest.target} | Recompensa: ${quest.reward}g
                 </div>
               </div>
             </div>
-          `;
-        }).join('');
+          `;}).join('');
       }
 
       showWeeklyQuests() {
@@ -2025,7 +2000,7 @@
 
           return `
             <div class="quest-card ${completed ? 'completed' : ''}">
-              <div class="quest-title">${quest.name} ${completed ? '✅' : ''}</div>
+              <div class="quest-title">${quest.name} ${completed ? '??' : ''}</div>
               <div class="quest-desc">${quest.desc}</div>
               <div style="margin-top: 8px;">
                 <div style="background: rgba(255,255,255,0.1); border-radius: 4px; height: 8px; overflow: hidden;">
@@ -2041,18 +2016,19 @@
       }
 
       showStats() {
-        this.showScreen('stats');
         const grid = this.$('statsGrid');
         const totalRareItems = Object.values(this.rareItems).reduce((sum, count) => sum + count, 0);
 
         grid.innerHTML = `
           <div style="font-size: 18px; color: #00ffff; margin: 10px 0;">
-            <div>👤 ${this.username}</div>
-            <div>💰 ${this.gold}g</div>
-            <div>📊 LVL ${this.level}</div>
-            <div style="color: #00ff00;">✓ ${this.wins} Vitórias</div>
-            <div style="color: #ff0000;">✗ ${this.losses} Derrotas</div>
-            <div style="color: #ffd700;">💎 ${totalRareItems} Itens Raros</div>
+            <div>
+              <div>?? ${this.username}</div>
+              <div>?? ${this.gold}g</div>
+              <div>?? LVL ${this.level}</div>
+              <div style="color: #00ff00;">? ${this.wins} Vitórias</div>
+              <div style="color: #ff0000;">? ${this.losses} Derrotas</div>
+              <div style="color: #ffd700;">?? ${totalRareItems} Itens Raros</div>
+            </div>
           </div>
         `;
       }
@@ -2069,21 +2045,31 @@
 
         grid.innerHTML = GAME_DATA.rareItems.filter(item => this.rareItems[item.id] > 0).map(item => {
           const count = this.rareItems[item.id];
-          const stats = item.type === 'weapon' ? `⚔️${item.atk} 🛡️${item.def} 💥${item.crit}%` : 
-                        item.type === 'armor' ? `⚔️${item.atk} 🛡️${item.def} 💥${item.crit}%` :
-                        item.type === 'artifact' ? `+${item.effect}` : item.description;
+          let stats;
+          if (item.type === 'weapon') {
+            stats = ` ${item.atk} ${item.def} ${item.crit}%`;
+          } else if (item.type === 'armor') {
+            stats = ` ${item.atk} ${item.def} ${item.crit}%`;
+          } else if (item.type === 'artifact') {
+            stats = `+${item.effect}`;
+          } else {
+            stats = item.description;
+          }
           
           return `
-            <div class="inventory-item" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.05)); border: 2px solid #ffd700;">
-              <div class="inv-emoji" style="font-size: 32px;">${item.emoji}</div>
-              <div class="inv-name" style="color: #ffd700; font-weight: bold;">${item.name}</div>
-              <div class="inv-count" style="color: #ffd700;">x${count}</div>
-              <div style="font-size: 8px; color: #aaaaaa; margin-top: 4px;">${item.description}</div>
-              ${stats ? `<div style="font-size: 8px; color: #ffff00; margin-top: 2px;">${stats}</div>` : ''}
+            <div class="inventory-item-container">
+              <div class="inventory-item" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.05)); border: 2px solid #ffd700;">
+                <div class="inv-emoji" style="font-size: 32px;">${item.emoji}</div>
+                <div class="inv-name" style="color: #ffd700; font-weight: bold;">${item.name}</div>
+                <div class="inv-count" style="color: #ffd700;">x${count}</div>
+                <div style="font-size: 8px; color: #aaaaaa; margin-top: 4px;">${item.description}</div>
+                ${stats ? `<div style="font-size: 8px; color: #ffff00; margin-top: 2px;">${stats}</div>` : ''}
+              </div>
             </div>
           `;
         }).join('');
       }
+
     }
 
     window.game = new Game();
