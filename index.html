@@ -1575,6 +1575,69 @@
         });
       }
 
+      register() {
+        const u = this.$('user').value.trim();
+        const p = this.$('pass').value;
+        const msg = this.$('msg');
+
+        if (!u || !p) {
+          msg.innerText = '❌ Preencha tudo!';
+          msg.classList.add('error');
+          return;
+        }
+
+        if (u.length < 3 || u.length > 20) {
+          msg.innerText = '❌ Usuário deve ter 3-20 caracteres!';
+          msg.classList.add('error');
+          return;
+        }
+
+        if (p.length < 4) {
+          msg.innerText = '❌ Senha deve ter pelo menos 4 caracteres!';
+          msg.classList.add('error');
+          return;
+        }
+
+        if (BLOCKED_NAMES.includes(u.toLowerCase())) {
+          msg.innerText = '❌ Nome de usuário não permitido!';
+          msg.classList.add('error');
+          return;
+        }
+
+        // Limpar localStorage antes de registrar
+        localStorage.removeItem('rpgUltimateSave');
+
+        // Fazer registro no servidor
+        fetch('/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user: u, pass: p })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.ok) {
+            this.username = u;
+            this.loadUserData(data.data);
+            msg.innerText = '✅ Registro OK!';
+            msg.classList.remove('error');
+            msg.classList.add('success');
+
+            setTimeout(() => {
+              this.showScreen('lobby');
+              this.$('headerContainer').style.display = 'flex';
+              this.updateUI();
+            }, 500);
+          } else {
+            msg.innerText = '❌ ' + (data.message || 'Erro no registro');
+            msg.classList.add('error');
+          }
+        })
+        .catch(err => {
+          msg.innerText = '❌ Erro de conexão';
+          msg.classList.add('error');
+        });
+      }
+
       login() {
         const u = this.$('user').value.trim();
         const p = this.$('pass').value;
