@@ -609,65 +609,104 @@
     .filter-btn {
       width: 100%;
       text-align: left;
-      padding: 9px 11px;
-      background: linear-gradient(135deg, rgba(114, 9, 183, 0.2), rgba(114, 9, 183, 0.05));
-      border: 2px solid var(--primary);
-      border-radius: 6px;
+      padding: 12px 14px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(236, 72, 153, 0.2));
+      border: 2px solid rgba(99, 102, 241, 0.5);
+      border-radius: 10px;
       color: white;
       font-family: 'Press Start 2P', sans-serif;
       cursor: pointer;
-      font-size: 10px;
-      transition: all 0.3s ease;
-      min-height: 38px;
+      font-size: 9px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      min-height: 45px;
       font-weight: 700;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .filter-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .filter-btn:hover::before {
+      left: 100%;
     }
 
     .filter-btn:hover {
       border-color: var(--secondary);
-      transform: translateX(3px);
+      transform: translateX(4px) scale(1.02);
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.5), rgba(236, 72, 153, 0.4));
+      box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
 
     .filter-btn.active {
-      background: linear-gradient(135deg, rgba(247, 37, 133, 0.4), rgba(247, 37, 133, 0.2));
+      background: linear-gradient(135deg, rgba(236, 72, 153, 0.5), rgba(236, 72, 153, 0.3));
       border-color: var(--secondary);
+      box-shadow: 0 6px 20px rgba(236, 72, 153, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
 
     .shop-content {
-      background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(114, 9, 183, 0.1));
-      padding: 18px;
-      border-radius: 10px;
-      border: 2px solid var(--primary);
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(114, 9, 183, 0.15));
+      padding: 20px;
+      border-radius: 16px;
+      border: 2px solid rgba(99, 102, 241, 0.5);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     }
 
     .items-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 16px;
     }
 
     .item-card {
-      background: var(--glass);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      padding: 14px;
-      border-radius: 12px;
-      border: 1px solid var(--glass-border);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      padding: 18px;
+      border-radius: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
       text-align: center;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      min-height: 180px;
+      gap: 10px;
+      min-height: 200px;
       justify-content: center;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .item-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .item-card:hover::before {
+      left: 100%;
     }
 
     .item-card:hover {
-      transform: translateY(-4px);
+      transform: translateY(-6px) scale(1.03);
       border-color: var(--secondary);
-      box-shadow: 0 8px 25px rgba(236, 72, 153, 0.3);
-      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 10px 30px rgba(236, 72, 153, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(236, 72, 153, 0.15));
     }
 
     .item-card.owned {
@@ -1149,6 +1188,7 @@
         <div class="quick-btn" onclick="window.game.showArtifacts();">💎 Artefatos</div>
         <div class="quick-btn" onclick="window.game.showInventory();">📦 Chars</div>
         <div class="quick-btn" onclick="window.game.showRareInventory();">💎 Raros</div>
+        <div class="quick-btn" onclick="window.game.claimDailyReward();">🎁 Recompensa Diária</div>
         <div class="quick-btn" onclick="window.game.showAchievements();">🏆 Achievements</div>
         <div class="quick-btn" onclick="window.game.showDailyQuests();">📅 Missões</div>
         <div class="quick-btn" onclick="window.game.showStats();">📊 Stats</div>
@@ -1429,33 +1469,42 @@
         { id: 'win_50', name: 'Mestre', emoji: '👑', desc: 'Vença 50 combates' },
         { id: 'rich_1000', name: 'Milheiro', emoji: '💰', desc: 'Acumule 1000 de ouro' },
         { id: 'rich_5000', name: 'Milionário', emoji: '💎', desc: 'Acumule 5000 de ouro' },
-        { id: 'all_chars', name: 'Colecionador', emoji: '📚', desc: 'Desbloqueie todos os personagens' }
+        { id: 'all_chars', name: 'Colecionador', emoji: '📚', desc: 'Desbloqueie todos os personagens' },
+        { id: 'boss_killer', name: 'Caçador de Boss', emoji: '🐉', desc: 'Vença o Dragão 5 vezes' },
+        { id: 'card_master', name: 'Mestre das Cartas', emoji: '🃏', desc: 'Use 100 cartas em combate' },
+        { id: 'daily_streak', name: 'Dedicação', emoji: '🔥', desc: 'Colete recompensa diária por 7 dias seguidos' },
+        { id: 'rare_collector', name: 'Colecionador Raro', emoji: '✨', desc: 'Obtenha 5 itens raros' },
+        { id: 'level_10', name: 'Experiente', emoji: '📈', desc: 'Alcance nível 10' }
       ],
       quests: [
         { id: 'daily_1', name: 'Treinamento Diário', desc: 'Vença 3 combates', type: 'daily', target: 3, progress: 0, reward: 100 },
         { id: 'daily_2', name: 'Caçador de Tesouros', desc: 'Ganhe 200 de ouro', type: 'daily', target: 200, progress: 0, reward: 150 },
-        { id: 'weekly_1', name: 'Guerreiro Semanal', desc: 'Vença 15 combates', type: 'weekly', target: 15, progress: 0, reward: 500 }
+        { id: 'daily_3', name: 'Uso de Cartas', desc: 'Use 10 cartas', type: 'daily', target: 10, progress: 0, reward: 120 },
+        { id: 'daily_4', name: 'Comprador', desc: 'Gaste 300 de ouro', type: 'daily', target: 300, progress: 0, reward: 100 },
+        { id: 'weekly_1', name: 'Guerreiro Semanal', desc: 'Vença 15 combates', type: 'weekly', target: 15, progress: 0, reward: 500 },
+        { id: 'weekly_2', name: 'Caçador de Boss Semanal', desc: 'Vença o Dragão 3 vezes', type: 'weekly', target: 3, progress: 0, reward: 800 },
+        { id: 'weekly_3', name: 'Colecionador Semanal', desc: 'Desbloqueie 2 personagens', type: 'weekly', target: 2, progress: 0, reward: 400 }
       ],
       cards: {
         // Basic cards (always available)
-        basic_attack: { id: 'basic_attack', name: 'Ataque Básico', emoji: '⚔️', type: 'attack', power: 1.0, rarity: 'common', description: 'Ataque normal' },
-        heavy_attack: { id: 'heavy_attack', name: 'Ataque Pesado', emoji: '💥', type: 'attack', power: 1.5, rarity: 'common', description: '+50% dano' },
-        quick_attack: { id: 'quick_attack', name: 'Ataque Rápido', emoji: '⚡', type: 'attack', power: 0.8, critBonus: 15, rarity: 'common', description: '+15% crítico' },
-        defend: { id: 'defend', name: 'Defesa', emoji: '🛡️', type: 'defense', damageReduction: 0.5, rarity: 'common', description: '-50% dano recebido' },
-        dodge: { id: 'dodge', name: 'Esquiva', emoji: '🤸', type: 'defense', dodgeChance: 30, rarity: 'common', description: '30% chance de esquiva' },
-        heal_small: { id: 'heal_small', name: 'Cura Pequena', emoji: '💚', type: 'heal', healAmount: 30, rarity: 'common', description: 'Restaura 30 HP' },
-        heal_medium: { id: 'heal_medium', name: 'Cura Média', emoji: '💚', type: 'heal', healAmount: 60, rarity: 'uncommon', description: 'Restaura 60 HP' },
-        regen: { id: 'regen', name: 'Regeneração', emoji: '🌱', type: 'heal', healAmount: 20, regenTurns: 2, rarity: 'uncommon', description: 'Cura 20 HP por 2 turnos' },
+        basic_attack: { id: 'basic_attack', name: 'Ataque Básico', emoji: '⚔️', type: 'attack', power: 1.0, rarity: 'common', dropChance: 25, description: 'Ataque normal' },
+        heavy_attack: { id: 'heavy_attack', name: 'Ataque Pesado', emoji: '💥', type: 'attack', power: 1.5, rarity: 'common', dropChance: 22, description: '+50% dano' },
+        quick_attack: { id: 'quick_attack', name: 'Ataque Rápido', emoji: '⚡', type: 'attack', power: 0.8, critBonus: 15, rarity: 'common', dropChance: 20, description: '+15% crítico' },
+        defend: { id: 'defend', name: 'Defesa', emoji: '🛡️', type: 'defense', damageReduction: 0.5, rarity: 'common', dropChance: 18, description: '-50% dano recebido' },
+        dodge: { id: 'dodge', name: 'Esquiva', emoji: '🤸', type: 'defense', dodgeChance: 30, rarity: 'common', dropChance: 18, description: '30% chance de esquiva' },
+        heal_small: { id: 'heal_small', name: 'Cura Pequena', emoji: '💚', type: 'heal', healAmount: 30, rarity: 'common', dropChance: 19, description: 'Restaura 30 HP' },
+        heal_medium: { id: 'heal_medium', name: 'Cura Média', emoji: '💚', type: 'heal', healAmount: 60, rarity: 'uncommon', dropChance: 18, description: 'Restaura 60 HP' },
+        regen: { id: 'regen', name: 'Regeneração', emoji: '🌱', type: 'heal', healAmount: 20, regenTurns: 2, rarity: 'legendary', dropChance: 18, description: 'Cura 20 HP por 2 turnos' },
 
         // Rare cards (unlock from rare items)
-        obsidian_strike: { id: 'obsidian_strike', name: 'Golpe de Obsidiana', emoji: '🗡️', type: 'attack', power: 2.0, critBonus: 10, rarity: 'rare', requiredItem: 'obsidian_knife', description: '+100% dano, +10% crítico' },
-        dragon_breath: { id: 'dragon_breath', name: 'Sopro de Dragão', emoji: '🔥', type: 'attack', power: 1.8, burnDamage: 15, rarity: 'rare', requiredItem: 'dragon_heart', description: '+80% dano, queima 15 HP/turno' },
-        phoenix_rise: { id: 'phoenix_rise', name: 'Ressurreição', emoji: '🪶', type: 'heal', healAmount: 100, revive: true, rarity: 'legendary', requiredItem: 'phoenix_feather', description: 'Cura 100 HP, revive se morto' },
-        shadow_step: { id: 'shadow_step', name: 'Passo das Sombras', emoji: '🥷', type: 'defense', dodgeChance: 50, counterAttack: true, rarity: 'rare', requiredItem: 'shadow_cloak', description: '50% esquiva + contra-ataque' },
-        thunder_smash: { id: 'thunder_smash', name: 'Impacto Trovão', emoji: '🔨', type: 'attack', power: 2.2, stunChance: 20, rarity: 'rare', requiredItem: 'thunder_hammer', description: '+120% dano, 20% atordoa' },
-        crystal_power: { id: 'crystal_power', name: 'Poder do Cristal', emoji: '💀', type: 'attack', power: 1.7, atkBoost: 25, rarity: 'rare', requiredItem: 'crystal_skull', description: '+70% dano, +25 ATK temporário' },
-        frost_strike: { id: 'frost_strike', name: 'Golpe de Gelo', emoji: '🧊', type: 'attack', power: 1.5, freezeChance: 25, rarity: 'rare', requiredItem: 'frost_blade', description: '+50% dano, 25% congela' },
-        demon_wings: { id: 'demon_wings', name: 'Asas Demoníacas', emoji: '🦇', type: 'special', extraAction: true, rarity: 'rare', requiredItem: 'demon_wings', description: 'Ação extra neste turno' }
+        obsidian_strike: { id: 'obsidian_strike', name: 'Golpe de Obsidiana', emoji: '🗡️', type: 'attack', power: 2.0, critBonus: 10, rarity: 'rare', dropChance: 18, requiredItem: 'obsidian_knife', description: '+100% dano, +10% crítico' },
+        dragon_breath: { id: 'dragon_breath', name: 'Sopro de Dragão', emoji: '🔥', type: 'attack', power: 1.8, burnDamage: 15, rarity: 'rare', dropChance: 20, requiredItem: 'dragon_heart', description: '+80% dano, queima 15 HP/turno' },
+        phoenix_rise: { id: 'phoenix_rise', name: 'Ressurreição', emoji: '🪶', type: 'heal', healAmount: 100, revive: true, rarity: 'legendary', dropChance: 18, requiredItem: 'phoenix_feather', description: 'Cura 100 HP, revive se morto' },
+        shadow_step: { id: 'shadow_step', name: 'Passo das Sombras', emoji: '🥷', type: 'defense', dodgeChance: 50, counterAttack: true, rarity: 'rare', dropChance: 18, requiredItem: 'shadow_cloak', description: '50% esquiva + contra-ataque' },
+        thunder_smash: { id: 'thunder_smash', name: 'Impacto Trovão', emoji: '🔨', type: 'attack', power: 2.2, stunChance: 20, rarity: 'rare', dropChance: 20, requiredItem: 'thunder_hammer', description: '+120% dano, 20% atordoa' },
+        crystal_power: { id: 'crystal_power', name: 'Poder do Cristal', emoji: '💀', type: 'attack', power: 1.7, atkBoost: 25, rarity: 'rare', dropChance: 18, requiredItem: 'crystal_skull', description: '+70% dano, +25 ATK temporário' },
+        frost_strike: { id: 'frost_strike', name: 'Golpe de Gelo', emoji: '🧊', type: 'attack', power: 1.5, freezeChance: 25, rarity: 'rare', dropChance: 18, requiredItem: 'frost_blade', description: '+50% dano, 25% congela' },
+        demon_wings: { id: 'demon_wings', name: 'Asas Demoníacas', emoji: '🦇', type: 'special', extraAction: true, rarity: 'legendary', dropChance: 18, requiredItem: 'demon_wings', description: 'Ação extra neste turno' }
       }
     };
 
@@ -1493,6 +1542,12 @@
         this.enemyEffects = { regen: 0, burn: 0, frozen: false, stunned: false, atkBoost: 0 };
         this.extraAction = false;
         
+        // Timer system
+        this.dailyResetTime = Date.now();
+        this.weeklyResetTime = Date.now();
+        this.dailyRewardClaimed = false;
+        this.dailyRewardDay = null;
+        
         // Initialize inventories
         GAME_DATA.potions.forEach(p => this.potions[p.id] = 0);
         GAME_DATA.equipment.forEach(e => this.equipment[e.id] = 0);
@@ -1502,6 +1557,7 @@
         GAME_DATA.quests.forEach(q => this.quests[q.id] = { ...q, progress: 0 });
         
         this.loadGame();
+        this.checkMissionResets();
         this.setupEventListeners();
       }
 
@@ -1525,11 +1581,94 @@
           rareItems: this.rareItems,
           achievements: this.achievements,
           quests: this.quests,
-          equippedItems: this.equippedItems
+          equippedItems: this.equippedItems,
+          dailyResetTime: this.dailyResetTime,
+          weeklyResetTime: this.weeklyResetTime,
+          dailyRewardClaimed: this.dailyRewardClaimed,
+          dailyRewardDay: this.dailyRewardDay
         };
         localStorage.setItem('rpgUltimateSave', JSON.stringify(saveData));
       }
-      
+
+      checkMissionResets() {
+        const now = new Date();
+        const currentHour = now.getHours();
+        const currentDay = now.getDay(); // 0 = Sunday, 5 = Friday
+        
+        // Check daily reset (12:00)
+        const lastDailyReset = new Date(this.dailyResetTime);
+        const lastDailyHour = lastDailyReset.getHours();
+        const lastDailyDay = lastDailyReset.getDate();
+        
+        if (currentDay !== lastDailyDay || (currentHour >= 12 && lastDailyHour < 12)) {
+          this.resetDailyMissions();
+          this.dailyResetTime = Date.now();
+        }
+        
+        // Check weekly reset (Friday 12:00)
+        const lastWeeklyReset = new Date(this.weeklyResetTime);
+        const lastWeeklyDay = lastWeeklyReset.getDay();
+        const lastWeeklyHour = lastWeeklyReset.getHours();
+        
+        if (currentDay === 5 && currentHour >= 12 && (lastWeeklyDay !== 5 || lastWeeklyHour < 12)) {
+          this.resetWeeklyMissions();
+          this.weeklyResetTime = Date.now();
+        }
+        
+        // Check daily reward reset
+        const today = now.toDateString();
+        if (this.dailyRewardDay !== today) {
+          this.dailyRewardClaimed = false;
+          this.dailyRewardDay = today;
+        }
+      }
+
+      resetDailyMissions() {
+        GAME_DATA.quests.filter(q => q.type === 'daily').forEach(q => {
+          this.quests[q.id] = { ...q, progress: 0 };
+        });
+      }
+
+      resetWeeklyMissions() {
+        GAME_DATA.quests.filter(q => q.type === 'weekly').forEach(q => {
+          this.quests[q.id] = { ...q, progress: 0 };
+        });
+      }
+
+      claimDailyReward() {
+        if (this.dailyRewardClaimed) {
+          alert('❌ Recompensa diária já foi coletada!');
+          return;
+        }
+
+        const rewards = [
+          { gold: 50 },
+          { gold: 75 },
+          { gold: 100 },
+          { gold: 125, potion: 'heal_small' },
+          { gold: 150, potion: 'heal_medium' },
+          { gold: 200, potion: 'heal_large' },
+          { gold: 250, equipment: 'sword_1' }
+        ];
+
+        const dayIndex = new Date().getDay(); // 0-6
+        const reward = rewards[dayIndex % rewards.length];
+
+        if (reward.gold) this.gold += reward.gold;
+        if (reward.potion) this.potions[reward.potion] = (this.potions[reward.potion] || 0) + 1;
+        if (reward.equipment) this.equipment[reward.equipment] = (this.equipment[reward.equipment] || 0) + 1;
+
+        this.dailyRewardClaimed = true;
+        this.updateUI();
+        this.saveGame();
+
+        let rewardText = `✅ Recompensa diária: ${reward.gold}g`;
+        if (reward.potion) rewardText += ` + ${GAME_DATA.potions.find(p => p.id === reward.potion)?.name}`;
+        if (reward.equipment) rewardText += ` + ${GAME_DATA.equipment.find(e => e.id === reward.equipment)?.name}`;
+
+        alert(rewardText);
+      }
+
       loadGame() {
         const savedData = localStorage.getItem('rpgUltimateSave');
         if (savedData) {
@@ -1977,8 +2116,20 @@
       drawCard() {
         const availableCards = this.getAvailableCards();
         if (availableCards.length === 0) return null;
-        const randomIndex = Math.floor(Math.random() * availableCards.length);
-        return availableCards[randomIndex];
+        
+        // Weighted random selection based on dropChance
+        const totalWeight = availableCards.reduce((sum, card) => sum + (card.dropChance || 18), 0);
+        let random = Math.random() * totalWeight;
+        
+        for (const card of availableCards) {
+          const weight = card.dropChance || 18;
+          if (random < weight) {
+            return card;
+          }
+          random -= weight;
+        }
+        
+        return availableCards[0];
       }
       
       drawInitialHand() {
