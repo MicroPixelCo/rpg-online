@@ -1195,85 +1195,32 @@
   </div>
 
   <div id="lobby" class="screen">
-    <div class="lobby-wrapper">
-      <div class="lobby-header">
-        <h1>⚔️ RPG ULTIMATE PRO v4.0</h1>
-        <p id="welcomeMsg">Bem-vindo!</p>
+    <div class="lobby-grid">
+      <div class="hero-card" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(236, 72, 153, 0.3)); border: 3px solid rgba(255, 255, 255, 0.3); box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4);">
+        <div class="hero-emoji" id="currentCharEmoji" style="font-size: 80px; animation: float 3s ease-in-out infinite;">🧙</div>
+        <div class="hero-name" id="currentCharName" style="font-size: 20px; color: #00ffff; text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);">Mago</div>
+        <div class="hero-stats" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+          <div style="background: rgba(255, 0, 0, 0.2); padding: 8px; border-radius: 8px; text-align: center;">❤️ <span id="charDisplayHP">100</span></div>
+          <div style="background: rgba(255, 165, 0, 0.2); padding: 8px; border-radius: 8px; text-align: center;">⚔️ <span id="charDisplayATK">18</span></div>
+          <div style="background: rgba(0, 255, 0, 0.2); padding: 8px; border-radius: 8px; text-align: center;">🛡️ <span id="charDisplayDEF">2</span></div>
+          <div style="background: rgba(255, 255, 0, 0.2); padding: 8px; border-radius: 8px; text-align: center;">💥 <span id="charDisplayCrit">15%</span></div>
+        </div>
       </div>
 
-      <div class="quick-menu">
-        <div class="quick-btn" onclick="window.game.startCombat('normal');">🎮 Combate</div>
-        <div class="quick-btn" onclick="window.game.startCombat('wave');">🌊 Ondas</div>
-        <div class="quick-btn" onclick="window.game.startCombat('boss');">👑 Boss</div>
-        <div class="quick-btn" onclick="window.game.showShop();">🛒 Loja</div>
-        <div class="quick-btn" onclick="window.game.showPotions();">🧪 Poções</div>
-        <div class="quick-btn" onclick="window.game.showEquipment();">🛡️ Equipamentos</div>
-        <div class="quick-btn" onclick="window.game.showArtifacts();">💎 Artefatos</div>
-        <div class="quick-btn" onclick="window.game.showInventory();">📦 Chars</div>
-        <div class="quick-btn" onclick="window.game.showRareInventory();">💎 Raros</div>
-        <div class="quick-btn" onclick="window.game.showDailyRewards();">🎁 Recompensa Diária</div>
-        <div class="quick-btn" onclick="window.game.showAchievements();">🏆 Achievements</div>
-        <div class="quick-btn" onclick="window.game.showDailyQuests();">📅 Missões</div>
-        <div class="quick-btn" onclick="window.game.showStats();">📊 Stats</div>
-      </div>
-
-      <div class="lobby-grid">
-        <div class="card">
-          <h3>🎨 Seu Herói</h3>
-          <div style="font-size: 52px; margin: 14px 0;" id="currentCharEmoji">🧙</div>
-          <div style="color: #00ffff; font-size: 14px; font-weight: bold; margin-bottom: 10px;" id="currentCharName">Mago</div>
-          <div style="font-size: 10px; color: var(--text-muted); line-height: 1.6; text-align: left;">
-            <div>❤️ HP: <strong id="charDisplayHP">100</strong></div>
-            <div>⚔️ ATK: <strong id="charDisplayATK">18</strong></div>
-            <div>🛡️ DEF: <strong id="charDisplayDEF">2</strong></div>
-            <div>💥 CRIT: <strong id="charDisplayCrit">15%</strong></div>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3>📊 Stats</h3>
-          <div class="stats-grid">
-            <div class="stat-box"><div class="stat-label">❤️ HP</div><div class="stat-value" id="statHp">100</div></div>
-            <div class="stat-box"><div class="stat-label">⚔️ ATK</div><div class="stat-value" id="statAtk">10</div></div>
-            <div class="stat-box"><div class="stat-label">🛡️ DEF</div><div class="stat-value" id="statDef">0</div></div>
-            <div class="stat-box"><div class="stat-label">💥 CRIT%</div><div class="stat-value" id="statCrit">15</div></div>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3>⚔️ Combates</h3>
-          <div class="card-buttons">
-            <button type="button" onclick="window.game.startCombat('normal');">▶️ Normal</button>
-            <button type="button" class="btn-secondary" onclick="window.game.startCombat('wave');">🌊 Ondas</button>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3>🧪 Poções</h3>
-          <div class="card-buttons">
-            <button type="button" onclick="window.game.showPotions();">🧪 Ver Loja</button>
-            <button type="button" class="btn-secondary" onclick="window.game.showPotionInventory();">📦 Inv</button>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3>📋 Missões</h3>
-          <div class="card-buttons">
-            <button type="button" onclick="window.game.showDailyQuests();">📅 Diárias</button>
-            <button type="button" class="btn-secondary" onclick="window.game.showWeeklyQuests();">📆 Semanais</button>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3>💎 Progresso</h3>
-          <div style="font-size: 10px; line-height: 1.7;">
-            <div>👤 <strong id="playerName">Anônimo</strong></div>
-            <div>💰 Ouro: <strong id="playerGold">1000</strong>g</div>
-            <div>📊 LVL: <strong id="playerLvl">1</strong></div>
-            <div>✓ <span id="playerWins" style="color: #00ff00;">0</span> Vitórias</div>
-            <div>✗ <span id="playerLosses" style="color: #ff0000;">0</span> Derrotas</div>
-          </div>
-        </div>
+      <div class="quick-menu" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+        <div class="quick-btn" style="background: linear-gradient(135deg, #ef4444, #dc2626); border: 2px solid rgba(255, 255, 255, 0.3); animation: glow 2s ease-in-out infinite;" onclick="window.game.startCombat('normal');">⚔️ Batalha</div>
+        <div class="quick-btn" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); border: 2px solid rgba(255, 255, 255, 0.3);" onclick="window.game.startCombat('boss');">🐉 Boss</div>
+        <div class="quick-btn" style="background: linear-gradient(135deg, #06b6d4, #0891b2); border: 2px solid rgba(255, 255, 255, 0.3);" onclick="window.game.startCombat('wave');">🌊 Ondas</div>
+        <div class="quick-btn" style="background: linear-gradient(135deg, #f59e0b, #d97706); border: 2px solid rgba(255, 255, 255, 0.3);" onclick="window.game.showShop();">🛒 Loja</div>
+        <div class="quick-btn" style="background: linear-gradient(135deg, #10b981, #059669); border: 2px solid rgba(255, 255, 255, 0.3);" onclick="window.game.showPotions();">🧪 Poções</div>
+        <div class="quick-btn" style="background: linear-gradient(135deg, #6366f1, #4f46e5); border: 2px solid rgba(255, 255, 255, 0.3);" onclick="window.game.showEquipment();">🛡️ Equipamentos</div>
+        <div class="quick-btn" style="background: linear-gradient(135deg, #ec4899, #db2777); border: 2px solid rgba(255, 255, 255, 0.3);" onclick="window.game.showArtifacts();">💎 Artefatos</div>
+        <div class="quick-btn" style="background: linear-gradient(135deg, #84cc16, #65a30d); border: 2px solid rgba(255, 255, 255, 0.3);" onclick="window.game.showInventory();">📦 Inventário</div>
+        <div class="quick-btn" style="background: linear-gradient(135deg, #f97316, #ea580c); border: 2px solid rgba(255, 255, 255, 0.3);" onclick="window.game.showRareInventory();">💎 Raros</div>
+        <div class="quick-btn" style="background: linear-gradient(135deg, #eab308, #ca8a04); border: 2px solid rgba(255, 255, 255, 0.3); animation: glow 3s ease-in-out infinite;" onclick="window.game.showDailyRewards();">🎁 Recompensa</div>
+        <div class="quick-btn" style="background: linear-gradient(135deg, #a855f7, #9333ea); border: 2px solid rgba(255, 255, 255, 0.3);" onclick="window.game.showAchievements();">🏆 Achievements</div>
+        <div class="quick-btn" style="background: linear-gradient(135deg, #14b8a6, #0d9488); border: 2px solid rgba(255, 255, 255, 0.3);" onclick="window.game.showQuests();">📋 Missões</div>
+        <div class="quick-btn" style="background: linear-gradient(135deg, #64748b, #475569); border: 2px solid rgba(255, 255, 255, 0.3);" onclick="window.game.showStats();">📊 Estatísticas</div>
       </div>
     </div>
   </div>
