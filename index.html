@@ -1122,6 +1122,29 @@
       background: linear-gradient(135deg, var(--primary), var(--secondary));
       border-radius: 4px;
     }
+
+    .potion-slot {
+      width: 50px;
+      height: 50px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      transition: all 0.3s ease;
+    }
+
+    .potion-slot:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.1);
+    }
+
+    .inventory-item.equipped {
+      border-color: #00ff00;
+      box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+    }
   </style>
 </head>
 
@@ -1284,9 +1307,59 @@
   </div>
 
   <div id="inventory" class="screen">
-    <h2 style="color: var(--secondary); margin: 0 0 14px 0;">📦 Personagens (<span id="ownedCount">1</span>/10)</h2>
-    <div style="flex: 1; overflow-y: auto;">
-      <div class="inventory-grid" id="charInventory"></div>
+    <h2 style="color: var(--secondary); margin: 0 0 14px 0;">📦 Inventário</h2>
+    <div style="flex: 1; overflow-y: auto; padding: 20px;">
+      <div style="background: var(--glass); border: 2px solid var(--glass-border); border-radius: 15px; padding: 20px; margin-bottom: 20px;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <div style="font-size: 64px;" id="inventoryCharEmoji">🧙</div>
+          <div style="color: #00ffff; font-size: 14px; font-weight: bold;" id="inventoryCharName">Mago</div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+          <div style="background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 15px;">
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">⚔️ Arma</div>
+            <div id="equippedWeapon" style="font-size: 24px; text-align: center;">🔲</div>
+            <div id="equippedWeaponName" style="font-size: 10px; text-align: center; margin-top: 5px;">Vazio</div>
+          </div>
+          
+          <div style="background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 15px;">
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">🛡️ Armadura</div>
+            <div id="equippedArmor" style="font-size: 24px; text-align: center;">🔲</div>
+            <div id="equippedArmorName" style="font-size: 10px; text-align: center; margin-top: 5px;">Vazio</div>
+          </div>
+        </div>
+        
+        <div style="background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 15px; margin-top: 15px;">
+          <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">💎 Artefato</div>
+          <div id="equippedArtifact" style="font-size: 24px; text-align: center;">🔲</div>
+          <div id="equippedArtifactName" style="font-size: 10px; text-align: center; margin-top: 5px;">Vazio</div>
+        </div>
+        
+        <div style="background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 15px; margin-top: 15px;">
+          <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">🧪 Poções (<span id="potionCount">0</span>/3)</div>
+          <div id="equippedPotions" style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
+            <div class="potion-slot">🔲</div>
+            <div class="potion-slot">🔲</div>
+            <div class="potion-slot">🔲</div>
+          </div>
+        </div>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div>
+          <h3 style="color: var(--primary); margin-bottom: 10px;">⚔️ Armas</h3>
+          <div id="inventoryWeapons" class="inventory-grid"></div>
+        </div>
+        <div>
+          <h3 style="color: var(--primary); margin-bottom: 10px;">🛡️ Armaduras</h3>
+          <div id="inventoryArmors" class="inventory-grid"></div>
+        </div>
+      </div>
+      
+      <div style="margin-top: 15px;">
+        <h3 style="color: var(--primary); margin-bottom: 10px;">💎 Artefatos</h3>
+        <div id="inventoryArtifacts" class="inventory-grid"></div>
+      </div>
     </div>
   </div>
 
@@ -1486,46 +1559,39 @@
     class Game {
       constructor() {
         this.username = '';
-        this.currentCharacterId = 'mago';
-        this.character = GAME_DATA.characters['mago'];
+        this.password = '';
         this.gold = 1000;
         this.level = 1;
         this.wins = 0;
         this.losses = 0;
+        this.currentCharacterId = 'mago';
+        this.character = GAME_DATA.characters.mago;
         this.ownedCharacters = ['mago'];
-        this.potions = {};
+        this.potions = { heal_small: 0, heal_medium: 0, heal_large: 0, attack_buff: 0, defense_buff: 0, crit_buff: 0, speed_buff: 0 };
         this.equipment = {};
         this.artifacts = {};
         this.rareItems = {};
-        this.achievements = {};
-        this.quests = {};
-        this.currentEnemy = null;
-        this.inCombat = false;
-        this.playerCurrentHp = 0;
-        this.enemyCurrentHp = 0;
-        this.combatRound = 1;
         this.equippedItems = { weapon: null, armor: null, artifact: null };
-        
-        // Card system
+        this.inventory = {
+          weapons: [],
+          armors: [],
+          artifacts: [],
+          potions: []
+        };
+        this.inCombat = false;
+        this.combatRound = 1;
+        this.playerCurrentHp = 100;
+        this.enemyCurrentHp = 100;
+        this.currentEnemy = null;
         this.cardHand = [];
         this.enemyCardHand = [];
         this.playerEffects = { regen: 0, burn: 0, frozen: false, stunned: false, atkBoost: 0 };
         this.enemyEffects = { regen: 0, burn: 0, frozen: false, stunned: false, atkBoost: 0 };
         this.extraAction = false;
-        
-        // Timer system
         this.dailyResetTime = Date.now();
         this.weeklyResetTime = Date.now();
         this.dailyRewardClaimed = false;
         this.dailyRewardDay = null;
-        
-        // Initialize inventories
-        GAME_DATA.potions.forEach(p => this.potions[p.id] = 0);
-        GAME_DATA.equipment.forEach(e => this.equipment[e.id] = 0);
-        GAME_DATA.artifacts.forEach(a => this.artifacts[a.id] = 0);
-        GAME_DATA.rareItems.forEach(r => this.rareItems[r.id] = 0);
-        GAME_DATA.achievements.forEach(a => this.achievements[a.id] = false);
-        GAME_DATA.quests.forEach(q => this.quests[q.id] = { ...q, progress: 0 });
         
         this.loadGame();
         this.checkMissionResets();
@@ -1553,6 +1619,7 @@
           achievements: this.achievements,
           quests: this.quests,
           equippedItems: this.equippedItems,
+          inventory: this.inventory,
           dailyResetTime: this.dailyResetTime,
           weeklyResetTime: this.weeklyResetTime,
           dailyRewardClaimed: this.dailyRewardClaimed,
@@ -1685,6 +1752,15 @@
             const data = JSON.parse(savedData);
             Object.assign(this, data);
             this.character = GAME_DATA.characters[this.currentCharacterId];
+            // Ensure inventory exists
+            if (!this.inventory) {
+              this.inventory = {
+                weapons: [],
+                armors: [],
+                artifacts: [],
+                potions: []
+              };
+            }
           } catch (e) {
             console.error('Failed to load save data:', e);
           }
@@ -1992,9 +2068,13 @@
           alert(`❌ Precisa ${potion.cost}g`);
           return;
         }
+        if (this.inventory.potions.length >= 3) {
+          alert('❌ Inventário de poções cheio! Máximo 3 poções.');
+          return;
+        }
         this.gold -= potion.cost;
-        this.potions[potionId]++;
-        alert(`✅ ${potion.name}!`);
+        this.inventory.potions.push(potionId);
+        alert(`✅ ${potion.name} adicionado ao inventário!`);
         this.updateUI();
       }
 
@@ -2025,8 +2105,12 @@
           return;
         }
         this.gold -= item.cost;
-        this.equipment[equipmentId]++;
-        alert(`✅ ${item.name}!`);
+        if (item.type === 'weapon') {
+          this.inventory.weapons.push(equipmentId);
+        } else if (item.type === 'armor') {
+          this.inventory.armors.push(equipmentId);
+        }
+        alert(`✅ ${item.name} adicionado ao inventário!`);
         this.updateUI();
       }
 
@@ -2057,8 +2141,8 @@
           return;
         }
         this.gold -= item.cost;
-        this.artifacts[artifactId]++;
-        alert(`✅ ${item.name}!`);
+        this.inventory.artifacts.push(artifactId);
+        alert(`✅ ${item.name} adicionado ao inventário!`);
         this.updateUI();
       }
 
@@ -2082,17 +2166,104 @@
 
       showInventory() {
         this.showScreen('inventory');
-        this.$('ownedCount').innerText = this.ownedCharacters.length;
-        const grid = this.$('charInventory');
-        grid.innerHTML = this.ownedCharacters.map(charId => {
-          const char = GAME_DATA.characters[charId];
+        
+        // Update character display
+        this.$('inventoryCharEmoji').innerText = this.character.emoji;
+        this.$('inventoryCharName').innerText = this.character.name;
+        
+        // Update equipped items
+        const weapon = this.equippedItems.weapon ? GAME_DATA.equipment.find(e => e.id === this.equippedItems.weapon) : null;
+        const armor = this.equippedItems.armor ? GAME_DATA.equipment.find(e => e.id === this.equippedItems.armor) : null;
+        const artifact = this.equippedItems.artifact ? GAME_DATA.artifacts.find(a => a.id === this.equippedItems.artifact) : null;
+        
+        this.$('equippedWeapon').innerText = weapon ? weapon.emoji : '🔲';
+        this.$('equippedWeaponName').innerText = weapon ? weapon.name : 'Vazio';
+        this.$('equippedArmor').innerText = armor ? armor.emoji : '🔲';
+        this.$('equippedArmorName').innerText = armor ? armor.name : 'Vazio';
+        this.$('equippedArtifact').innerText = artifact ? artifact.emoji : '🔲';
+        this.$('equippedArtifactName').innerText = artifact ? artifact.name : 'Vazio';
+        
+        // Update potions
+        this.$('potionCount').innerText = this.inventory.potions.length;
+        const potionsContainer = this.$('equippedPotions');
+        potionsContainer.innerHTML = this.inventory.potions.map(potionId => {
+          const potion = GAME_DATA.potions.find(p => p.id === potionId);
+          return `<div class="potion-slot" onclick="window.game.usePotion('${potionId}');" style="cursor: pointer;">${potion.emoji}</div>`;
+        }).join('');
+        // Fill empty slots
+        for (let i = this.inventory.potions.length; i < 3; i++) {
+          potionsContainer.innerHTML += '<div class="potion-slot">🔲</div>';
+        }
+        
+        // Update inventory items
+        this.$('inventoryWeapons').innerHTML = this.inventory.weapons.map(weaponId => {
+          const weapon = GAME_DATA.equipment.find(e => e.id === weaponId);
+          const isEquipped = this.equippedItems.weapon === weaponId;
           return `
-            <div class="inventory-item" onclick="window.game.selectCharacter('${charId}');">
-              <div class="inv-emoji">${char.emoji}</div>
-              <div class="inv-name">${char.name}</div>
+            <div class="inventory-item ${isEquipped ? 'equipped' : ''}" onclick="window.game.equipItem('weapon', '${weaponId}');">
+              <div class="inv-emoji">${weapon.emoji}</div>
+              <div class="inv-name">${weapon.name}</div>
+              <div style="font-size: 8px; color: ${isEquipped ? '#00ff00' : '#ffff00'};">${isEquipped ? '✓ Equipado' : '⚔️ ATK+' + weapon.atk}</div>
             </div>
           `;
         }).join('');
+        
+        this.$('inventoryArmors').innerHTML = this.inventory.armors.map(armorId => {
+          const armor = GAME_DATA.equipment.find(e => e.id === armorId);
+          const isEquipped = this.equippedItems.armor === armorId;
+          return `
+            <div class="inventory-item ${isEquipped ? 'equipped' : ''}" onclick="window.game.equipItem('armor', '${armorId}');">
+              <div class="inv-emoji">${armor.emoji}</div>
+              <div class="inv-name">${armor.name}</div>
+              <div style="font-size: 8px; color: ${isEquipped ? '#00ff00' : '#ffff00'};">${isEquipped ? '✓ Equipado' : '🛡️ DEF+' + armor.def}</div>
+            </div>
+          `;
+        }).join('');
+        
+        this.$('inventoryArtifacts').innerHTML = this.inventory.artifacts.map(artifactId => {
+          const artifact = GAME_DATA.artifacts.find(a => a.id === artifactId);
+          const isEquipped = this.equippedItems.artifact === artifactId;
+          return `
+            <div class="inventory-item ${isEquipped ? 'equipped' : ''}" onclick="window.game.equipItem('artifact', '${artifactId}');">
+              <div class="inv-emoji">${artifact.emoji}</div>
+              <div class="inv-name">${artifact.name}</div>
+              <div style="font-size: 8px; color: ${isEquipped ? '#00ff00' : '#ffff00'};">${isEquipped ? '✓ Equipado' : '💎 +' + artifact.effect}</div>
+            </div>
+          `;
+        }).join('');
+      }
+      
+      equipItem(slot, itemId) {
+        // If already equipped, unequip
+        if (this.equippedItems[slot] === itemId) {
+          this.equippedItems[slot] = null;
+          alert(`📤 Item desequipado!`);
+        } else {
+          // Equip new item
+          this.equippedItems[slot] = itemId;
+          alert(`✅ Item equipado!`);
+        }
+        this.showInventory();
+        this.updateUI();
+      }
+      
+      usePotion(potionId) {
+        const potionIndex = this.inventory.potions.indexOf(potionId);
+        if (potionIndex === -1) return;
+        
+        const potion = GAME_DATA.potions.find(p => p.id === potionId);
+        this.inventory.potions.splice(potionIndex, 1);
+        
+        if (potion.type === 'heal') {
+          this.playerCurrentHp = Math.min(this.getTotalStats().hp, this.playerCurrentHp + potion.effect);
+          alert(`💚 Curou ${potion.effect} HP!`);
+        } else if (potion.type === 'buff') {
+          if (potion.id === 'attack_buff') this.playerEffects.atkBoost += potion.effect;
+          alert(`⚔️ Buff aplicado!`);
+        }
+        
+        this.showInventory();
+        this.updateUI();
       }
 
       selectCharacter(charId) {
@@ -2164,8 +2335,22 @@
       useCard(cardIndex) {
         if (!this.inCombat || cardIndex < 0 || cardIndex >= this.cardHand.length) return;
         
+        // Check for max rounds
+        if (this.combatRound > this.maxCombatRounds) {
+          alert('⏱️ Tempo esgotado! Empate declarado.');
+          this.endCombat(false);
+          return;
+        }
+        
         const card = this.cardHand[cardIndex];
         this.showCombatMessage(`🃏 Usou: ${card.emoji} ${card.name}`);
+        
+        // Add visual animation
+        const cardElement = document.querySelectorAll('.game-card')[cardIndex];
+        if (cardElement) {
+          cardElement.style.animation = 'pulse 0.3s ease';
+          setTimeout(() => cardElement.style.animation = '', 300);
+        }
         
         // Apply card effect
         this.applyCardEffect(card, true);
@@ -2175,7 +2360,7 @@
         const newCard = this.drawCard();
         if (newCard) this.cardHand.push(newCard);
         
-        // Update UI
+        // Update UI with animation
         this.updateCardUI();
         this.updateCombatUI();
         
@@ -2183,8 +2368,8 @@
         if (this.enemyCurrentHp <= 0) {
           this.victory();
         } else {
-          // Enemy turn
-          this.enemyTurn();
+          // Enemy turn with delay for visual effect
+          setTimeout(() => this.enemyTurn(), 500);
         }
       }
       
@@ -2254,9 +2439,9 @@
             }
             
             if (card.regen) {
-              effects.regen = card.healAmount;
+              effects.regen = Math.floor(card.healAmount * 0.5); // Reduce regeneration by 50%
               effects.regenTurns = card.regenTurns || 2;
-              this.showCombatMessage(`🌱 Regeneração por ${card.healAmount} HP por ${card.regenTurns} turnos!`);
+              this.showCombatMessage(`🌱 Regeneração por ${effects.regen} HP por ${card.regenTurns} turnos!`);
             }
             if (card.revive) {
               if (isPlayer && this.playerCurrentHp <= 0) {
@@ -2293,6 +2478,7 @@
         this.showScreen('combat');
         this.inCombat = true;
         this.combatRound = 1;
+        this.maxCombatRounds = 50; // Prevent infinite stalemates
         
         // Initialize card system
         this.drawInitialHand();
