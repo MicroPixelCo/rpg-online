@@ -87,12 +87,16 @@
     }
 
     .header-title {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 700;
       background: linear-gradient(135deg, var(--secondary), var(--primary));
       -webkit-text-fill-color: transparent;
       background-clip: text;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+      min-width: 0;
     }
 
     .header-right {
@@ -101,6 +105,8 @@
       align-items: center;
       flex-shrink: 0;
       min-width: fit-content;
+      position: relative;
+      z-index: 1001;
     }
 
     .gold-display {
