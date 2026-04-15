@@ -63,10 +63,8 @@
       flex-direction: column;
       animation: fadeIn 0.4s ease;
       overflow-y: auto;
-    }
-
-    .screen > *:first-child {
-      margin-top: 75px;
+      padding-top: 75px;
+      box-sizing: border-box;
     }
 
     .screen.active {
@@ -99,9 +97,10 @@
 
     .header-right {
       display: flex;
-      gap: 12px;
+      gap: 16px;
       align-items: center;
       flex-shrink: 0;
+      min-width: fit-content;
     }
 
     .gold-display {
