@@ -1188,7 +1188,7 @@
         <div class="quick-btn" onclick="window.game.showArtifacts();">💎 Artefatos</div>
         <div class="quick-btn" onclick="window.game.showInventory();">📦 Chars</div>
         <div class="quick-btn" onclick="window.game.showRareInventory();">💎 Raros</div>
-        <div class="quick-btn" onclick="window.game.claimDailyReward();">🎁 Recompensa Diária</div>
+        <div class="quick-btn" onclick="window.game.showDailyRewards();">🎁 Recompensa Diária</div>
         <div class="quick-btn" onclick="window.game.showAchievements();">🏆 Achievements</div>
         <div class="quick-btn" onclick="window.game.showDailyQuests();">📅 Missões</div>
         <div class="quick-btn" onclick="window.game.showStats();">📊 Stats</div>
@@ -1256,64 +1256,34 @@
   </div>
 
   <div id="shop" class="screen">
-    <div class="shop-wrapper">
-      <div class="shop-sidebar">
-        <div class="sidebar-title">Raridade</div>
-        <button type="button" class="filter-btn active" onclick="window.game.filterShop('all');">Todos</button>
-        <button type="button" class="filter-btn" onclick="window.game.filterShop('free');">FREE</button>
-        <button type="button" class="filter-btn" onclick="window.game.filterShop('common');">Comum</button>
-        <button type="button" class="filter-btn" onclick="window.game.filterShop('rare');">Raro</button>
-        <button type="button" class="filter-btn" onclick="window.game.filterShop('epic');">Épico</button>
-        <button type="button" class="btn-secondary" style="margin-top: 10px; font-size: 10px;" onclick="window.game.goLobby();">← Voltar</button>
-      </div>
-      <div class="shop-content">
-        <div class="items-grid" id="shopGrid"></div>
-      </div>
+    <div class="shop-content">
+      <div class="sidebar-title" style="margin-bottom: 12px; font-size: 14px;">🛒 Loja</div>
+      <div class="items-grid" id="shopItemsGrid"></div>
+      <button type="button" class="btn-secondary" style="margin: 20px 0; width: 100%;" onclick="window.game.goLobby();">← Voltar</button>
     </div>
   </div>
 
   <div id="potions" class="screen">
-    <div class="shop-wrapper">
-      <div class="shop-sidebar">
-        <div class="sidebar-title">Tipo</div>
-        <button type="button" class="filter-btn active" onclick="window.game.filterPotions('all');">Todos</button>
-        <button type="button" class="filter-btn" onclick="window.game.filterPotions('heal');">Cura</button>
-        <button type="button" class="filter-btn" onclick="window.game.filterPotions('buff');">Buff</button>
-        <button type="button" class="btn-secondary" style="margin-top: 10px; font-size: 10px;" onclick="window.game.goLobby();">← Voltar</button>
-      </div>
-      <div class="shop-content">
-        <div class="items-grid" id="potionsGrid"></div>
-      </div>
+    <div class="shop-content">
+      <div class="sidebar-title" style="margin-bottom: 12px; font-size: 14px;">🧪 Poções</div>
+      <div class="items-grid" id="potionsGrid"></div>
+      <button type="button" class="btn-secondary" style="margin: 20px 0; width: 100%;" onclick="window.game.goLobby();">← Voltar</button>
     </div>
   </div>
 
   <div id="equipment" class="screen">
-    <div class="shop-wrapper">
-      <div class="shop-sidebar">
-        <div class="sidebar-title">Tipo</div>
-        <button type="button" class="filter-btn active" onclick="window.game.filterEquipment('all');">Todos</button>
-        <button type="button" class="filter-btn" onclick="window.game.filterEquipment('weapon');">Armas</button>
-        <button type="button" class="filter-btn" onclick="window.game.filterEquipment('armor');">Armaduras</button>
-        <button type="button" class="btn-secondary" style="margin-top: 10px; font-size: 10px;" onclick="window.game.goLobby();">← Voltar</button>
-      </div>
-      <div class="shop-content">
-        <div class="items-grid" id="equipmentGrid"></div>
-      </div>
+    <div class="shop-content">
+      <div class="sidebar-title" style="margin-bottom: 12px; font-size: 14px;">🛡️ Equipamentos</div>
+      <div class="items-grid" id="equipmentGrid"></div>
+      <button type="button" class="btn-secondary" style="margin: 20px 0; width: 100%;" onclick="window.game.goLobby();">← Voltar</button>
     </div>
   </div>
 
   <div id="artifacts" class="screen">
-    <div class="shop-wrapper">
-      <div class="shop-sidebar">
-        <div class="sidebar-title">Tipo</div>
-        <button type="button" class="filter-btn active" onclick="window.game.filterArtifacts('all');">Todos</button>
-        <button type="button" class="filter-btn" onclick="window.game.filterArtifacts('power');">Poder</button>
-        <button type="button" class="filter-btn" onclick="window.game.filterArtifacts('defense');">Defesa</button>
-        <button type="button" class="btn-secondary" style="margin-top: 10px; font-size: 10px;" onclick="window.game.goLobby();">← Voltar</button>
-      </div>
-      <div class="shop-content">
-        <div class="items-grid" id="artifactsGrid"></div>
-      </div>
+    <div class="shop-content">
+      <div class="sidebar-title" style="margin-bottom: 12px; font-size: 14px;">💎 Artefatos</div>
+      <div class="items-grid" id="artifactsGrid"></div>
+      <button type="button" class="btn-secondary" style="margin: 20px 0; width: 100%;" onclick="window.game.goLobby();">← Voltar</button>
     </div>
   </div>
 
@@ -1354,6 +1324,20 @@
     <div style="flex: 1; overflow-y: auto;">
       <div class="inventory-grid" id="rareInventoryGrid"></div>
       <button type="button" class="btn-secondary" style="margin: 20px 0; width: 100%;" onclick="window.game.goLobby();">← Voltar</button>
+    </div>
+  </div>
+
+  <div id="daily-rewards" class="screen">
+    <h2 style="color: var(--secondary); margin: 0 0 14px 0;">🎁 Recompensa Diária</h2>
+    <div style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 20px;">
+      <div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.05)); border: 3px solid #ffd700; border-radius: 20px; padding: 30px; text-align: center; max-width: 400px; box-shadow: 0 8px 32px rgba(255, 215, 0, 0.3);">
+        <div style="font-size: 64px; margin-bottom: 10px;" id="dailyRewardEmoji">🎁</div>
+        <div style="font-size: 16px; color: #ffd700; font-weight: bold; margin-bottom: 10px;">Recompensa de Hoje</div>
+        <div style="font-size: 24px; color: white; font-weight: bold; margin-bottom: 20px;" id="dailyRewardAmount">💰 50g</div>
+        <button type="button" class="btn-success" style="padding: 15px 30px; font-size: 14px; width: 100%;" onclick="window.game.claimDailyReward();" id="claimDailyRewardBtn">🎁 Coletar Recompensa</button>
+        <div style="font-size: 10px; color: rgba(255, 255, 255, 0.6); margin-top: 15px;">Reseta todos os dias às 12:00</div>
+      </div>
+      <button type="button" class="btn-secondary" style="margin: 20px 0; width: 100%; max-width: 400px;" onclick="window.game.goLobby();">← Voltar</button>
     </div>
   </div>
 
@@ -1487,12 +1471,12 @@
       ],
       cards: {
         // Basic cards (always available)
-        basic_attack: { id: 'basic_attack', name: 'Ataque Básico', emoji: '⚔️', type: 'attack', power: 1.0, rarity: 'common', dropChance: 25, description: 'Ataque normal' },
-        heavy_attack: { id: 'heavy_attack', name: 'Ataque Pesado', emoji: '💥', type: 'attack', power: 1.5, rarity: 'common', dropChance: 22, description: '+50% dano' },
-        quick_attack: { id: 'quick_attack', name: 'Ataque Rápido', emoji: '⚡', type: 'attack', power: 0.8, critBonus: 15, rarity: 'common', dropChance: 20, description: '+15% crítico' },
+        basic_attack: { id: 'basic_attack', name: 'Ataque Básico', emoji: '⚔️', type: 'attack', power: 1.0, rarity: 'common', dropChance: 30, description: 'Ataque normal' },
+        heavy_attack: { id: 'heavy_attack', name: 'Ataque Pesado', emoji: '💥', type: 'attack', power: 1.5, rarity: 'common', dropChance: 25, description: '+50% dano' },
+        quick_attack: { id: 'quick_attack', name: 'Ataque Rápido', emoji: '⚡', type: 'attack', power: 0.8, critBonus: 15, rarity: 'common', dropChance: 23, description: '+15% crítico' },
         defend: { id: 'defend', name: 'Defesa', emoji: '🛡️', type: 'defense', damageReduction: 0.5, rarity: 'common', dropChance: 18, description: '-50% dano recebido' },
         dodge: { id: 'dodge', name: 'Esquiva', emoji: '🤸', type: 'defense', dodgeChance: 30, rarity: 'common', dropChance: 18, description: '30% chance de esquiva' },
-        heal_small: { id: 'heal_small', name: 'Cura Pequena', emoji: '💚', type: 'heal', healAmount: 30, rarity: 'common', dropChance: 19, description: 'Restaura 30 HP' },
+        heal_small: { id: 'heal_small', name: 'Cura Pequena', emoji: '💚', type: 'heal', healAmount: 30, rarity: 'common', dropChance: 18, description: 'Restaura 30 HP' },
         heal_medium: { id: 'heal_medium', name: 'Cura Média', emoji: '💚', type: 'heal', healAmount: 60, rarity: 'uncommon', dropChance: 18, description: 'Restaura 60 HP' },
         regen: { id: 'regen', name: 'Regeneração', emoji: '🌱', type: 'heal', healAmount: 20, regenTurns: 2, rarity: 'legendary', dropChance: 18, description: 'Cura 20 HP por 2 turnos' },
 
@@ -1661,12 +1645,50 @@
         this.dailyRewardClaimed = true;
         this.updateUI();
         this.saveGame();
+        this.updateDailyRewardsUI();
 
         let rewardText = `✅ Recompensa diária: ${reward.gold}g`;
         if (reward.potion) rewardText += ` + ${GAME_DATA.potions.find(p => p.id === reward.potion)?.name}`;
         if (reward.equipment) rewardText += ` + ${GAME_DATA.equipment.find(e => e.id === reward.equipment)?.name}`;
 
         alert(rewardText);
+      }
+
+      showDailyRewards() {
+        this.updateDailyRewardsUI();
+        this.showScreen('daily-rewards');
+      }
+
+      updateDailyRewardsUI() {
+        const rewards = [
+          { gold: 50 },
+          { gold: 75 },
+          { gold: 100 },
+          { gold: 125, potion: 'heal_small' },
+          { gold: 150, potion: 'heal_medium' },
+          { gold: 200, potion: 'heal_large' },
+          { gold: 250, equipment: 'sword_1' }
+        ];
+
+        const dayIndex = new Date().getDay(); // 0-6
+        const reward = rewards[dayIndex % rewards.length];
+
+        let rewardText = `💰 ${reward.gold}g`;
+        if (reward.potion) rewardText += ` + ${GAME_DATA.potions.find(p => p.id === reward.potion)?.name}`;
+        if (reward.equipment) rewardText += ` + ${GAME_DATA.equipment.find(e => e.id === reward.equipment)?.name}`;
+
+        $('dailyRewardAmount').textContent = rewardText;
+
+        const btn = $('claimDailyRewardBtn');
+        if (this.dailyRewardClaimed) {
+          btn.textContent = '✅ Já Coletado';
+          btn.disabled = true;
+          btn.style.opacity = '0.5';
+        } else {
+          btn.textContent = '🎁 Coletar Recompensa';
+          btn.disabled = false;
+          btn.style.opacity = '1';
+        }
       }
 
       loadGame() {
