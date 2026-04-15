@@ -9,19 +9,19 @@
     @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P:wght@400;700&display=swap');
 
     :root {
-      --primary: #6366f1;
-      --secondary: #ec4899;
-      --success: #10b981;
-      --danger: #ef4444;
-      --warning: #f59e0b;
-      --info: #06b6d4;
-      --dark: #0f172a;
-      --darker: #020617;
-      --light: #f8fafc;
-      --text: #f1f5f9;
-      --text-muted: #94a3b8;
-      --glass: rgba(255, 255, 255, 0.1);
-      --glass-border: rgba(255, 255, 255, 0.2);
+      --primary: #ff6b35;
+      --secondary: #f7c59f;
+      --success: #2ecc71;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+      --info: #3498db;
+      --dark: #1a1a2e;
+      --darker: #16213e;
+      --light: #e94560;
+      --text: #ffffff;
+      --text-muted: #b8b8b8;
+      --glass: rgba(233, 69, 96, 0.15);
+      --glass-border: rgba(233, 69, 96, 0.3);
     }
 
     html, body {
@@ -32,7 +32,7 @@
 
     body {
       font-family: 'Press Start 2P', sans-serif;
-      background: linear-gradient(135deg, var(--darker) 0%, #1e1b4b 25%, #312e81 50%, #4c1d95 75%, #6b21a8 100%);
+      background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
       background-size: 400% 400%;
       animation: gradientShift 15s ease infinite;
       color: var(--text);
@@ -1145,6 +1145,276 @@
       border-color: #00ff00;
       box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
     }
+
+    /* Lobby Styles */
+    .lobby-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 30px;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      gap: 30px;
+    }
+
+    .lobby-hero-section {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .hero-card-main {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+      background: linear-gradient(135deg, rgba(255, 107, 53, 0.25), rgba(233, 69, 96, 0.2));
+      border: 2px solid var(--primary);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 40px rgba(255, 107, 53, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card-main::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+      transform: rotate(45deg);
+      animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) rotate(45deg); }
+    }
+
+    .hero-avatar-container {
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .hero-avatar {
+      font-size: 100px;
+      animation: float 3s ease-in-out infinite;
+      filter: drop-shadow(0 0 20px rgba(255, 107, 53, 0.5));
+    }
+
+    .hero-level-badge {
+      position: absolute;
+      bottom: -5px;
+      right: -10px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: bold;
+      box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .hero-info {
+      flex: 1;
+    }
+
+    .hero-title {
+      font-size: 28px;
+      color: var(--secondary);
+      margin: 0 0 8px 0;
+      text-shadow: 0 0 15px rgba(247, 197, 159, 0.5);
+    }
+
+    .hero-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin: 0;
+      letter-spacing: 1px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+
+    .stat-card {
+      background: var(--glass);
+      border: 2px solid var(--glass-border);
+      border-radius: 15px;
+      padding: 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--primary);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
+    }
+
+    .stat-card.hp-card::before { background: linear-gradient(90deg, #ef4444, #dc2626); }
+    .stat-card.atk-card::before { background: linear-gradient(90deg, #f59e0b, #d97706); }
+    .stat-card.def-card::before { background: linear-gradient(90deg, #10b981, #059669); }
+    .stat-card.crit-card::before { background: linear-gradient(90deg, #eab308, #ca8a04); }
+
+    .stat-icon {
+      font-size: 32px;
+      margin-bottom: 10px;
+      filter: drop-shadow(0 0 10px currentColor);
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--text);
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .lobby-navigation {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .nav-section-title {
+      font-size: 18px;
+      color: var(--secondary);
+      margin: 0 0 15px 0;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--glass-border);
+      text-shadow: 0 0 10px rgba(247, 197, 159, 0.3);
+    }
+
+    .nav-grid {
+      display: grid;
+      gap: 15px;
+    }
+
+    .combat-grid { grid-template-columns: repeat(3, 1fr); }
+    .shop-grid { grid-template-columns: repeat(4, 1fr); }
+    .inventory-grid { grid-template-columns: repeat(2, 1fr); }
+    .progress-grid { grid-template-columns: repeat(4, 1fr); }
+
+    .nav-card {
+      background: var(--glass);
+      border: 2px solid var(--glass-border);
+      border-radius: 15px;
+      padding: 25px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .nav-card:hover::before {
+      opacity: 1;
+    }
+
+    .nav-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+    }
+
+    .combat-card { border-color: rgba(239, 68, 68, 0.3); }
+    .combat-card:hover { border-color: #ef4444; box-shadow: 0 12px 35px rgba(239, 68, 68, 0.3); }
+
+    .boss-card { border-color: rgba(139, 92, 246, 0.3); }
+    .boss-card:hover { border-color: #8b5cf6; box-shadow: 0 12px 35px rgba(139, 92, 246, 0.3); }
+
+    .wave-card { border-color: rgba(6, 182, 212, 0.3); }
+    .wave-card:hover { border-color: #06b6d4; box-shadow: 0 12px 35px rgba(6, 182, 212, 0.3); }
+
+    .shop-card { border-color: rgba(245, 158, 11, 0.3); }
+    .shop-card:hover { border-color: #f59e0b; box-shadow: 0 12px 35px rgba(245, 158, 11, 0.3); }
+
+    .potion-card { border-color: rgba(16, 185, 129, 0.3); }
+    .potion-card:hover { border-color: #10b981; box-shadow: 0 12px 35px rgba(16, 185, 129, 0.3); }
+
+    .equip-card { border-color: rgba(99, 102, 241, 0.3); }
+    .equip-card:hover { border-color: #6366f1; box-shadow: 0 12px 35px rgba(99, 102, 241, 0.3); }
+
+    .artifact-card { border-color: rgba(236, 72, 153, 0.3); }
+    .artifact-card:hover { border-color: #ec4899; box-shadow: 0 12px 35px rgba(236, 72, 153, 0.3); }
+
+    .inv-card { border-color: rgba(132, 204, 22, 0.3); }
+    .inv-card:hover { border-color: #84cc16; box-shadow: 0 12px 35px rgba(132, 204, 22, 0.3); }
+
+    .rare-card { border-color: rgba(249, 115, 22, 0.3); }
+    .rare-card:hover { border-color: #f97316; box-shadow: 0 12px 35px rgba(249, 115, 22, 0.3); }
+
+    .daily-card { border-color: rgba(234, 179, 8, 0.3); animation: glow 2s ease-in-out infinite; }
+    .daily-card:hover { border-color: #eab308; box-shadow: 0 12px 35px rgba(234, 179, 8, 0.3); }
+
+    .quest-card { border-color: rgba(20, 184, 166, 0.3); }
+    .quest-card:hover { border-color: #14b8a6; box-shadow: 0 12px 35px rgba(20, 184, 166, 0.3); }
+
+    .achievement-card { border-color: rgba(168, 85, 247, 0.3); }
+    .achievement-card:hover { border-color: #a855f7; box-shadow: 0 12px 35px rgba(168, 85, 247, 0.3); }
+
+    .stats-card { border-color: rgba(100, 116, 139, 0.3); }
+    .stats-card:hover { border-color: #64748b; box-shadow: 0 12px 35px rgba(100, 116, 139, 0.3); }
+
+    .nav-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+      transition: transform 0.3s ease;
+    }
+
+    .nav-card:hover .nav-icon {
+      transform: scale(1.2);
+    }
+
+    .nav-label {
+      font-size: 14px;
+      font-weight: bold;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .nav-badge {
+      font-size: 10px;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.1);
+      padding: 4px 10px;
+      border-radius: 12px;
+      display: inline-block;
+    }
   </style>
 </head>
 
@@ -1195,32 +1465,128 @@
   </div>
 
   <div id="lobby" class="screen">
-    <div class="lobby-grid">
-      <div class="hero-card" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(236, 72, 153, 0.3)); border: 3px solid rgba(255, 255, 255, 0.3); box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4);">
-        <div class="hero-emoji" id="currentCharEmoji" style="font-size: 80px; animation: float 3s ease-in-out infinite;">🧙</div>
-        <div class="hero-name" id="currentCharName" style="font-size: 20px; color: #00ffff; text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);">Mago</div>
-        <div class="hero-stats" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
-          <div style="background: rgba(255, 0, 0, 0.2); padding: 8px; border-radius: 8px; text-align: center;">❤️ <span id="charDisplayHP">100</span></div>
-          <div style="background: rgba(255, 165, 0, 0.2); padding: 8px; border-radius: 8px; text-align: center;">⚔️ <span id="charDisplayATK">18</span></div>
-          <div style="background: rgba(0, 255, 0, 0.2); padding: 8px; border-radius: 8px; text-align: center;">🛡️ <span id="charDisplayDEF">2</span></div>
-          <div style="background: rgba(255, 255, 0, 0.2); padding: 8px; border-radius: 8px; text-align: center;">💥 <span id="charDisplayCrit">15%</span></div>
+    <div class="lobby-container">
+      <!-- Character Profile Card -->
+      <div class="lobby-hero-section">
+        <div class="hero-card-main">
+          <div class="hero-avatar-container">
+            <div class="hero-avatar" id="currentCharEmoji">🧙</div>
+            <div class="hero-level-badge">
+              <span id="charLevelDisplay">LVL 1</span>
+            </div>
+          </div>
+          <div class="hero-info">
+            <h2 class="hero-title" id="currentCharName">Mago</h2>
+            <p class="hero-subtitle">Aventureiro Destemido</p>
+          </div>
+        </div>
+        
+        <div class="stats-grid">
+          <div class="stat-card hp-card">
+            <div class="stat-icon">❤️</div>
+            <div class="stat-value" id="charDisplayHP">100</div>
+            <div class="stat-label">HP</div>
+          </div>
+          <div class="stat-card atk-card">
+            <div class="stat-icon">⚔️</div>
+            <div class="stat-value" id="charDisplayATK">18</div>
+            <div class="stat-label">ATK</div>
+          </div>
+          <div class="stat-card def-card">
+            <div class="stat-icon">🛡️</div>
+            <div class="stat-value" id="charDisplayDEF">2</div>
+            <div class="stat-label">DEF</div>
+          </div>
+          <div class="stat-card crit-card">
+            <div class="stat-icon">💥</div>
+            <div class="stat-value" id="charDisplayCrit">15%</div>
+            <div class="stat-label">CRIT</div>
+          </div>
         </div>
       </div>
 
-      <div class="quick-menu" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
-        <div class="quick-btn" style="background: linear-gradient(135deg, #ef4444, #dc2626); border: 2px solid rgba(255, 255, 255, 0.3); animation: glow 2s ease-in-out infinite;" onclick="window.game.startCombat('normal');">⚔️ Batalha</div>
-        <div class="quick-btn" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); border: 2px solid rgba(255, 255, 255, 0.3);" onclick="window.game.startCombat('boss');">🐉 Boss</div>
-        <div class="quick-btn" style="background: linear-gradient(135deg, #06b6d4, #0891b2); border: 2px solid rgba(255, 255, 255, 0.3);" onclick="window.game.startCombat('wave');">🌊 Ondas</div>
-        <div class="quick-btn" style="background: linear-gradient(135deg, #f59e0b, #d97706); border: 2px solid rgba(255, 255, 255, 0.3);" onclick="window.game.showShop();">🛒 Loja</div>
-        <div class="quick-btn" style="background: linear-gradient(135deg, #10b981, #059669); border: 2px solid rgba(255, 255, 255, 0.3);" onclick="window.game.showPotions();">🧪 Poções</div>
-        <div class="quick-btn" style="background: linear-gradient(135deg, #6366f1, #4f46e5); border: 2px solid rgba(255, 255, 255, 0.3);" onclick="window.game.showEquipment();">🛡️ Equipamentos</div>
-        <div class="quick-btn" style="background: linear-gradient(135deg, #ec4899, #db2777); border: 2px solid rgba(255, 255, 255, 0.3);" onclick="window.game.showArtifacts();">💎 Artefatos</div>
-        <div class="quick-btn" style="background: linear-gradient(135deg, #84cc16, #65a30d); border: 2px solid rgba(255, 255, 255, 0.3);" onclick="window.game.showInventory();">📦 Inventário</div>
-        <div class="quick-btn" style="background: linear-gradient(135deg, #f97316, #ea580c); border: 2px solid rgba(255, 255, 255, 0.3);" onclick="window.game.showRareInventory();">💎 Raros</div>
-        <div class="quick-btn" style="background: linear-gradient(135deg, #eab308, #ca8a04); border: 2px solid rgba(255, 255, 255, 0.3); animation: glow 3s ease-in-out infinite;" onclick="window.game.showDailyRewards();">🎁 Recompensa</div>
-        <div class="quick-btn" style="background: linear-gradient(135deg, #a855f7, #9333ea); border: 2px solid rgba(255, 255, 255, 0.3);" onclick="window.game.showAchievements();">🏆 Achievements</div>
-        <div class="quick-btn" style="background: linear-gradient(135deg, #14b8a6, #0d9488); border: 2px solid rgba(255, 255, 255, 0.3);" onclick="window.game.showQuests();">📋 Missões</div>
-        <div class="quick-btn" style="background: linear-gradient(135deg, #64748b, #475569); border: 2px solid rgba(255, 255, 255, 0.3);" onclick="window.game.showStats();">📊 Estatísticas</div>
+      <!-- Navigation Grid -->
+      <div class="lobby-navigation">
+        <div class="nav-section-title">⚔️ Combate</div>
+        <div class="nav-grid combat-grid">
+          <div class="nav-card combat-card" onclick="window.game.startCombat('normal');">
+            <div class="nav-icon">⚔️</div>
+            <div class="nav-label">Batalha</div>
+            <div class="nav-badge">Normal</div>
+          </div>
+          <div class="nav-card boss-card" onclick="window.game.startCombat('boss');">
+            <div class="nav-icon">🐉</div>
+            <div class="nav-label">Boss</div>
+            <div class="nav-badge">Difícil</div>
+          </div>
+          <div class="nav-card wave-card" onclick="window.game.startCombat('wave');">
+            <div class="nav-icon">🌊</div>
+            <div class="nav-label">Ondas</div>
+            <div class="nav-badge">Infinito</div>
+          </div>
+        </div>
+
+        <div class="nav-section-title">🛒 Loja</div>
+        <div class="nav-grid shop-grid">
+          <div class="nav-card shop-card" onclick="window.game.showShop();">
+            <div class="nav-icon">🛒</div>
+            <div class="nav-label">Loja</div>
+            <div class="nav-badge">Personagens</div>
+          </div>
+          <div class="nav-card potion-card" onclick="window.game.showPotions();">
+            <div class="nav-icon">🧪</div>
+            <div class="nav-label">Poções</div>
+            <div class="nav-badge">Consumíveis</div>
+          </div>
+          <div class="nav-card equip-card" onclick="window.game.showEquipment();">
+            <div class="nav-icon">🛡️</div>
+            <div class="nav-label">Equipamentos</div>
+            <div class="nav-badge">Armas/Armaduras</div>
+          </div>
+          <div class="nav-card artifact-card" onclick="window.game.showArtifacts();">
+            <div class="nav-icon">💎</div>
+            <div class="nav-label">Artefatos</div>
+            <div class="nav-badge">Lendários</div>
+          </div>
+        </div>
+
+        <div class="nav-section-title">📦 Inventário</div>
+        <div class="nav-grid inventory-grid">
+          <div class="nav-card inv-card" onclick="window.game.showInventory();">
+            <div class="nav-icon">📦</div>
+            <div class="nav-label">Inventário</div>
+            <div class="nav-badge">Equipamentos</div>
+          </div>
+          <div class="nav-card rare-card" onclick="window.game.showRareInventory();">
+            <div class="nav-icon">✨</div>
+            <div class="nav-label">Raros</div>
+            <div class="nav-badge">Itens Especiais</div>
+          </div>
+        </div>
+
+        <div class="nav-section-title">🎯 Progresso</div>
+        <div class="nav-grid progress-grid">
+          <div class="nav-card daily-card" onclick="window.game.showDailyRewards();">
+            <div class="nav-icon">🎁</div>
+            <div class="nav-label">Recompensa</div>
+            <div class="nav-badge">Diária</div>
+          </div>
+          <div class="nav-card quest-card" onclick="window.game.showQuests();">
+            <div class="nav-icon">📋</div>
+            <div class="nav-label">Missões</div>
+            <div class="nav-badge">Diárias/Semanais</div>
+          </div>
+          <div class="nav-card achievement-card" onclick="window.game.showAchievements();">
+            <div class="nav-icon">🏆</div>
+            <div class="nav-label">Achievements</div>
+            <div class="nav-badge">Conquistas</div>
+          </div>
+          <div class="nav-card stats-card" onclick="window.game.showStats();">
+            <div class="nav-icon">📊</div>
+            <div class="nav-label">Estatísticas</div>
+            <div class="nav-badge">Performance</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
