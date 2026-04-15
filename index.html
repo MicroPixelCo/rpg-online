@@ -1606,11 +1606,16 @@
       saveGame() {
         const saveData = {
           username: this.username,
-          currentCharacterId: this.currentCharacterId,
+          pass: this.password,
           gold: this.gold,
           level: this.level,
-          wins: this.wins,
-          losses: this.losses,
+          classe: this.currentCharacterId,
+          hp: this.getTotalStats().hp,
+          inventario: this.inventory,
+          stats: {
+            wins: this.wins,
+            losses: this.losses
+          },
           ownedCharacters: this.ownedCharacters,
           potions: this.potions,
           equipment: this.equipment,
@@ -1619,13 +1624,32 @@
           achievements: this.achievements,
           quests: this.quests,
           equippedItems: this.equippedItems,
-          inventory: this.inventory,
           dailyResetTime: this.dailyResetTime,
           weeklyResetTime: this.weeklyResetTime,
           dailyRewardClaimed: this.dailyRewardClaimed,
           dailyRewardDay: this.dailyRewardDay
         };
         localStorage.setItem('rpgUltimateSave', JSON.stringify(saveData));
+        
+        // Also try to save to server if available
+        this.saveToServer(saveData);
+      }
+      
+      async saveToServer(data) {
+        try {
+          const response = await fetch('/api/save', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          });
+          if (response.ok) {
+            console.log('Data saved to server');
+          }
+        } catch (e) {
+          console.log('Server save failed, using localStorage only');
+        }
       }
 
       checkMissionResets() {
@@ -1750,8 +1774,25 @@
         if (savedData) {
           try {
             const data = JSON.parse(savedData);
+            
+            // Handle users.json structure format
+            if (data.classe) {
+              this.currentCharacterId = data.classe;
+            }
+            if (data.inventario) {
+              this.inventory = data.inventario;
+            }
+            if (data.stats) {
+              this.wins = data.stats.wins || 0;
+              this.losses = data.stats.losses || 0;
+            }
+            if (data.pass) {
+              this.password = data.pass;
+            }
+            
             Object.assign(this, data);
             this.character = GAME_DATA.characters[this.currentCharacterId];
+            
             // Ensure inventory exists
             if (!this.inventory) {
               this.inventory = {
@@ -3011,3 +3052,4 @@
   </script>
 </body>
 </html>
+ 
