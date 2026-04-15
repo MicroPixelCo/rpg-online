@@ -10,18 +10,22 @@
 
     :root {
       --primary: #ff6b35;
-      --secondary: #f7c59f;
+      --secondary: #e94560;
       --success: #2ecc71;
       --danger: #e74c3c;
       --warning: #f39c12;
       --info: #3498db;
-      --dark: #1a1a2e;
-      --darker: #16213e;
-      --light: #e94560;
-      --text: #ffffff;
-      --text-muted: #b8b8b8;
+      --dark: #2d1b4e;
+      --darker: #1a0a2e;
+      --light: #ff6b35;
+      --text: #c8a8c8;
+      --text-muted: #c8a8c8;
       --glass: rgba(233, 69, 96, 0.15);
       --glass-border: rgba(233, 69, 96, 0.3);
+      --accent-orange: #ff6b35;
+      --accent-blue: #4a90e2;
+      --accent-purple: #9b59b6;
+      --accent-pink: #e91e63;
     }
 
     html, body {
@@ -32,7 +36,7 @@
 
     body {
       font-family: 'Press Start 2P', sans-serif;
-      background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+      background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 25%, var(--accent-purple) 50%, var(--accent-blue) 75%, var(--accent-pink) 100%);
       background-size: 400% 400%;
       animation: gradientShift 15s ease infinite;
       color: var(--text);
@@ -1593,13 +1597,15 @@
 
   <div id="shop" class="screen">
     <div class="shop-content">
+      <button type="button" class="btn-secondary" style="margin-bottom: 12px;" onclick="window.game.showScreen('lobby');">⬅️ Voltar</button>
       <div class="sidebar-title" style="margin-bottom: 12px; font-size: 14px;">🛒 Loja</div>
-      <div class="items-grid" id="shopItemsGrid"></div>
+      <div class="items-grid" id="shopGrid"></div>
     </div>
   </div>
 
   <div id="potions" class="screen">
     <div class="shop-content">
+      <button type="button" class="btn-secondary" style="margin-bottom: 12px;" onclick="window.game.showScreen('lobby');">⬅️ Voltar</button>
       <div class="sidebar-title" style="margin-bottom: 12px; font-size: 14px;">🧪 Poções</div>
       <div class="items-grid" id="potionsGrid"></div>
     </div>
@@ -1607,6 +1613,7 @@
 
   <div id="equipment" class="screen">
     <div class="shop-content">
+      <button type="button" class="btn-secondary" style="margin-bottom: 12px;" onclick="window.game.showScreen('lobby');">⬅️ Voltar</button>
       <div class="sidebar-title" style="margin-bottom: 12px; font-size: 14px;">🛡️ Equipamentos</div>
       <div class="items-grid" id="equipmentGrid"></div>
     </div>
@@ -1614,12 +1621,14 @@
 
   <div id="artifacts" class="screen">
     <div class="shop-content">
+      <button type="button" class="btn-secondary" style="margin-bottom: 12px;" onclick="window.game.showScreen('lobby');">⬅️ Voltar</button>
       <div class="sidebar-title" style="margin-bottom: 12px; font-size: 14px;">💎 Artefatos</div>
       <div class="items-grid" id="artifactsGrid"></div>
     </div>
   </div>
 
   <div id="inventory" class="screen">
+    <button type="button" class="btn-secondary" style="margin: 0 0 14px 0;" onclick="window.game.showScreen('lobby');">⬅️ Voltar</button>
     <h2 style="color: var(--secondary); margin: 0 0 14px 0;">📦 Inventário</h2>
     <div style="flex: 1; overflow-y: auto; padding: 20px;">
       <div style="background: var(--glass); border: 2px solid var(--glass-border); border-radius: 15px; padding: 20px; margin-bottom: 20px;">
@@ -1677,6 +1686,7 @@
   </div>
 
   <div id="potionInventory" class="screen">
+    <button type="button" class="btn-secondary" style="margin: 0 0 14px 0;" onclick="window.game.showScreen('lobby');">⬅️ Voltar</button>
     <h2 style="color: var(--secondary); margin: 0 0 14px 0;">🧪 Poções</h2>
     <div style="flex: 1; overflow-y: auto;">
       <div class="inventory-grid" id="potionInventoryGrid"></div>
@@ -1684,6 +1694,7 @@
   </div>
 
   <div id="equipment-inv" class="screen">
+    <button type="button" class="btn-secondary" style="margin: 0 0 14px 0;" onclick="window.game.showScreen('lobby');">⬅️ Voltar</button>
     <h2 style="color: var(--secondary); margin: 0 0 14px 0;">🛡️ Equipamentos</h2>
     <div style="flex: 1; overflow-y: auto;">
       <div class="inventory-grid" id="equipmentInventoryGrid"></div>
@@ -1691,6 +1702,7 @@
   </div>
 
   <div id="artifacts-inv" class="screen">
+    <button type="button" class="btn-secondary" style="margin: 0 0 14px 0;" onclick="window.game.showScreen('lobby');">⬅️ Voltar</button>
     <h2 style="color: var(--secondary); margin: 0 0 14px 0;">💎 Artefatos</h2>
     <div style="flex: 1; overflow-y: auto;">
       <div class="inventory-grid" id="artifactsInventoryGrid"></div>
@@ -1698,6 +1710,7 @@
   </div>
 
   <div id="rare-inv" class="screen">
+    <button type="button" class="btn-secondary" style="margin: 0 0 14px 0;" onclick="window.game.showScreen('lobby');">⬅️ Voltar</button>
     <h2 style="color: var(--secondary); margin: 0 0 14px 0;">💎 Itens Raros</h2>
     <div style="flex: 1; overflow-y: auto;">
       <div class="inventory-grid" id="rareInventoryGrid"></div>
@@ -1705,6 +1718,7 @@
   </div>
 
   <div id="daily-rewards" class="screen">
+    <button type="button" class="btn-secondary" style="margin: 0 0 14px 0;" onclick="window.game.showScreen('lobby');">⬅️ Voltar</button>
     <h2 style="color: var(--secondary); margin: 0 0 14px 0;">🎁 Recompensa Diária</h2>
     <div style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 20px;">
       <div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.05)); border: 3px solid #ffd700; border-radius: 20px; padding: 30px; text-align: center; max-width: 400px; box-shadow: 0 8px 32px rgba(255, 215, 0, 0.3);">
@@ -1712,7 +1726,7 @@
         <div style="font-size: 16px; color: #ffd700; font-weight: bold; margin-bottom: 10px;">Recompensa de Hoje</div>
         <div style="font-size: 24px; color: white; font-weight: bold; margin-bottom: 20px;" id="dailyRewardAmount">💰 50g</div>
         <button type="button" class="btn-success" style="padding: 15px 30px; font-size: 14px; width: 100%;" onclick="window.game.claimDailyReward();" id="claimDailyRewardBtn">🎁 Coletar Recompensa</button>
-        <div style="font-size: 10px; color: rgba(255, 255, 255, 0.6); margin-top: 15px;">Reseta todos os dias às 12:00</div>
+        <div style="font-size: 10px; color: rgba(255, 255, 255, 0.6); margin-top: 15px;">Reseta sexta-feira às 12:00</div>
       </div>
     </div>
   </div>
@@ -1739,6 +1753,7 @@
   </div>
 
   <div id="achievements" class="screen">
+    <button type="button" class="btn-secondary" style="margin: 0 0 14px 0;" onclick="window.game.showScreen('lobby');">⬅️ Voltar</button>
     <h2 style="color: var(--secondary); margin: 0 0 14px 0;">🏆 Achievements</h2>
     <div style="flex: 1; overflow-y: auto;">
       <div class="grid-container" id="achievementsGrid"></div>
@@ -1746,6 +1761,7 @@
   </div>
 
   <div id="quests" class="screen">
+    <button type="button" class="btn-secondary" style="margin: 0 0 14px 0;" onclick="window.game.showScreen('lobby');">⬅️ Voltar</button>
     <h2 style="color: var(--secondary); margin: 0 0 14px 0;">📋 Missões</h2>
     <div style="flex: 1; overflow-y: auto;">
       <div id="questsList"></div>
@@ -1753,6 +1769,7 @@
   </div>
 
   <div id="stats" class="screen">
+    <button type="button" class="btn-secondary" style="margin: 0 0 14px 0;" onclick="window.game.showScreen('lobby');">⬅️ Voltar</button>
     <h2 style="color: var(--secondary); margin: 0 0 14px 0;">📊 Estatísticas</h2>
     <div style="flex: 1; overflow-y: auto;">
       <div id="statsGrid" style="padding: 20px;"></div>
@@ -1873,7 +1890,7 @@
       constructor() {
         this.username = '';
         this.password = '';
-        this.gold = 1000;
+        this.gold = 100;
         this.level = 1;
         this.wins = 0;
         this.losses = 0;
@@ -1970,12 +1987,12 @@
         const currentHour = now.getHours();
         const currentDay = now.getDay(); // 0 = Sunday, 5 = Friday
         
-        // Check daily reset (12:00)
+        // Check daily reset (Friday 12:00)
         const lastDailyReset = new Date(this.dailyResetTime);
+        const lastDailyDay = lastDailyReset.getDay();
         const lastDailyHour = lastDailyReset.getHours();
-        const lastDailyDay = lastDailyReset.getDate();
         
-        if (currentDay !== lastDailyDay || (currentHour >= 12 && lastDailyHour < 12)) {
+        if (currentDay === 5 && currentHour >= 12 && (lastDailyDay !== 5 || lastDailyHour < 12)) {
           this.resetDailyMissions();
           this.dailyResetTime = Date.now();
         }
@@ -1990,11 +2007,14 @@
           this.weeklyResetTime = Date.now();
         }
         
-        // Check daily reward reset
-        const today = now.toDateString();
-        if (this.dailyRewardDay !== today) {
+        // Check daily reward reset (Friday 12:00)
+        const lastRewardReset = new Date(this.dailyRewardDay || 0);
+        const lastRewardDay = lastRewardReset.getDay();
+        const lastRewardHour = lastRewardReset.getHours();
+        
+        if (currentDay === 5 && currentHour >= 12 && (lastRewardDay !== 5 || lastRewardHour < 12)) {
           this.dailyRewardClaimed = false;
-          this.dailyRewardDay = today;
+          this.dailyRewardDay = now;
         }
       }
 
@@ -2985,7 +3005,18 @@
       enemyTurn() {
         if (!this.inCombat || this.enemyCurrentHp <= 0) return;
         
+        // Show thinking message
+        this.showCombatMessage('🤔 O inimigo está pensando...');
+        
+        // Add visual thinking indicator
+        const enemySprite = this.$('enemySprite');
+        enemySprite.style.animation = 'pulse 0.5s ease infinite';
+        
+        // Wait 3 seconds before enemy plays
         setTimeout(() => {
+          // Remove thinking animation
+          enemySprite.style.animation = '';
+          
           // AI Card Selection Logic
           if (this.enemyCardHand.length > 0) {
             const bestCardIndex = this.selectBestEnemyCard();
@@ -3027,7 +3058,7 @@
           }
           
           this.updateCombatUI();
-        }, 1000);
+        }, 3000);
       }
       
       selectBestEnemyCard() {
@@ -3302,6 +3333,73 @@
             </div>
           `;
         }).join('');
+      }
+
+      showQuests() {
+        this.showScreen('quests');
+        const list = this.$('questsList');
+        
+        // Initialize quests if they don't exist
+        GAME_DATA.quests.forEach(quest => {
+          if (!this.quests[quest.id]) {
+            this.quests[quest.id] = { ...quest, progress: 0, completed: false };
+          }
+        });
+
+        const dailyQuests = GAME_DATA.quests.filter(q => q.type === 'daily');
+        const weeklyQuests = GAME_DATA.quests.filter(q => q.type === 'weekly');
+
+        list.innerHTML = `
+          <div style="margin-bottom: 20px;">
+            <h3 style="color: var(--accent-orange); margin-bottom: 10px; font-size: 14px;">⚔️ Missões Diárias (Fácil)</h3>
+            ${dailyQuests.map(quest => {
+              const progress = this.quests[quest.id]?.progress || 0;
+              const completed = this.quests[quest.id]?.completed || false;
+              const progressPercent = Math.min(100, (progress / quest.target) * 100);
+
+              return `
+                <div class="quest-card ${completed ? 'completed' : ''}">
+                  <div class="quest-title">${quest.name} ${completed ? '✅' : ''}</div>
+                  <div class="quest-desc">${quest.desc}</div>
+                  <div style="margin-top: 8px;">
+                    <div style="background: rgba(255,255,255,0.1); border-radius: 4px; height: 8px; overflow: hidden;">
+                      <div style="background: linear-gradient(90deg, var(--accent-orange), var(--accent-pink)); width: ${progressPercent}%; height: 100%;"></div>
+                    </div>
+                    <div style="font-size: 8px; margin-top: 4px; color: #aaaaaa;">
+                      Progress: ${progress}/${quest.target} | Recompensa: ${quest.reward}g
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+          <div>
+            <h3 style="color: var(--accent-purple); margin-bottom: 10px; font-size: 14px;">🏆 Missões Semanais (Difícil)</h3>
+            ${weeklyQuests.map(quest => {
+              const progress = this.quests[quest.id]?.progress || 0;
+              const completed = this.quests[quest.id]?.completed || false;
+              const progressPercent = Math.min(100, (progress / quest.target) * 100);
+
+              return `
+                <div class="quest-card ${completed ? 'completed' : ''}">
+                  <div class="quest-title">${quest.name} ${completed ? '✅' : ''}</div>
+                  <div class="quest-desc">${quest.desc}</div>
+                  <div style="margin-top: 8px;">
+                    <div style="background: rgba(255,255,255,0.1); border-radius: 4px; height: 8px; overflow: hidden;">
+                      <div style="background: linear-gradient(90deg, var(--accent-purple), var(--accent-blue)); width: ${progressPercent}%; height: 100%;"></div>
+                    </div>
+                    <div style="font-size: 8px; margin-top: 4px; color: #aaaaaa;">
+                      Progress: ${progress}/${quest.target} | Recompensa: ${quest.reward}g
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+          <div style="margin-top: 20px; font-size: 10px; color: var(--text-muted); text-align: center;">
+            ⏰ As missões resetam sexta-feira às 12:00
+          </div>
+        `;
       }
 
       showStats() {
