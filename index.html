@@ -1317,7 +1317,7 @@
       gap: 15px;
     }
 
-    .combat-grid { grid-template-columns: repeat(3, 1fr); }
+    .combat-grid { grid-template-columns: repeat(5, 1fr); }
     .shop-grid { grid-template-columns: repeat(4, 1fr); }
     .inventory-grid { grid-template-columns: repeat(2, 1fr); }
     .progress-grid { grid-template-columns: repeat(4, 1fr); }
@@ -1363,6 +1363,12 @@
 
     .wave-card { border-color: rgba(6, 182, 212, 0.3); }
     .wave-card:hover { border-color: #06b6d4; box-shadow: 0 12px 35px rgba(6, 182, 212, 0.3); }
+
+    .miniboss-card { border-color: rgba(251, 146, 60, 0.3); }
+    .miniboss-card:hover { border-color: #fb923c; box-shadow: 0 12px 35px rgba(251, 146, 60, 0.3); }
+
+    .finalboss-card { border-color: rgba(220, 38, 38, 0.3); animation: glow 2s ease-in-out infinite; }
+    .finalboss-card:hover { border-color: #dc2626; box-shadow: 0 12px 35px rgba(220, 38, 38, 0.5); }
 
     .shop-card { border-color: rgba(245, 158, 11, 0.3); }
     .shop-card:hover { border-color: #f59e0b; box-shadow: 0 12px 35px rgba(245, 158, 11, 0.3); }
@@ -1528,6 +1534,16 @@
             <div class="nav-label">Ondas</div>
             <div class="nav-badge">Infinito</div>
           </div>
+          <div class="nav-card miniboss-card" onclick="window.game.startCombat('miniboss');">
+            <div class="nav-icon">🗿</div>
+            <div class="nav-label">Mini-Boss</div>
+            <div class="nav-badge">Médio</div>
+          </div>
+          <div class="nav-card finalboss-card" onclick="window.game.startCombat('finalboss');">
+            <div class="nav-icon">👑</div>
+            <div class="nav-label">Chefão Final</div>
+            <div class="nav-badge">Insano</div>
+          </div>
         </div>
 
         <div class="nav-section-title">🛒 Loja</div>
@@ -1570,6 +1586,16 @@
 
         <div class="nav-section-title">🎯 Progresso</div>
         <div class="nav-grid progress-grid">
+          <div class="nav-card skill-card" onclick="window.game.showSkillTree();">
+            <div class="nav-icon">🌳</div>
+            <div class="nav-label">Árvore de Habilidades</div>
+            <div class="nav-badge">Habilidades</div>
+          </div>
+          <div class="nav-card map-card" onclick="window.game.showMap();">
+            <div class="nav-icon">🌍</div>
+            <div class="nav-label">Mapa</div>
+            <div class="nav-badge">Explorar</div>
+          </div>
           <div class="nav-card daily-card" onclick="window.game.showDailyRewards();">
             <div class="nav-icon">🎁</div>
             <div class="nav-label">Recompensa</div>
@@ -1732,10 +1758,11 @@
   </div>
 
   <div id="combat" class="screen">
+    <button type="button" class="btn-danger" style="margin: 0 0 10px 0;" onclick="window.game.exitCombat();">⬅️ Sair do Combate</button>
     <div class="combat-info" id="combatRound">🎯 Rodada: 1</div>
     <div class="combat-hud">
       <div class="hud-card">
-        <div class="hud-name">🧙 Você</div>
+        <div class="hud-name" id="playerName">🧙 Você</div>
         <div class="hp-bar"><div class="hp-fill" id="playerHpBar">100/100</div></div>
       </div>
       <div class="hud-card">
@@ -1792,20 +1819,20 @@
         { id: 'speed_buff', name: 'Poção de Velocidade', emoji: '⚡', type: 'buff', effect: 1, cost: 120, desc: 'Ação extra' }
       ],
       equipment: [
-        { id: 'sword_1', name: 'Espada de Ferro', emoji: '🗡️', type: 'weapon', atk: 5, def: 0, crit: 0, cost: 100 },
-        { id: 'sword_2', name: 'Espada Lendária', emoji: '⚔️', type: 'weapon', atk: 25, def: 0, crit: 5, cost: 1000 },
-        { id: 'bow_1', name: 'Arco Simples', emoji: '🏹', type: 'weapon', atk: 12, def: 0, crit: 8, cost: 200 },
-        { id: 'staff_1', name: 'Cajado Mágico', emoji: '🔮', type: 'weapon', atk: 15, def: 2, crit: 3, cost: 300 },
-        { id: 'shield_1', name: 'Escudo de Madeira', emoji: '🛡️', type: 'armor', atk: 0, def: 5, crit: 0, cost: 80 },
-        { id: 'shield_2', name: 'Escudo de Ferro', emoji: '🛡️', type: 'armor', atk: 0, def: 15, crit: 0, cost: 250 },
-        { id: 'armor_1', name: 'Armadura Leve', emoji: '🎽', type: 'armor', atk: 0, def: 8, crit: 0, cost: 150 },
-        { id: 'armor_2', name: 'Armadura Pesada', emoji: '🦺', type: 'armor', atk: 0, def: 20, crit: -2, cost: 500 }
+        { id: 'sword_1', name: 'Espada de Ferro', emoji: '🗡️', type: 'weapon', atk: 5, def: 0, crit: 0, cost: 100, rarity: 'common', specialEffect: null },
+        { id: 'sword_2', name: 'Espada Lendária', emoji: '⚔️', type: 'weapon', atk: 25, def: 0, crit: 5, cost: 1000, rarity: 'legendary', specialEffect: { type: 'burn', value: 10, chance: 20 } },
+        { id: 'bow_1', name: 'Arco Simples', emoji: '🏹', type: 'weapon', atk: 12, def: 0, crit: 8, cost: 200, rarity: 'common', specialEffect: null },
+        { id: 'staff_1', name: 'Cajado Mágico', emoji: '🔮', type: 'weapon', atk: 15, def: 2, crit: 3, cost: 300, rarity: 'uncommon', specialEffect: { type: 'mana', value: 5 } },
+        { id: 'shield_1', name: 'Escudo de Madeira', emoji: '🛡️', type: 'armor', atk: 0, def: 5, crit: 0, cost: 80, rarity: 'common', specialEffect: null },
+        { id: 'shield_2', name: 'Escudo de Ferro', emoji: '🛡️', type: 'armor', atk: 0, def: 15, crit: 0, cost: 250, rarity: 'uncommon', specialEffect: { type: 'reflect', value: 10, chance: 15 } },
+        { id: 'armor_1', name: 'Armadura Leve', emoji: '🎽', type: 'armor', atk: 0, def: 8, crit: 0, cost: 150, rarity: 'common', specialEffect: null },
+        { id: 'armor_2', name: 'Armadura Pesada', emoji: '🦺', type: 'armor', atk: 0, def: 20, crit: -2, cost: 500, rarity: 'rare', specialEffect: { type: 'thorns', value: 5 } }
       ],
       artifacts: [
-        { id: 'orb_power', name: 'Orbe de Poder', emoji: '🔵', type: 'power', effect: 30, cost: 2000 },
-        { id: 'orb_defense', name: 'Orbe de Proteção', emoji: '🟡', type: 'defense', effect: 25, cost: 1800 },
-        { id: 'ring_crit', name: 'Anel do Crítico', emoji: '💍', type: 'power', effect: 15, cost: 1500 },
-        { id: 'amulet_hp', name: 'Amuleto da Vida', emoji: '📿', type: 'defense', effect: 50, cost: 2200 }
+        { id: 'orb_power', name: 'Orbe de Poder', emoji: '🔵', type: 'power', effect: 30, cost: 2000, specialEffect: { type: 'atkBoost', value: 10 } },
+        { id: 'orb_defense', name: 'Orbe de Proteção', emoji: '🟡', type: 'defense', effect: 25, cost: 1800, specialEffect: { type: 'defBoost', value: 10 } },
+        { id: 'ring_crit', name: 'Anel do Crítico', emoji: '💍', type: 'power', effect: 15, cost: 1500, specialEffect: { type: 'critBoost', value: 5 } },
+        { id: 'amulet_hp', name: 'Amuleto da Vida', emoji: '📿', type: 'defense', effect: 50, cost: 2200, specialEffect: { type: 'regen', value: 5 } }
       ],
       rareItems: [
         { id: 'obsidian_knife', name: 'Faca de Obsidiana', emoji: '🗡️', type: 'weapon', atk: 35, def: 0, crit: 15, dropChance: 1, bossOnly: true, description: 'Lendaria arma forjada em obsidiana' },
@@ -1818,24 +1845,34 @@
         { id: 'demon_wings', name: 'Asas de Demônio', emoji: '🦇', type: 'armor', atk: 15, def: 15, crit: 10, dropChance: 0.9, bossOnly: true, description: 'Permite ação extra por turno' }
       ],
       characters: {
-        mago: { id: 'mago', name: 'Mago', emoji: '🧙', hp: 100, atk: 18, def: 2, crit: 15, cost: 0 },
-        arqueiro: { id: 'arqueiro', name: 'Arqueiro', emoji: '🏹', hp: 110, atk: 22, def: 5, crit: 28, cost: 150 },
-        cavaleiro: { id: 'cavaleiro', name: 'Cavaleiro', emoji: '🛡️', hp: 175, atk: 25, def: 10, crit: 10, cost: 200 },
-        ladino: { id: 'ladino', name: 'Ladino', emoji: '🗡️', hp: 90, atk: 28, def: 3, crit: 35, cost: 250 },
-        barbaro: { id: 'barbaro', name: 'Bárbaro', emoji: '🪓', hp: 150, atk: 30, def: 8, crit: 12, cost: 300 },
-        paladino: { id: 'paladino', name: 'Paladino', emoji: '⚜️', hp: 160, atk: 20, def: 12, crit: 8, cost: 350 },
-        necromante: { id: 'necromante', name: 'Necromante', emoji: '💀', hp: 95, atk: 24, def: 4, crit: 20, cost: 400 },
-        druida: { id: 'druida', name: 'Druida', emoji: '🌿', hp: 120, atk: 19, def: 7, crit: 18, cost: 450 },
-        monge: { id: 'monge', name: 'Monge', emoji: '🥋', hp: 105, atk: 26, def: 6, crit: 25, cost: 500 },
-        cacador: { id: 'cacador', name: 'Caçador', emoji: '🏹', hp: 115, atk: 23, def: 6, crit: 30, cost: 550 }
+        mago: { id: 'mago', name: 'Mago', emoji: '🧙', hp: 100, atk: 18, def: 2, crit: 15, cost: 0, element: 'fire' },
+        arqueiro: { id: 'arqueiro', name: 'Arqueiro', emoji: '🏹', hp: 110, atk: 22, def: 5, crit: 28, cost: 150, element: 'electric' },
+        cavaleiro: { id: 'cavaleiro', name: 'Cavaleiro', emoji: '🛡️', hp: 175, atk: 25, def: 10, crit: 10, cost: 200, element: 'physical' },
+        ladino: { id: 'ladino', name: 'Ladino', emoji: '🗡️', hp: 90, atk: 28, def: 3, crit: 35, cost: 250, element: 'ice' },
+        barbaro: { id: 'barbaro', name: 'Bárbaro', emoji: '🪓', hp: 150, atk: 30, def: 8, crit: 12, cost: 300, element: 'fire' },
+        paladino: { id: 'paladino', name: 'Paladino', emoji: '⚜️', hp: 160, atk: 20, def: 12, crit: 8, cost: 350, element: 'electric' },
+        necromante: { id: 'necromante', name: 'Necromante', emoji: '💀', hp: 95, atk: 24, def: 4, crit: 20, cost: 400, element: 'ice' },
+        druida: { id: 'druida', name: 'Druida', emoji: '🌿', hp: 120, atk: 19, def: 7, crit: 18, cost: 450, element: 'ice' },
+        monge: { id: 'monge', name: 'Monge', emoji: '🥋', hp: 105, atk: 26, def: 6, crit: 25, cost: 500, element: 'electric' },
+        cacador: { id: 'cacador', name: 'Caçador', emoji: '🏹', hp: 115, atk: 23, def: 6, crit: 30, cost: 550, element: 'fire' }
+      },
+      elements: {
+        fire: { name: 'Fogo', emoji: '🔥', strongAgainst: 'ice', weakAgainst: 'electric', bonus: 1.5 },
+        ice: { name: 'Gelo', emoji: '🧊', strongAgainst: 'electric', weakAgainst: 'fire', bonus: 1.5 },
+        electric: { name: 'Elétrico', emoji: '⚡', strongAgainst: 'fire', weakAgainst: 'ice', bonus: 1.5 },
+        physical: { name: 'Físico', emoji: '⚔️', strongAgainst: null, weakAgainst: null, bonus: 1.0 }
       },
       enemies: {
-        slime: { name: 'Slime', emoji: '🟢', hp: 50, atk: 8, def: 2, crit: 5, gold: 20, isBoss: false },
-        goblin: { name: 'Goblin', emoji: '👺', hp: 70, atk: 12, def: 4, crit: 10, gold: 35, isBoss: false },
-        orc: { name: 'Orc', emoji: '👹', hp: 100, atk: 18, def: 8, crit: 8, gold: 60, isBoss: false },
-        esqueleto: { name: 'Esqueleto', emoji: '💀', hp: 80, atk: 15, def: 3, crit: 15, gold: 45, isBoss: false },
-        demonio: { name: 'Demônio', emoji: '👿', hp: 150, atk: 25, def: 10, crit: 12, gold: 120, isBoss: false },
-        dragao: { name: 'Dragão', emoji: '🐉', hp: 300, atk: 35, def: 15, crit: 20, gold: 500, isBoss: true }
+        slime: { name: 'Slime', emoji: '🟢', hp: 50, atk: 8, def: 2, crit: 5, gold: 20, isBoss: false, element: 'physical' },
+        goblin: { name: 'Goblin', emoji: '👺', hp: 70, atk: 12, def: 4, crit: 10, gold: 35, isBoss: false, element: 'physical' },
+        orc: { name: 'Orc', emoji: '👹', hp: 100, atk: 18, def: 8, crit: 8, gold: 60, isBoss: false, element: 'fire' },
+        esqueleto: { name: 'Esqueleto', emoji: '💀', hp: 80, atk: 15, def: 3, crit: 15, gold: 45, isBoss: false, element: 'ice' },
+        demonio: { name: 'Demônio', emoji: '👿', hp: 150, atk: 25, def: 10, crit: 12, gold: 120, isBoss: false, element: 'fire' },
+        dragao: { name: 'Dragão', emoji: '🐉', hp: 300, atk: 35, def: 15, crit: 20, gold: 500, isBoss: true, element: 'fire' },
+        lich_rei: { name: 'Lich Rei', emoji: '👑', hp: 500, atk: 45, def: 20, crit: 25, gold: 1000, isBoss: true, isFinalBoss: true, phases: 3, element: 'ice' },
+        mini_boss_golem: { name: 'Golem de Pedra', emoji: '🗿', hp: 200, atk: 30, def: 25, crit: 10, gold: 300, isBoss: true, isMiniBoss: true, element: 'physical' },
+        mini_boss_necromancer: { name: 'Necromante Sombrio', emoji: '🧛', hp: 180, atk: 28, def: 12, crit: 18, gold: 350, isBoss: true, isMiniBoss: true, element: 'ice' },
+        mini_boss_demon_knight: { name: 'Cavaleiro Demoníaco', emoji: '🗡️', hp: 220, atk: 32, def: 18, crit: 15, gold: 400, isBoss: true, isMiniBoss: true, element: 'electric' }
       },
       achievements: [
         { id: 'first_win', name: 'Primeira Vitória', emoji: '🏆', desc: 'Vença seu primeiro combate' },
@@ -1859,6 +1896,16 @@
         { id: 'weekly_2', name: 'Caçador de Boss Semanal', desc: 'Vença o Dragão 3 vezes', type: 'weekly', target: 3, progress: 0, reward: 800 },
         { id: 'weekly_3', name: 'Colecionador Semanal', desc: 'Desbloqueie 2 personagens', type: 'weekly', target: 2, progress: 0, reward: 400 }
       ],
+      sideQuests: [
+        { id: 'side_1', name: 'Limpeza da Floresta', desc: 'Derrote 5 Slimes na Floresta', type: 'side', location: 'forest', targetEnemy: 'slime', targetCount: 5, progress: 0, reward: 150, requiredReputation: 0, npc: 'quest_giver' },
+        { id: 'side_2', name: 'Caça aos Goblins', desc: 'Derrote 3 Goblins na Floresta', type: 'side', location: 'forest', targetEnemy: 'goblin', targetCount: 3, progress: 0, reward: 200, requiredReputation: 10, npc: 'quest_giver' },
+        { id: 'side_3', name: 'Tesouro do Deserto', desc: 'Ganhe 500 de ouro no Deserto', type: 'side', location: 'desert', targetGold: 500, progress: 0, reward: 300, requiredReputation: 20, npc: 'merchant' },
+        { id: 'side_4', name: 'Escalada das Montanhas', desc: 'Derrote 2 Demônios nas Montanhas', type: 'side', location: 'mountains', targetEnemy: 'demonio', targetCount: 2, progress: 0, reward: 400, requiredReputation: 30, npc: 'blacksmith' },
+        { id: 'side_5', name: 'Colecionador de Itens', desc: 'Obtenha 3 itens raros', type: 'side', targetRareItems: 3, progress: 0, reward: 500, requiredReputation: 15, npc: 'merchant' },
+        { id: 'side_6', name: 'Mestre das Habilidades', desc: 'Desbloqueie 5 habilidades', type: 'side', targetSkills: 5, progress: 0, reward: 350, requiredReputation: 25, npc: 'healer' },
+        { id: 'side_7', name: 'Defensor da Aldeia', desc: 'Vença 10 combates na Floresta', type: 'side', location: 'forest', targetCombats: 10, progress: 0, reward: 250, requiredReputation: 5, npc: 'quest_giver' },
+        { id: 'side_8', name: 'Explorador do Deserto', desc: 'Viaje para o Deserto 3 vezes', type: 'side', location: 'desert', targetVisits: 3, progress: 0, reward: 200, requiredReputation: 20, npc: 'merchant' }
+      ],
       cards: {
         // Basic cards (always available)
         basic_attack: { id: 'basic_attack', name: 'Ataque Básico', emoji: '⚔️', type: 'attack', power: 1.0, rarity: 'common', dropChance: 30, description: 'Ataque normal' },
@@ -1879,6 +1926,365 @@
         crystal_power: { id: 'crystal_power', name: 'Poder do Cristal', emoji: '💀', type: 'attack', power: 1.7, atkBoost: 25, rarity: 'rare', dropChance: 18, requiredItem: 'crystal_skull', description: '+70% dano, +25 ATK temporário' },
         frost_strike: { id: 'frost_strike', name: 'Golpe de Gelo', emoji: '🧊', type: 'attack', power: 1.5, freezeChance: 25, rarity: 'rare', dropChance: 18, requiredItem: 'frost_blade', description: '+50% dano, 25% congela' },
         demon_wings: { id: 'demon_wings', name: 'Asas Demoníacas', emoji: '🦇', type: 'special', extraAction: true, rarity: 'legendary', dropChance: 18, requiredItem: 'demon_wings', description: 'Ação extra neste turno' }
+      },
+      skills: {
+        // Fire Skills
+        fireball: { id: 'fireball', name: 'Bola de Fogo', emoji: '🔥', type: 'attack', power: 2.0, cooldown: 3, element: 'fire', requiredLevel: 1, description: 'Dano de fogo poderoso' },
+        inferno: { id: 'inferno', name: 'Inferno', emoji: '🌋', type: 'attack', power: 3.0, cooldown: 5, element: 'fire', burnDamage: 20, requiredLevel: 5, description: 'Dano massivo + queima' },
+        
+        // Ice Skills
+        ice_spike: { id: 'ice_spike', name: 'Espinho de Gelo', emoji: '🧊', type: 'attack', power: 1.8, cooldown: 3, element: 'ice', freezeChance: 25, requiredLevel: 1, description: 'Dano de gelo com chance de congelar' },
+        blizzard: { id: 'blizzard', name: 'Nevasca', emoji: '❄️', type: 'attack', power: 2.5, cooldown: 5, element: 'ice', freezeChance: 50, requiredLevel: 5, description: 'Dano massivo + alto congelar' },
+        
+        // Electric Skills
+        lightning: { id: 'lightning', name: 'Relâmpago', emoji: '⚡', type: 'attack', power: 2.0, cooldown: 3, element: 'electric', stunChance: 20, requiredLevel: 1, description: 'Dano elétrico com chance de atordoar' },
+        thunder_storm: { id: 'thunder_storm', name: 'Tempestade', emoji: '🌩️', type: 'attack', power: 3.0, cooldown: 5, element: 'electric', stunChance: 40, requiredLevel: 5, description: 'Dano massivo + alto atordoar' },
+        
+        // Physical Skills
+        power_strike: { id: 'power_strike', name: 'Golpe Poderoso', emoji: '💪', type: 'attack', power: 2.2, cooldown: 3, element: 'physical', requiredLevel: 1, description: 'Golpe físico forte' },
+        berserk: { id: 'berserk', name: 'Berserk', emoji: '😤', type: 'buff', atkBoost: 50, cooldown: 4, element: 'physical', requiredLevel: 5, description: '+50 ATK temporário' },
+        
+        // Healing Skills
+        heal: { id: 'heal', name: 'Cura', emoji: '💚', type: 'heal', healAmount: 50, cooldown: 3, requiredLevel: 1, description: 'Cura 50 HP' },
+        greater_heal: { id: 'greater_heal', name: 'Cura Maior', emoji: '💖', type: 'heal', healAmount: 100, cooldown: 5, requiredLevel: 5, description: 'Cura 100 HP' },
+        
+        // Defense Skills
+        shield: { id: 'shield', name: 'Escudo', emoji: '🛡️', type: 'defense', damageReduction: 0.7, cooldown: 3, requiredLevel: 1, description: '-30% dano recebido' },
+        fortify: { id: 'fortify', name: 'Fortificar', emoji: '🏰', type: 'defense', damageReduction: 0.5, defBoost: 20, cooldown: 5, requiredLevel: 5, description: '-50% dano + DEF' }
+      },
+      skillTrees: {
+        mago: {
+          name: 'Árvore de Magia',
+          emoji: '🧙',
+          branches: [
+            {
+              id: 'fire_path',
+              name: 'Caminho de Fogo',
+              emoji: '🔥',
+              skills: ['fireball', 'inferno'],
+              requiredLevel: 1
+            },
+            {
+              id: 'ice_path',
+              name: 'Caminho de Gelo',
+              emoji: '🧊',
+              skills: ['ice_spike', 'blizzard'],
+              requiredLevel: 1
+            },
+            {
+              id: 'healing_path',
+              name: 'Caminho de Cura',
+              emoji: '💚',
+              skills: ['heal', 'greater_heal'],
+              requiredLevel: 1
+            }
+          ]
+        },
+        arqueiro: {
+          name: 'Árvore de Precisão',
+          emoji: '🏹',
+          branches: [
+            {
+              id: 'electric_path',
+              name: 'Caminho Elétrico',
+              emoji: '⚡',
+              skills: ['lightning', 'thunder_storm'],
+              requiredLevel: 1
+            },
+            {
+              id: 'physical_path',
+              name: 'Caminho Físico',
+              emoji: '⚔️',
+              skills: ['power_strike', 'berserk'],
+              requiredLevel: 1
+            }
+          ]
+        },
+        cavaleiro: {
+          name: 'Árvore de Defesa',
+          emoji: '🛡️',
+          branches: [
+            {
+              id: 'defense_path',
+              name: 'Caminho Defensivo',
+              emoji: '🛡️',
+              skills: ['shield', 'fortify'],
+              requiredLevel: 1
+            },
+            {
+              id: 'physical_path',
+              name: 'Caminho de Guerra',
+              emoji: '⚔️',
+              skills: ['power_strike', 'berserk'],
+              requiredLevel: 1
+            }
+          ]
+        },
+        ladino: {
+          name: 'Árvore de Furtividade',
+          emoji: '🗡️',
+          branches: [
+            {
+              id: 'ice_path',
+              name: 'Caminho de Gelo',
+              emoji: '🧊',
+              skills: ['ice_spike', 'blizzard'],
+              requiredLevel: 1
+            },
+            {
+              id: 'physical_path',
+              name: 'Caminho de Assalto',
+              emoji: '⚔️',
+              skills: ['power_strike', 'berserk'],
+              requiredLevel: 1
+            }
+          ]
+        },
+        barbaro: {
+          name: 'Árvore de Fúria',
+          emoji: '🪓',
+          branches: [
+            {
+              id: 'fire_path',
+              name: 'Caminho de Fogo',
+              emoji: '🔥',
+              skills: ['fireball', 'inferno'],
+              requiredLevel: 1
+            },
+            {
+              id: 'physical_path',
+              name: 'Caminho de Força',
+              emoji: '💪',
+              skills: ['power_strike', 'berserk'],
+              requiredLevel: 1
+            }
+          ]
+        },
+        paladino: {
+          name: 'Árvore de Luz',
+          emoji: '⚜️',
+          branches: [
+            {
+              id: 'healing_path',
+              name: 'Caminho Sagrado',
+              emoji: '💚',
+              skills: ['heal', 'greater_heal'],
+              requiredLevel: 1
+            },
+            {
+              id: 'defense_path',
+              name: 'Caminho Protetor',
+              emoji: '🛡️',
+              skills: ['shield', 'fortify'],
+              requiredLevel: 1
+            }
+          ]
+        },
+        necromante: {
+          name: 'Árvore das Trevas',
+          emoji: '💀',
+          branches: [
+            {
+              id: 'ice_path',
+              name: 'Caminho de Morte',
+              emoji: '🧊',
+              skills: ['ice_spike', 'blizzard'],
+              requiredLevel: 1
+            },
+            {
+              id: 'fire_path',
+              name: 'Caminho de Chamas',
+              emoji: '🔥',
+              skills: ['fireball', 'inferno'],
+              requiredLevel: 1
+            }
+          ]
+        },
+        druida: {
+          name: 'Árvore da Natureza',
+          emoji: '🌿',
+          branches: [
+            {
+              id: 'healing_path',
+              name: 'Caminho de Vida',
+              emoji: '💚',
+              skills: ['heal', 'greater_heal'],
+              requiredLevel: 1
+            },
+            {
+              id: 'ice_path',
+              name: 'Caminho de Inverno',
+              emoji: '🧊',
+              skills: ['ice_spike', 'blizzard'],
+              requiredLevel: 1
+            }
+          ]
+        },
+        monge: {
+          name: 'Árvore de Ki',
+          emoji: '🥋',
+          branches: [
+            {
+              id: 'electric_path',
+              name: 'Caminho de Raios',
+              emoji: '⚡',
+              skills: ['lightning', 'thunder_storm'],
+              requiredLevel: 1
+            },
+            {
+              id: 'defense_path',
+              name: 'Caminho de Proteção',
+              emoji: '🛡️',
+              skills: ['shield', 'fortify'],
+              requiredLevel: 1
+            }
+          ]
+        },
+        cacador: {
+          name: 'Árvore da Caça',
+          emoji: '🏹',
+          branches: [
+            {
+              id: 'fire_path',
+              name: 'Caminho de Queima',
+              emoji: '🔥',
+              skills: ['fireball', 'inferno'],
+              requiredLevel: 1
+            },
+            {
+              id: 'electric_path',
+              name: 'Caminho de Choque',
+              emoji: '⚡',
+              skills: ['lightning', 'thunder_storm'],
+              requiredLevel: 1
+            }
+          ]
+        }
+      },
+      npcs: {
+        merchant: {
+          id: 'merchant',
+          name: 'Mercador',
+          emoji: '🧑‍💼',
+          description: 'Vende itens raros e especiais',
+          dialogue: [
+            'Bem-vindo, aventureiro! Tenho as melhores mercadorias!',
+            'Olhe só esses preços! É um roubo!',
+            'Precisa de algo especial? Eu tenho.',
+            'Ouro é o que move o mundo, não é mesmo?'
+          ],
+          reputationBonus: 5,
+          services: ['shop', 'rare_items']
+        },
+        blacksmith: {
+          id: 'blacksmith',
+          name: 'Ferreiro',
+          emoji: '🔨',
+          description: 'Forja e melhora equipamentos',
+          dialogue: [
+            'Minha bigorna está quente e pronta!',
+            'Traga-me seu equipamento e eu o melhorarei.',
+            'Uma boa arma faz toda a diferença.',
+            'O aço não mente, aventureiro!'
+          ],
+          reputationBonus: 5,
+          services: ['equipment']
+        },
+        healer: {
+          id: 'healer',
+          name: 'Curandeiro',
+          emoji: '⚕️',
+          description: 'Cura feridas e remove maldições',
+          dialogue: [
+            'Suas feridas parecem graves... deixe-me ajudar.',
+            'A luz da cura brilha sobre você.',
+            'Descanse, aventureiro. Você precisa recuperar.',
+            'A vida é preciosa, cuide bem dela.'
+          ],
+          reputationBonus: 10,
+          services: ['heal']
+        },
+        quest_giver: {
+          id: 'quest_giver',
+          name: 'Elder',
+          emoji: '👴',
+          description: 'Fornece missões e informações',
+          dialogue: [
+            'Os tempos são perigosos, herói.',
+            'Há muitos mistérios neste mundo.',
+            'Você parece capaz de grandes feitos.',
+            'A lenda diz que um herói virá salvar-nos...'
+          ],
+          reputationBonus: 8,
+          services: ['quests']
+        }
+      },
+      maps: {
+        world: {
+          name: 'Mundo de Aventura',
+          emoji: '🌍',
+          description: 'Explore o vasto mundo cheio de perigos e tesouros',
+          locations: {
+            forest: {
+              id: 'forest',
+              name: 'Floresta Misteriosa',
+              emoji: '🌲',
+              description: 'Uma floresta densa com criaturas perigosas',
+              level: 1,
+              enemies: ['slime', 'goblin'],
+              lootChance: 20,
+              goldBonus: 1.0,
+              connectedTo: ['village', 'mountains']
+            },
+            village: {
+              id: 'village',
+              name: 'Aldeia dos Heróis',
+              emoji: '🏘️',
+              description: 'Um refúgio seguro para aventureiros',
+              level: 1,
+              enemies: [],
+              lootChance: 0,
+              goldBonus: 0,
+              connectedTo: ['forest', 'desert'],
+              isSafe: true,
+              npcs: ['merchant', 'blacksmith', 'healer', 'quest_giver']
+            },
+            desert: {
+              id: 'desert',
+              name: 'Deserto Escaldante',
+              emoji: '🏜️',
+              description: 'Um deserto vasto com tempestades de areia',
+              level: 5,
+              enemies: ['orc', 'esqueleto'],
+              lootChance: 30,
+              goldBonus: 1.5,
+              connectedTo: ['village', 'mountains']
+            },
+            mountains: {
+              id: 'mountains',
+              name: 'Montanhas Gélidas',
+              emoji: '🏔️',
+              description: 'Montanhas altas com dragões',
+              level: 10,
+              enemies: ['demonio', 'dragao'],
+              lootChance: 40,
+              goldBonus: 2.0,
+              connectedTo: ['forest', 'desert', 'castle']
+            },
+            castle: {
+              id: 'castle',
+              name: 'Castelo do Lich',
+              emoji: '🏰',
+              description: 'A fortaleza do Lich Rei',
+              level: 20,
+              enemies: ['lich_rei'],
+              lootChance: 50,
+              goldBonus: 3.0,
+              connectedTo: ['mountains'],
+              isBossArea: true
+            }
+          }
+        }
       }
     };
 
@@ -1892,6 +2298,17 @@
         this.password = '';
         this.gold = 100;
         this.level = 1;
+        this.xp = 0;
+        this.xpToNextLevel = 100;
+        this.skillPoints = 0;
+        this.attributes = {
+          strength: 0,
+          agility: 0,
+          intelligence: 0,
+          luck: 0
+        };
+        this.skills = {};
+        this.skillCooldowns = {};
         this.wins = 0;
         this.losses = 0;
         this.currentCharacterId = 'mago';
@@ -1915,13 +2332,18 @@
         this.currentEnemy = null;
         this.cardHand = [];
         this.enemyCardHand = [];
-        this.playerEffects = { regen: 0, burn: 0, frozen: false, stunned: false, atkBoost: 0 };
-        this.enemyEffects = { regen: 0, burn: 0, frozen: false, stunned: false, atkBoost: 0 };
+        this.playerEffects = { regen: 0, burn: 0, frozen: false, stunned: false, atkBoost: 0, poison: 0 };
+        this.enemyEffects = { regen: 0, burn: 0, frozen: false, stunned: false, atkBoost: 0, poison: 0 };
         this.extraAction = false;
+        this.bossPhase = 1;
+        this.bossMaxPhases = 1;
         this.dailyResetTime = Date.now();
         this.weeklyResetTime = Date.now();
         this.dailyRewardClaimed = false;
         this.dailyRewardDay = null;
+        this.reputation = 0; // Overall reputation with NPCs
+        this.currentLocation = 'village'; // Starting location
+        this.sideQuests = {}; // Side quest progress
         
         this.loadGame();
         this.checkMissionResets();
@@ -1939,6 +2361,11 @@
           pass: this.password,
           gold: this.gold,
           level: this.level,
+          xp: this.xp,
+          xpToNextLevel: this.xpToNextLevel,
+          skillPoints: this.skillPoints,
+          attributes: this.attributes,
+          skills: this.skills,
           classe: this.currentCharacterId,
           hp: this.getTotalStats().hp,
           inventario: this.inventory,
@@ -1957,7 +2384,10 @@
           dailyResetTime: this.dailyResetTime,
           weeklyResetTime: this.weeklyResetTime,
           dailyRewardClaimed: this.dailyRewardClaimed,
-          dailyRewardDay: this.dailyRewardDay
+          dailyRewardDay: this.dailyRewardDay,
+          reputation: this.reputation,
+          currentLocation: this.currentLocation,
+          sideQuests: this.sideQuests
         };
         localStorage.setItem('rpgUltimateSave', JSON.stringify(saveData));
         
@@ -2160,6 +2590,21 @@
         const baseStats = { ...this.character };
         let bonusStats = { hp: 0, atk: 0, def: 0, crit: 0 };
         
+        // Level scaling (5% increase per level)
+        const levelMultiplier = 1 + (this.level - 1) * 0.05;
+        
+        // Attribute bonuses
+        const attr = this.attributes || { strength: 0, agility: 0, intelligence: 0, luck: 0 };
+        bonusStats.hp += attr.strength * 5;
+        bonusStats.atk += attr.strength * 2;
+        bonusStats.def += attr.strength * 1;
+        bonusStats.atk += attr.agility * 1;
+        bonusStats.crit += attr.agility * 0.5;
+        bonusStats.hp += attr.intelligence * 3;
+        bonusStats.atk += attr.intelligence * 1.5;
+        bonusStats.crit += attr.intelligence * 0.3;
+        bonusStats.crit += attr.luck * 0.5;
+        
         // Add equipment bonuses
         if (this.equippedItems.weapon) {
           const weapon = GAME_DATA.equipment.find(e => e.id === this.equippedItems.weapon);
@@ -2192,18 +2637,42 @@
         }
         
         return {
-          hp: baseStats.hp + bonusStats.hp,
-          atk: baseStats.atk + bonusStats.atk,
-          def: baseStats.def + bonusStats.def,
-          crit: Math.max(0, baseStats.crit + bonusStats.crit)
+          hp: Math.floor((baseStats.hp + bonusStats.hp) * levelMultiplier),
+          atk: Math.floor((baseStats.atk + bonusStats.atk) * levelMultiplier),
+          def: Math.floor((baseStats.def + bonusStats.def) * levelMultiplier),
+          crit: Math.min(100, Math.floor(baseStats.crit + bonusStats.crit))
         };
       }
 
+      // XP SYSTEM
+      gainXP(amount) {
+        this.xp += amount;
+        
+        while (this.xp >= this.xpToNextLevel) {
+          this.xp -= this.xpToNextLevel;
+          this.level++;
+          this.skillPoints += 2; // 2 skill points per level
+          this.xpToNextLevel = Math.floor(this.xpToNextLevel * 1.5);
+          
+          this.showCombatMessage(`🎉 LEVEL UP! Nível ${this.level}! +2 Pontos de Habilidade`);
+          
+          // Check level achievements
+          if (this.level >= 10 && !this.achievements.level_10) {
+            this.achievements.level_10 = true;
+            this.showCombatMessage('🏆 Achievement: Experiente!');
+          }
+        }
+        
+        this.saveGame();
+      }
+
       setupEventListeners() {
-        const userInput = this.$('user');
-        if (userInput) {
-          userInput.addEventListener('input', (e) => {
-            const hint = this.$('userHint');
+        const userField = this.$('user');
+        const passField = this.$('pass');
+        const hint = this.$('hint');
+        
+        if (userField) {
+          userField.addEventListener('input', (e) => {
             const val = e.target.value;
             if (val.length < 3) {
               hint.innerText = '⚠️ Mínimo 3';
@@ -2218,6 +2687,615 @@
         document.addEventListener('keypress', (e) => {
           if (e.key === 'Enter' && document.activeElement.id === 'pass') {
             window.game.login();
+          }
+        });
+      }
+
+      // SKILL SYSTEM
+      useSkill(skillId) {
+        if (!this.inCombat) return;
+        
+        const skill = GAME_DATA.skills[skillId];
+        if (!skill) return;
+        
+        // Check if skill is unlocked
+        if (!this.skills[skillId]) {
+          this.showCombatMessage(`❌ Habilidade não desbloqueada!`);
+          return;
+        }
+        
+        // Check cooldown
+        if (this.skillCooldowns[skillId] > 0) {
+          this.showCombatMessage(`❌ Em cooldown: ${this.skillCooldowns[skillId]} turnos`);
+          return;
+        }
+        
+        // Check level requirement
+        if (this.level < skill.requiredLevel) {
+          this.showCombatMessage(`❌ Requer nível ${skill.requiredLevel}`);
+          return;
+        }
+        
+        this.showCombatMessage(`✨ Usou habilidade: ${skill.emoji} ${skill.name}`);
+        
+        // Apply skill effect
+        const stats = this.getTotalStats();
+        
+        switch (skill.type) {
+          case 'attack':
+            const atkPower = stats.atk * (skill.power || 1.0);
+            const critBonus = skill.critBonus || 0;
+            const critChance = stats.crit + critBonus;
+            const attackerElement = skill.element || this.character.element;
+            const result = this.calculateDamage(atkPower, this.currentEnemy.def, critChance, attackerElement, this.currentEnemy.element);
+            
+            this.enemyCurrentHp = Math.max(0, this.enemyCurrentHp - result.damage);
+            this.createDamageNumber(result.damage, result.isCrit, false);
+            
+            if (result.elementMessage) {
+              this.showCombatMessage(result.elementMessage);
+            }
+            
+            // Apply special effects
+            if (skill.burnDamage) {
+              this.enemyEffects.burn = skill.burnDamage;
+              this.showCombatMessage(`🔥 Queimando por ${skill.burnDamage} HP/turno!`);
+            }
+            if (skill.stunChance && Math.random() * 100 < skill.stunChance) {
+              this.enemyEffects.stunned = true;
+              this.showCombatMessage(`💥 Inimigo atordoado!`);
+            }
+            if (skill.freezeChance && Math.random() * 100 < skill.freezeChance) {
+              this.enemyEffects.frozen = true;
+              this.showCombatMessage(`🧊 Inimigo congelado!`);
+            }
+            break;
+            
+          case 'heal':
+            const healAmount = skill.healAmount || 0;
+            this.playerCurrentHp = Math.min(stats.hp, this.playerCurrentHp + healAmount);
+            this.createDamageNumber(healAmount, false, true);
+            break;
+            
+          case 'defense':
+            if (skill.damageReduction) {
+              this.playerEffects.damageReduction = skill.damageReduction;
+              this.showCombatMessage(`🛡️ Redução de dano ativa!`);
+            }
+            if (skill.defBoost) {
+              this.playerEffects.defBoost = skill.defBoost;
+              this.showCombatMessage(`🛡️ DEF +${skill.defBoost} temporário!`);
+            }
+            break;
+            
+          case 'buff':
+            if (skill.atkBoost) {
+              this.playerEffects.atkBoost += skill.atkBoost;
+              this.showCombatMessage(`⬆️ ATK +${skill.atkBoost} temporário!`);
+            }
+            break;
+        }
+        
+        // Set cooldown
+        this.skillCooldowns[skillId] = skill.cooldown;
+        
+        // Check win/lose conditions
+        if (this.enemyCurrentHp <= 0) {
+          this.victory();
+        } else {
+          this.enemyTurn();
+        }
+        
+        this.updateCombatUI();
+      }
+
+      unlockSkill(skillId) {
+        const skill = GAME_DATA.skills[skillId];
+        if (!skill) return;
+        
+        // Check if already unlocked
+        if (this.skills[skillId]) {
+          alert('❌ Habilidade já desbloqueada!');
+          return;
+        }
+        
+        // Check skill points
+        if (this.skillPoints < 1) {
+          alert('❌ Pontos de habilidade insuficientes!');
+          return;
+        }
+        
+        // Check level requirement
+        if (this.level < skill.requiredLevel) {
+          alert(`❌ Requer nível ${skill.requiredLevel}`);
+          return;
+        }
+        
+        // Unlock skill
+        this.skills[skillId] = true;
+        this.skillPoints--;
+        
+        alert(`✅ ${skill.emoji} ${skill.name} desbloqueado!`);
+        
+        this.saveGame();
+        this.showSkillTree(); // Refresh the skill tree UI
+      }
+
+      reduceCooldowns() {
+        Object.keys(this.skillCooldowns).forEach(skillId => {
+          if (this.skillCooldowns[skillId] > 0) {
+            this.skillCooldowns[skillId]--;
+          }
+        });
+      }
+
+      showSkillTree() {
+        const skillTree = GAME_DATA.skillTrees[this.currentCharacterId];
+        if (!skillTree) return;
+
+        const container = document.createElement('div');
+        container.style.cssText = 'padding: 20px; overflow-y: auto;';
+
+        container.innerHTML = `
+          <h2 style="color: var(--secondary); margin-bottom: 20px;">${skillTree.emoji} ${skillTree.name}</h2>
+          <div style="margin-bottom: 20px; color: #ffff00;">📊 Pontos de Habilidade: ${this.skillPoints}</div>
+          <div style="display: grid; gap: 20px;">
+            ${skillTree.branches.map(branch => `
+              <div style="background: var(--glass); border: 2px solid var(--glass-border); border-radius: 15px; padding: 20px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                  <div style="font-size: 32px;">${branch.emoji}</div>
+                  <div>
+                    <div style="color: var(--primary); font-weight: bold;">${branch.name}</div>
+                    <div style="font-size: 12px; color: var(--text-muted);">Nível requerido: ${branch.requiredLevel}</div>
+                  </div>
+                </div>
+                <div style="display: grid; gap: 10px;">
+                  ${branch.skills.map(skillId => {
+                    const skill = GAME_DATA.skills[skillId];
+                    const isUnlocked = this.skills[skillId];
+                    const canUnlock = this.skillPoints >= 1 && this.level >= skill.requiredLevel && !isUnlocked;
+                    return `
+                      <div style="background: rgba(255, 255, 255, 0.05); border: ${isUnlocked ? '2px solid #00ff00' : '2px solid rgba(255, 255, 255, 0.1)'}; border-radius: 10px; padding: 15px; display: flex; align-items: center; gap: 15px;">
+                        <div style="font-size: 24px;">${skill.emoji}</div>
+                        <div style="flex: 1;">
+                          <div style="color: ${isUnlocked ? '#00ff00' : 'white'};">${skill.name}</div>
+                          <div style="font-size: 11px; color: var(--text-muted);">${skill.description}</div>
+                          <div style="font-size: 10px; color: ${this.level >= skill.requiredLevel ? '#00ff00' : '#ff4444'};">Nível ${skill.requiredLevel} • CD: ${skill.cooldown}t</div>
+                        </div>
+                        ${isUnlocked ? '<div style="color: #00ff00; font-size: 12px;">✓</div>' : 
+                          `<button type="button" class="${canUnlock ? 'btn-success' : 'btn-secondary'}" 
+                            style="padding: 8px 16px; font-size: 12px; ${!canUnlock ? 'opacity: 0.5;' : ''}"
+                            ${!canUnlock ? 'disabled' : ''}
+                            onclick="window.game.unlockSkill('${skillId}')">
+                            1 Ponto
+                          </button>`}
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+
+        // Create or update skill tree screen
+        let skillTreeScreen = document.getElementById('skill-tree');
+        if (!skillTreeScreen) {
+          skillTreeScreen = document.createElement('div');
+          skillTreeScreen.id = 'skill-tree';
+          skillTreeScreen.className = 'screen';
+          skillTreeScreen.innerHTML = `
+            <button type="button" class="btn-secondary" style="margin: 0 0 14px 0;" onclick="window.game.showScreen('lobby');">⬅️ Voltar</button>
+          `;
+          document.body.appendChild(skillTreeScreen);
+        }
+
+        // Keep the back button and replace the content
+        skillTreeScreen.innerHTML = `
+          <button type="button" class="btn-secondary" style="margin: 0 0 14px 0;" onclick="window.game.showScreen('lobby');">⬅️ Voltar</button>
+        `;
+        skillTreeScreen.appendChild(container);
+
+        this.showScreen('skill-tree');
+      }
+
+      // MAP SYSTEM
+      showMap() {
+        const map = GAME_DATA.maps.world;
+        if (!map) return;
+
+        const container = document.createElement('div');
+        container.style.cssText = 'padding: 20px; overflow-y: auto;';
+
+        container.innerHTML = `
+          <h2 style="color: var(--secondary); margin-bottom: 20px;">${map.emoji} ${map.name}</h2>
+          <p style="color: var(--text-muted); margin-bottom: 20px;">${map.description}</p>
+          <div style="margin-bottom: 20px; color: #ffff00;">📍 Localização atual: ${this.currentLocation ? map.locations[this.currentLocation]?.name : 'Aldeia dos Heróis'}</div>
+          <div style="display: grid; gap: 15px;">
+            ${Object.values(map.locations).map(location => {
+              const isAccessible = this.level >= location.level;
+              const isCurrentLocation = this.currentLocation === location.id;
+              const isSafe = location.isSafe;
+              const isBossArea = location.isBossArea;
+              return `
+                <div style="background: var(--glass); border: ${isCurrentLocation ? '2px solid #00ff00' : '2px solid var(--glass-border)'}; border-radius: 15px; padding: 20px; ${!isAccessible ? 'opacity: 0.5;' : ''}">
+                  <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                    <div style="font-size: 32px;">${location.emoji}</div>
+                    <div style="flex: 1;">
+                      <div style="color: ${isCurrentLocation ? '#00ff00' : 'var(--primary)'}; font-weight: bold;">${location.name}</div>
+                      <div style="font-size: 11px; color: var(--text-muted);">${location.description}</div>
+                      <div style="font-size: 10px; color: ${isSafe ? '#00ff00' : isBossArea ? '#ff4444' : '#ffff00'};">
+                        ${isSafe ? '🛡️ Zona Segura' : isBossArea ? '👑 Área de Boss' : `⚔️ Nível ${location.level}`}
+                      </div>
+                    </div>
+                    ${isCurrentLocation ? '<div style="color: #00ff00; font-size: 12px;">📍 Aqui</div>' :
+                      isAccessible ? 
+                        `<button type="button" class="btn-primary" style="padding: 8px 16px; font-size: 12px;" onclick="window.game.travelTo('${location.id}')">Viajar</button>` :
+                        `<div style="color: #ff4444; font-size: 10px;">Nível ${location.level} requerido</div>`
+                    }
+                  </div>
+                  ${location.enemies.length > 0 ? `
+                    <div style="font-size: 10px; color: var(--text-muted); margin-top: 8px;">
+                      Inimigos: ${location.enemies.map(e => GAME_DATA.enemies[e]?.emoji + ' ' + GAME_DATA.enemies[e]?.name).join(', ')}
+                    </div>
+                  ` : ''}
+                  ${location.lootChance > 0 ? `
+                    <div style="font-size: 10px; color: #ffd700; margin-top: 4px;">
+                      💎 Chance de loot: ${location.lootChance}% | 💰 Bônus de ouro: x${location.goldBonus}
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+
+        // Create or update map screen
+        let mapScreen = document.getElementById('map-screen');
+        if (!mapScreen) {
+          mapScreen = document.createElement('div');
+          mapScreen.id = 'map-screen';
+          mapScreen.className = 'screen';
+          mapScreen.innerHTML = `
+            <button type="button" class="btn-secondary" style="margin: 0 0 14px 0;" onclick="window.game.showScreen('lobby');">⬅️ Voltar</button>
+          `;
+          document.body.appendChild(mapScreen);
+        }
+
+        // Keep the back button and replace the content
+        mapScreen.innerHTML = `
+          <button type="button" class="btn-secondary" style="margin: 0 0 14px 0;" onclick="window.game.showScreen('lobby');">⬅️ Voltar</button>
+        `;
+        mapScreen.appendChild(container);
+
+        this.showScreen('map-screen');
+      }
+
+      travelTo(locationId) {
+        const map = GAME_DATA.maps.world;
+        const location = map.locations[locationId];
+        
+        if (!location) return;
+
+        // Check if location is accessible
+        if (this.level < location.level) {
+          alert(`❌ Nível ${location.level} requerido para viajar para ${location.name}!`);
+          return;
+        }
+
+        // Check if location is connected to current location
+        if (this.currentLocation && !location.connectedTo.includes(this.currentLocation)) {
+          alert(`❌ ${location.name} não está conectado à sua localização atual!`);
+          return;
+        }
+
+        // Travel to location
+        this.currentLocation = locationId;
+        alert(`✅ Viajou para ${location.emoji} ${location.name}!`);
+
+        // If it's a safe location with NPCs, show NPCs
+        if (location.isSafe && location.npcs && location.npcs.length > 0) {
+          this.showLocationNPCs();
+          this.saveGame();
+          return;
+        }
+
+        // If it's a dangerous area, offer to start combat
+        if (!location.isSafe && location.enemies.length > 0) {
+          const randomEnemy = location.enemies[Math.floor(Math.random() * location.enemies.length)];
+          if (confirm(`🎯 Encontrar inimigo em ${location.name}?`)) {
+            this.currentEnemyKey = randomEnemy;
+            this.startCombat('normal');
+            return;
+          }
+        }
+
+        this.saveGame();
+        this.showMap();
+      }
+
+      showLocationNPCs() {
+        const map = GAME_DATA.maps.world;
+        const location = map.locations[this.currentLocation];
+        
+        if (!location || !location.npcs || location.npcs.length === 0) return;
+
+        const container = document.createElement('div');
+        container.style.cssText = 'padding: 20px; overflow-y: auto;';
+
+        container.innerHTML = `
+          <h2 style="color: var(--secondary); margin-bottom: 20px;">${location.emoji} ${location.name} - NPCs</h2>
+          <p style="color: var(--text-muted); margin-bottom: 20px;">Interaja com os habitantes locais</p>
+          <div style="margin-bottom: 20px; color: #ffff00;">⭐ Reputação: ${this.reputation}</div>
+          <div style="display: grid; gap: 15px;">
+            ${location.npcs.map(npcId => {
+              const npc = GAME_DATA.npcs[npcId];
+              if (!npc) return '';
+              return `
+                <div style="background: var(--glass); border: 2px solid var(--glass-border); border-radius: 15px; padding: 20px;">
+                  <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                    <div style="font-size: 48px;">${npc.emoji}</div>
+                    <div style="flex: 1;">
+                      <div style="color: var(--primary); font-weight: bold;">${npc.name}</div>
+                      <div style="font-size: 11px; color: var(--text-muted);">${npc.description}</div>
+                      <div style="font-size: 10px; color: #ffd700; margin-top: 4px;">
+                        +${npc.reputationBonus} Reputação por interação
+                      </div>
+                    </div>
+                    <button type="button" class="btn-primary" style="padding: 8px 16px; font-size: 12px;" onclick="window.game.interactWithNPC('${npcId}')">
+                      Falar
+                    </button>
+                  </div>
+                  <div style="font-size: 10px; color: var(--text-muted); margin-top: 8px;">
+                    Serviços: ${npc.services.map(s => s.toUpperCase()).join(', ')}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+
+        // Create or update location NPCs screen
+        let locationScreen = document.getElementById('location-npcs');
+        if (!locationScreen) {
+          locationScreen = document.createElement('div');
+          locationScreen.id = 'location-npcs';
+          locationScreen.className = 'screen';
+          locationScreen.innerHTML = `
+            <button type="button" class="btn-secondary" style="margin: 0 0 14px 0;" onclick="window.game.showMap();">⬅️ Voltar ao Mapa</button>
+          `;
+          document.body.appendChild(locationScreen);
+        }
+
+        // Keep the back button and replace the content
+        locationScreen.innerHTML = `
+          <button type="button" class="btn-secondary" style="margin: 0 0 14px 0;" onclick="window.game.showMap();">⬅️ Voltar ao Mapa</button>
+        `;
+        locationScreen.appendChild(container);
+
+        this.showScreen('location-npcs');
+      }
+
+      interactWithNPC(npcId) {
+        const npc = GAME_DATA.npcs[npcId];
+        if (!npc) return;
+
+        // Get random dialogue
+        const dialogue = npc.dialogue[Math.floor(Math.random() * npc.dialogue.length)];
+
+        // Gain reputation
+        this.reputation += npc.reputationBonus;
+
+        // NPC reaction based on reputation
+        let reaction = '';
+        if (this.reputation < 10) {
+          reaction = 'O NPC parece desconfiado de você.';
+        } else if (this.reputation < 30) {
+          reaction = 'O NPC te reconhece, mas ainda é neutro.';
+        } else if (this.reputation < 50) {
+          reaction = 'O NPC te cumprimenta com respeito.';
+        } else {
+          reaction = 'O NPC te trata como um amigo próximo!';
+        }
+
+        alert(`${npc.emoji} ${npc.name}: "${dialogue}"\n\n${reaction}\n\nReputação atual: ${this.reputation}`);
+
+        // Check if NPC has services and offer them
+        if (npc.services.length > 0) {
+          const serviceOptions = npc.services.join(', ');
+          if (confirm(`${npc.emoji} ${npc.name} oferece os seguintes serviços:\n${serviceOptions}\n\nDeseja acessar um serviço?`)) {
+            // Open relevant screen based on first service
+            if (npc.services.includes('shop')) {
+              this.showShop();
+            } else if (npc.services.includes('equipment')) {
+              this.showEquipment();
+            } else if (npc.services.includes('heal')) {
+              this.showPotions();
+            } else if (npc.services.includes('quests')) {
+              this.showSideQuests();
+              return;
+            } else if (npc.services.includes('rare_items')) {
+              this.showRareInventory();
+            }
+            return;
+          }
+        }
+
+        this.saveGame();
+        this.showLocationNPCs(); // Refresh to show updated reputation
+      }
+
+      // SIDE QUEST SYSTEM
+      showSideQuests() {
+        const container = document.createElement('div');
+        container.style.cssText = 'padding: 20px; overflow-y: auto;';
+
+        // Get available side quests based on reputation
+        const availableQuests = GAME_DATA.sideQuests.filter(q => 
+          this.reputation >= q.requiredReputation && !this.sideQuests[q.id]?.completed
+        );
+
+        // Get active quests
+        const activeQuests = Object.values(this.sideQuests).filter(q => q.active && !q.completed);
+
+        container.innerHTML = `
+          <h2 style="color: var(--secondary); margin-bottom: 20px;">📜 Missões Secundárias</h2>
+          <div style="margin-bottom: 20px; color: #ffff00;">⭐ Reputação: ${this.reputation}</div>
+          
+          <h3 style="color: var(--primary); margin: 20px 0 15px 0;">Missões Disponíveis</h3>
+          ${availableQuests.length === 0 ? '<p style="color: var(--text-muted);">Nenhuma missão disponível no momento.</p>' : ''}
+          <div style="display: grid; gap: 15px; margin-bottom: 30px;">
+            ${availableQuests.map(quest => `
+              <div style="background: var(--glass); border: 2px solid var(--glass-border); border-radius: 15px; padding: 20px;">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                  <div style="flex: 1;">
+                    <div style="color: var(--primary); font-weight: bold;">${quest.name}</div>
+                    <div style="font-size: 11px; color: var(--text-muted);">${quest.desc}</div>
+                    <div style="font-size: 10px; color: #ffd700; margin-top: 4px;">
+                      Reputação requerida: ${quest.requiredReputation} | Recompensa: ${quest.reward}g
+                    </div>
+                  </div>
+                  <button type="button" class="btn-success" style="padding: 8px 16px; font-size: 12px;" onclick="window.game.acceptSideQuest('${quest.id}')">
+                    Aceitar
+                  </button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+
+          <h3 style="color: var(--primary); margin: 20px 0 15px 0;">Missões Ativas</h3>
+          ${activeQuests.length === 0 ? '<p style="color: var(--text-muted);">Nenhuma missão ativa.</p>' : ''}
+          <div style="display: grid; gap: 15px;">
+            ${activeQuests.map(quest => {
+              const questData = GAME_DATA.sideQuests.find(q => q.id === quest.id);
+              if (!questData) return '';
+              const progress = quest.progress || 0;
+              const target = questData.targetCount || questData.targetGold || questData.targetRareItems || questData.targetSkills || questData.targetCombats || questData.targetVisits || 1;
+              const progressPercent = Math.min(100, (progress / target) * 100);
+              return `
+                <div style="background: var(--glass); border: 2px solid #00ff00; border-radius: 15px; padding: 20px;">
+                  <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                    <div style="flex: 1;">
+                      <div style="color: #00ff00; font-weight: bold;">${questData.name}</div>
+                      <div style="font-size: 11px; color: var(--text-muted);">${questData.desc}</div>
+                      <div style="font-size: 10px; color: #ffff00; margin-top: 4px;">
+                        Progresso: ${progress}/${target} (${Math.round(progressPercent)}%)
+                      </div>
+                    </div>
+                  </div>
+                  <div style="background: rgba(255, 255, 255, 0.1); border-radius: 10px; height: 8px; overflow: hidden; margin-top: 10px;">
+                    <div style="background: #00ff00; height: 100%; width: ${progressPercent}%; transition: width 0.3s ease;"></div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+
+        // Create or update side quests screen
+        let sideQuestScreen = document.getElementById('side-quests');
+        if (!sideQuestScreen) {
+          sideQuestScreen = document.createElement('div');
+          sideQuestScreen.id = 'side-quests';
+          sideQuestScreen.className = 'screen';
+          sideQuestScreen.innerHTML = `
+            <button type="button" class="btn-secondary" style="margin: 0 0 14px 0;" onclick="window.game.showMap();">⬅️ Voltar ao Mapa</button>
+          `;
+          document.body.appendChild(sideQuestScreen);
+        }
+
+        // Keep the back button and replace the content
+        sideQuestScreen.innerHTML = `
+          <button type="button" class="btn-secondary" style="margin: 0 0 14px 0;" onclick="window.game.showMap();">⬅️ Voltar ao Mapa</button>
+        `;
+        sideQuestScreen.appendChild(container);
+
+        this.showScreen('side-quests');
+      }
+
+      acceptSideQuest(questId) {
+        const quest = GAME_DATA.sideQuests.find(q => q.id === questId);
+        if (!quest) return;
+
+        // Check reputation requirement
+        if (this.reputation < quest.requiredReputation) {
+          alert(`❌ Reputação ${quest.requiredReputation} requerida!`);
+          return;
+        }
+
+        // Initialize quest progress
+        this.sideQuests[questId] = {
+          id: questId,
+          active: true,
+          completed: false,
+          progress: 0
+        };
+
+        alert(`✅ Missão "${quest.name}" aceita!`);
+        this.saveGame();
+        this.showSideQuests();
+      }
+
+      updateSideQuestProgress(eventType, data) {
+        Object.keys(this.sideQuests).forEach(questId => {
+          const questProgress = this.sideQuests[questId];
+          if (!questProgress.active || questProgress.completed) return;
+
+          const quest = GAME_DATA.sideQuests.find(q => q.id === questId);
+          if (!quest) return;
+
+          let progressMade = false;
+
+          // Enemy defeat quests
+          if (eventType === 'enemy_defeat' && quest.targetEnemy && data.enemyId === quest.targetEnemy) {
+            questProgress.progress = (questProgress.progress || 0) + 1;
+            progressMade = true;
+          }
+
+          // Combat quests
+          if (eventType === 'combat_win' && quest.targetCombats && quest.location === data.location) {
+            questProgress.progress = (questProgress.progress || 0) + 1;
+            progressMade = true;
+          }
+
+          // Gold quests
+          if (eventType === 'gold_earned' && quest.targetGold) {
+            questProgress.progress = (questProgress.progress || 0) + data.amount;
+            progressMade = true;
+          }
+
+          // Rare item quests
+          if (eventType === 'rare_item_obtained' && quest.targetRareItems) {
+            const rareItemCount = Object.keys(this.rareItems).length;
+            questProgress.progress = rareItemCount;
+            progressMade = true;
+          }
+
+          // Skill unlock quests
+          if (eventType === 'skill_unlocked' && quest.targetSkills) {
+            const skillCount = Object.keys(this.skills).length;
+            questProgress.progress = skillCount;
+            progressMade = true;
+          }
+
+          // Location visit quests
+          if (eventType === 'location_visit' && quest.targetVisits && quest.location === data.location) {
+            questProgress.progress = (questProgress.progress || 0) + 1;
+            progressMade = true;
+          }
+
+          if (progressMade) {
+            const target = quest.targetCount || quest.targetGold || quest.targetRareItems || quest.targetSkills || quest.targetCombats || quest.targetVisits || 1;
+            
+            if (questProgress.progress >= target) {
+              // Quest completed
+              questProgress.completed = true;
+              questProgress.active = false;
+              this.gold += quest.reward;
+              alert(`🎉 Missão "${quest.name}" completada! +${quest.reward}g`);
+            }
+
+            this.saveGame();
           }
         });
       }
@@ -2564,19 +3642,18 @@
           const potion = GAME_DATA.potions.find(p => p.id === potionId);
           return `<div class="potion-slot" onclick="window.game.usePotion('${potionId}');" style="cursor: pointer;">${potion.emoji}</div>`;
         }).join('');
-        // Fill empty slots
-        for (let i = this.inventory.potions.length; i < 3; i++) {
-          potionsContainer.innerHTML += '<div class="potion-slot">🔲</div>';
-        }
         
         // Update inventory items
         this.$('inventoryWeapons').innerHTML = this.inventory.weapons.map(weaponId => {
           const weapon = GAME_DATA.equipment.find(e => e.id === weaponId);
           const isEquipped = this.equippedItems.weapon === weaponId;
+          const rarityColors = { common: '#a0a0a0', uncommon: '#00ff00', rare: '#0088ff', legendary: '#ffaa00' };
+          const rarityColor = rarityColors[weapon.rarity] || '#a0a0a0';
           return `
             <div class="inventory-item ${isEquipped ? 'equipped' : ''}" onclick="window.game.equipItem('weapon', '${weaponId}');">
               <div class="inv-emoji">${weapon.emoji}</div>
               <div class="inv-name">${weapon.name}</div>
+              <div style="font-size: 7px; color: ${rarityColor}; text-transform: uppercase;">${weapon.rarity}</div>
               <div style="font-size: 8px; color: ${isEquipped ? '#00ff00' : '#ffff00'};">${isEquipped ? '✓ Equipado' : '⚔️ ATK+' + weapon.atk}</div>
             </div>
           `;
@@ -2585,10 +3662,13 @@
         this.$('inventoryArmors').innerHTML = this.inventory.armors.map(armorId => {
           const armor = GAME_DATA.equipment.find(e => e.id === armorId);
           const isEquipped = this.equippedItems.armor === armorId;
+          const rarityColors = { common: '#a0a0a0', uncommon: '#00ff00', rare: '#0088ff', legendary: '#ffaa00' };
+          const rarityColor = rarityColors[armor.rarity] || '#a0a0a0';
           return `
             <div class="inventory-item ${isEquipped ? 'equipped' : ''}" onclick="window.game.equipItem('armor', '${armorId}');">
               <div class="inv-emoji">${armor.emoji}</div>
               <div class="inv-name">${armor.name}</div>
+              <div style="font-size: 7px; color: ${rarityColor}; text-transform: uppercase;">${armor.rarity}</div>
               <div style="font-size: 8px; color: ${isEquipped ? '#00ff00' : '#ffff00'};">${isEquipped ? '✓ Equipado' : '🛡️ DEF+' + armor.def}</div>
             </div>
           `;
@@ -2738,6 +3818,9 @@
         this.updateCardUI();
         this.updateCombatUI();
         
+        // Process status effects at end of turn
+        this.processStatusEffects();
+        
         // Check win/lose conditions
         if (this.enemyCurrentHp <= 0) {
           this.victory();
@@ -2758,11 +3841,16 @@
             const atkPower = targetStats.atk * (card.power || 1.0) + (isPlayer ? effects.atkBoost : 0);
             const critBonus = card.critBonus || 0;
             const critChance = targetStats.crit + critBonus;
-            const result = this.calculateDamage(atkPower, enemyStats.def, critChance);
+            const attackerElement = isPlayer ? this.character.element : this.currentEnemy.element;
+            const defenderElement = isPlayer ? this.currentEnemy.element : this.character.element;
+            const result = this.calculateDamage(atkPower, enemyStats.def, critChance, attackerElement, defenderElement);
             
             if (isPlayer) {
               this.enemyCurrentHp = Math.max(0, this.enemyCurrentHp - result.damage);
               this.createDamageNumber(result.damage, result.isCrit, false);
+              if (result.elementMessage) {
+                this.showCombatMessage(result.elementMessage);
+              }
               
               // Apply special effects
               if (card.burnDamage) {
@@ -2777,6 +3865,10 @@
                 this.enemyEffects.frozen = true;
                 this.showCombatMessage(`🧊 Inimigo congelado!`);
               }
+              if (card.poisonDamage) {
+                this.enemyEffects.poison = card.poisonDamage;
+                this.showCombatMessage(`☠️ Envenenado por ${card.poisonDamage} HP/turno!`);
+              }
               if (card.atkBoost) {
                 this.playerEffects.atkBoost += card.atkBoost;
                 this.showCombatMessage(`⬆️ ATK +${card.atkBoost} temporário!`);
@@ -2784,6 +3876,10 @@
             } else {
               this.playerCurrentHp = Math.max(0, this.playerCurrentHp - result.damage);
               this.createDamageNumber(result.damage, result.isCrit, true);
+              if (card.poisonDamage) {
+                this.playerEffects.poison = card.poisonDamage;
+                this.showCombatMessage(`☠️ Você está envenenado por ${card.poisonDamage} HP/turno!`);
+              }
             }
             break;
             
@@ -2861,7 +3957,12 @@
         const enemyKeys = Object.keys(GAME_DATA.enemies);
         let enemyKey;
         
-        if (mode === 'boss') {
+        if (mode === 'finalboss') {
+          enemyKey = 'lich_rei';
+        } else if (mode === 'miniboss') {
+          const miniBossKeys = enemyKeys.filter(key => GAME_DATA.enemies[key].isMiniBoss);
+          enemyKey = miniBossKeys[Math.floor(Math.random() * miniBossKeys.length)];
+        } else if (mode === 'boss') {
           enemyKey = 'dragao';
         } else if (mode === 'wave') {
           // Progressive difficulty for waves
@@ -2873,11 +3974,37 @@
         }
         
         this.currentEnemy = { ...GAME_DATA.enemies[enemyKey] };
+        
+        // Enemy scaling based on player level (10% increase per level above 1)
+        const levelScaling = 1 + ((this.level - 1) * 0.1);
+        if (!this.currentEnemy.isBoss && !this.currentEnemy.isMiniBoss) {
+          this.currentEnemy.hp = Math.floor(this.currentEnemy.hp * levelScaling);
+          this.currentEnemy.atk = Math.floor(this.currentEnemy.atk * levelScaling);
+          this.currentEnemy.def = Math.floor(this.currentEnemy.def * levelScaling);
+          this.currentEnemy.gold = Math.floor(this.currentEnemy.gold * levelScaling);
+        }
+        
         this.playerCurrentHp = this.getTotalStats().hp;
         this.enemyCurrentHp = this.currentEnemy.hp;
         
+        // Initialize boss phases
+        if (this.currentEnemy.phases) {
+          this.bossMaxPhases = this.currentEnemy.phases;
+          this.bossPhase = 1;
+          this.showCombatMessage(`⚠️ ${this.currentEnemy.name} - Fase 1/${this.bossMaxPhases}`);
+        } else {
+          this.bossMaxPhases = 1;
+          this.bossPhase = 1;
+        }
+        
         this.showCombatMessage(`🎮 Combate contra ${this.currentEnemy.name} iniciado!`);
-        this.$('enemyName').innerText = `${this.currentEnemy.emoji} ${this.currentEnemy.name}`;
+        
+        // Show element info
+        const playerElem = GAME_DATA.elements[this.character.element] || GAME_DATA.elements.physical;
+        const enemyElem = GAME_DATA.elements[this.currentEnemy.element] || GAME_DATA.elements.physical;
+        this.showCombatMessage(`${playerElem.emoji} Seu elemento: ${playerElem.name} vs ${enemyElem.emoji} Inimigo: ${enemyElem.name}`);
+        
+        this.$('enemyName').innerText = `${this.currentEnemy.emoji} ${this.currentEnemy.name} ${enemyElem.emoji}`;
         this.$('playerSprite').innerText = this.character.emoji;
         this.$('enemySprite').innerText = this.currentEnemy.emoji;
         
@@ -2896,9 +4023,12 @@
       
       updateCombatUI() {
         const stats = this.getTotalStats();
+        const playerElem = GAME_DATA.elements[this.character.element] || GAME_DATA.elements.physical;
+        const enemyElem = GAME_DATA.elements[this.currentEnemy.element] || GAME_DATA.elements.physical;
         
         this.$('combatRound').innerText = `🔁 Rodada: ${this.combatRound}`;
-        this.$('enemyName').innerText = `${this.currentEnemy.emoji} ${this.currentEnemy.name}`;
+        this.$('playerName').innerText = `${this.character.emoji} Você ${playerElem.emoji}`;
+        this.$('enemyName').innerText = `${this.currentEnemy.emoji} ${this.currentEnemy.name} ${enemyElem.emoji}`;
         this.$('playerSprite').innerText = this.character.emoji;
         this.$('enemySprite').innerText = this.currentEnemy.emoji;
         
@@ -2910,6 +4040,8 @@
         this.$('playerHpBar').innerText = `${this.playerCurrentHp}/${stats.hp}`;
         this.$('enemyHpBar').style.width = enemyHpPercent + '%';
         this.$('enemyHpBar').innerText = `${this.enemyCurrentHp}/${this.currentEnemy.hp}`;
+        
+        this.checkBossPhaseTransition();
       }
       
       showCombatMessage(message) {
@@ -2929,16 +4061,190 @@
         }
       }
       
-      calculateDamage(attackerAtk, defenderDef, critChance = 0) {
+      checkBossPhaseTransition() {
+        if (!this.currentEnemy.phases || this.bossPhase >= this.bossMaxPhases) return;
+        
+        const hpPercent = (this.enemyCurrentHp / this.currentEnemy.hp) * 100;
+        const phaseThreshold = 100 - (this.bossPhase * 33); // Phase transitions at 67%, 33%, etc.
+        
+        if (hpPercent <= phaseThreshold) {
+          this.bossPhase++;
+          this.showCombatMessage(`🔥 ${this.currentEnemy.name} entrou na Fase ${this.bossPhase}/${this.bossMaxPhases}!`);
+          
+          // Enhance boss stats for each phase
+          const phaseMultiplier = 1 + (this.bossPhase * 0.3);
+          this.currentEnemy.atk = Math.floor(this.currentEnemy.atk * phaseMultiplier);
+          this.currentEnemy.def = Math.floor(this.currentEnemy.def * phaseMultiplier);
+          this.currentEnemy.crit = Math.min(50, this.currentEnemy.crit + 5);
+          
+          // Heal boss slightly on phase change
+          const healAmount = Math.floor(this.currentEnemy.hp * 0.15);
+          this.enemyCurrentHp = Math.min(this.currentEnemy.hp, this.enemyCurrentHp + healAmount);
+          this.showCombatMessage(`💚 ${this.currentEnemy.name} recuperou ${healAmount} HP!`);
+          
+          this.updateCombatUI();
+        }
+      }
+      
+      // STATUS EFFECTS PROCESSING
+      processStatusEffects() {
+        const stats = this.getTotalStats();
+        
+        // Process player effects
+        if (this.playerEffects.poison > 0) {
+          const poisonDamage = this.playerEffects.poison;
+          this.playerCurrentHp = Math.max(0, this.playerCurrentHp - poisonDamage);
+          this.showCombatMessage(`☠️ Veneno: -${poisonDamage} HP`);
+          this.createDamageNumber(poisonDamage, false, true);
+        }
+        if (this.playerEffects.burn > 0) {
+          const burnDamage = this.playerEffects.burn;
+          this.playerCurrentHp = Math.max(0, this.playerCurrentHp - burnDamage);
+          this.showCombatMessage(`🔥 Queimadura: -${burnDamage} HP`);
+          this.createDamageNumber(burnDamage, false, true);
+        }
+        if (this.playerEffects.regen > 0) {
+          const healAmount = this.playerEffects.regen;
+          this.playerCurrentHp = Math.min(stats.hp, this.playerCurrentHp + healAmount);
+          this.showCombatMessage(`🌱 Regeneração: +${healAmount} HP`);
+          this.createDamageNumber(healAmount, false, true);
+        }
+        
+        // Process enemy effects
+        if (this.enemyEffects.poison > 0) {
+          const poisonDamage = this.enemyEffects.poison;
+          this.enemyCurrentHp = Math.max(0, this.enemyCurrentHp - poisonDamage);
+          this.showCombatMessage(`☠️ Veneno no inimigo: -${poisonDamage} HP`);
+          this.createDamageNumber(poisonDamage, false, false);
+        }
+        if (this.enemyEffects.burn > 0) {
+          const burnDamage = this.enemyEffects.burn;
+          this.enemyCurrentHp = Math.max(0, this.enemyCurrentHp - burnDamage);
+          this.showCombatMessage(`🔥 Queimadura no inimigo: -${burnDamage} HP`);
+          this.createDamageNumber(burnDamage, false, false);
+        }
+        if (this.enemyEffects.regen > 0) {
+          const healAmount = this.enemyEffects.regen;
+          this.enemyCurrentHp = Math.min(this.currentEnemy.hp, this.enemyCurrentHp + healAmount);
+          this.showCombatMessage(`🌱 Regeneração do inimigo: +${healAmount} HP`);
+        }
+        
+        // Check win/lose conditions after status effects
+        if (this.playerCurrentHp <= 0) {
+          this.defeat();
+        } else if (this.enemyCurrentHp <= 0) {
+          this.victory();
+        }
+      }
+      
+      // CHEST SYSTEM
+      findChest() {
+        // 15% chance to find a chest
+        if (Math.random() * 100 < 15) {
+          const chestTypes = ['common', 'common', 'common', 'rare', 'legendary'];
+          const chestType = chestTypes[Math.floor(Math.random() * chestTypes.length)];
+          this.openChest(chestType);
+        }
+      }
+      
+      openChest(chestType) {
+        const chest = GAME_DATA.chests[chestType];
+        if (!chest) return;
+        
+        let rewards = [];
+        
+        // Gold reward
+        const goldReward = randomBetween(chest.goldMin, chest.goldMax);
+        this.gold += goldReward;
+        rewards.push(`💰 ${goldReward}g`);
+        
+        // Potion chance
+        if (Math.random() * 100 < chest.potionChance) {
+          const potions = GAME_DATA.potions;
+          const randomPotion = potions[Math.floor(Math.random() * potions.length)];
+          this.potions[randomPotion.id] = (this.potions[randomPotion.id] || 0) + 1;
+          rewards.push(`🧪 ${randomPotion.name}`);
+        }
+        
+        // Equipment chance
+        if (Math.random() * 100 < chest.equipmentChance) {
+          const equipment = GAME_DATA.equipment;
+          const randomEquip = equipment[Math.floor(Math.random() * equipment.length)];
+          this.equipment[randomEquip.id] = (this.equipment[randomEquip.id] || 0) + 1;
+          rewards.push(`🛡️ ${randomEquip.name}`);
+        }
+        
+        // Rare item chance (for rare and legendary chests)
+        if (chest.rareItemChance && Math.random() * 100 < chest.rareItemChance) {
+          const rareItems = GAME_DATA.rareItems;
+          const randomRare = rareItems[Math.floor(Math.random() * rareItems.length)];
+          this.rareItems[randomRare.id] = (this.rareItems[randomRare.id] || 0) + 1;
+          rewards.push(`✨ ${randomRare.name}`);
+        }
+        
+        const rewardText = rewards.join(', ');
+        alert(`🎁 ${chest.emoji} Baú ${chestType === 'common' ? 'Comum' : chestType === 'rare' ? 'Raro' : 'Lendário'}!\n\nRecompensas: ${rewardText}`);
+        
+        this.updateUI();
+        this.saveGame();
+      }
+      
+      // NPC REPUTATION SYSTEM
+      interactWithNPC(npcId) {
+        const npc = GAME_DATA.npcs[npcId];
+        if (!npc) return;
+        
+        // Get random dialogue
+        const dialogue = npc.dialogue[Math.floor(Math.random() * npc.dialogue.length)];
+        
+        // Gain reputation
+        this.reputation += npc.reputationBonus;
+        
+        // NPC reaction based on reputation
+        let reaction = '';
+        if (this.reputation < 10) {
+          reaction = 'O NPC parece desconfiado de você.';
+        } else if (this.reputation < 30) {
+          reaction = 'O NPC te reconhece, mas ainda é neutro.';
+        } else if (this.reputation < 50) {
+          reaction = 'O NPC te cumprimenta com respeito.';
+        } else {
+          reaction = 'O NPC te trata como um amigo próximo!';
+        }
+        
+        alert(`${npc.emoji} ${npc.name}: "${dialogue}"\n\n${reaction}\n\nReputação atual: ${this.reputation}`);
+        
+        this.saveGame();
+      }
+      
+      calculateDamage(attackerAtk, defenderDef, critChance = 0, attackerElement = 'physical', defenderElement = 'physical') {
         const isCrit = Math.random() * 100 < critChance;
-        const baseDamage = Math.max(1, attackerAtk - defenderDef);
+        let baseDamage = Math.max(1, attackerAtk - defenderDef);
+        
+        // Apply element advantage
+        const attackerElem = GAME_DATA.elements[attackerElement] || GAME_DATA.elements.physical;
+        const defenderElem = GAME_DATA.elements[defenderElement] || GAME_DATA.elements.physical;
+        
+        let elementMultiplier = 1.0;
+        let elementMessage = '';
+        
+        if (attackerElem.strongAgainst === defenderElement) {
+          elementMultiplier = attackerElem.bonus;
+          elementMessage = `${attackerElem.emoji} Super efetivo!`;
+        } else if (attackerElem.weakAgainst === defenderElement) {
+          elementMultiplier = 0.5;
+          elementMessage = `${attackerElem.emoji} Pouco efetivo...`;
+        }
+        
+        baseDamage = Math.floor(baseDamage * elementMultiplier);
         const damage = isCrit ? baseDamage * 2 : baseDamage;
         const variance = Math.floor(damage * 0.2); // 20% variance
         const finalDamage = damage + Math.floor(Math.random() * (variance * 2 + 1)) - variance;
         
         return {
           damage: Math.max(1, finalDamage),
-          isCrit
+          isCrit,
+          elementMessage
         };
       }
       
@@ -2946,10 +4252,14 @@
         if (!this.inCombat) return;
         
         const stats = this.getTotalStats();
-        const result = this.calculateDamage(stats.atk, this.currentEnemy.def, stats.crit);
+        const result = this.calculateDamage(stats.atk, this.currentEnemy.def, stats.crit, this.character.element, this.currentEnemy.element);
         
         this.enemyCurrentHp = Math.max(0, this.enemyCurrentHp - result.damage);
         this.createDamageNumber(result.damage, result.isCrit, false);
+        
+        if (result.elementMessage) {
+          this.showCombatMessage(result.elementMessage);
+        }
         
         if (this.enemyCurrentHp <= 0) {
           this.victory();
@@ -2965,11 +4275,15 @@
         
         const stats = this.getTotalStats();
         const specialDamage = Math.floor(stats.atk * 1.5);
-        const result = this.calculateDamage(specialDamage, this.currentEnemy.def, stats.crit + 10);
+        const result = this.calculateDamage(specialDamage, this.currentEnemy.def, stats.crit + 10, this.character.element, this.currentEnemy.element);
         
         this.enemyCurrentHp = Math.max(0, this.enemyCurrentHp - result.damage);
         this.createDamageNumber(result.damage, result.isCrit, false);
         this.showCombatMessage('✨ Ataque especial!');
+        
+        if (result.elementMessage) {
+          this.showCombatMessage(result.elementMessage);
+        }
         
         if (this.enemyCurrentHp <= 0) {
           this.victory();
@@ -3040,8 +4354,12 @@
             }
           } else {
             // Fallback to basic attack if no cards
-            const damage = this.calculateDamage(this.currentEnemy.atk, this.getTotalStats().def, this.currentEnemy.crit);
+            const damage = this.calculateDamage(this.currentEnemy.atk, this.getTotalStats().def, this.currentEnemy.crit, this.currentEnemy.element, this.character.element);
             let finalDamage = damage.damage;
+            
+            if (damage.elementMessage) {
+              this.showCombatMessage(damage.elementMessage);
+            }
             
             if (this.defending) {
               finalDamage = Math.floor(finalDamage * 0.5);
@@ -3057,6 +4375,9 @@
             }
           }
           
+          // Process status effects at end of enemy turn
+          this.processStatusEffects();
+          
           this.updateCombatUI();
         }, 3000);
       }
@@ -3066,12 +4387,19 @@
         
         const enemyHpPercent = (this.enemyCurrentHp / this.currentEnemy.hp) * 100;
         const playerHpPercent = (this.playerCurrentHp / this.getTotalStats().hp) * 100;
+        const playerElem = GAME_DATA.elements[this.character.element] || GAME_DATA.elements.physical;
+        const enemyElem = GAME_DATA.elements[this.currentEnemy.element] || GAME_DATA.elements.physical;
         
         let bestCardIndex = 0;
         let bestScore = -Infinity;
         
         this.enemyCardHand.forEach((card, index) => {
           let score = 0;
+          
+          // Check if enemy is stunned or frozen - skip attacks
+          if (this.enemyEffects.stunned || this.enemyEffects.frozen) {
+            if (card.type === 'attack') score -= 1000;
+          }
           
           // Score based on card type and situation
           switch (card.type) {
@@ -3082,6 +4410,24 @@
               score += (card.power || 1.0) * 20;
               // Crit bonus adds value
               score += (card.critBonus || 0) * 2;
+              
+              // Element advantage consideration
+              if (enemyElem.strongAgainst === this.character.element) {
+                score += 30; // Bonus for using strong element
+              } else if (enemyElem.weakAgainst === this.character.element) {
+                score -= 20; // Penalty for using weak element
+              }
+              
+              // Status effect cards get bonus
+              if (card.burnDamage) score += 25;
+              if (card.stunChance) score += 30;
+              if (card.freezeChance) score += 25;
+              if (card.poisonDamage) score += 20;
+              
+              // Boss-specific: prefer high damage cards at low HP
+              if (this.currentEnemy.isBoss && enemyHpPercent < 30) {
+                score += (card.power || 1.0) * 15;
+              }
               break;
               
             case 'defense':
@@ -3091,6 +4437,14 @@
               score += (card.dodgeChance || 0) * 0.5;
               // Damage reduction adds value
               score += (card.damageReduction || 0) * 50;
+              
+              // Counter-attack is valuable
+              if (card.counterAttack) score += 35;
+              
+              // Boss-specific: use defense when player has buffs
+              if (this.currentEnemy.isBoss && this.playerEffects.atkBoost > 0) {
+                score += 40;
+              }
               break;
               
             case 'heal':
@@ -3102,13 +4456,24 @@
               if (card.regen) score += 30;
               // Revive is extremely valuable if dead
               if (card.revive && enemyHpPercent <= 0) score += 1000;
+              
+              // Boss-specific: heal more aggressively at low HP
+              if (this.currentEnemy.isBoss && enemyHpPercent < 40) {
+                score += 20;
+              }
               break;
               
             case 'special':
               // Extra action is always valuable
               if (card.extraAction) score += 50;
+              // ATK boost is valuable for aggressive play
+              if (card.atkBoost) score += card.atkBoost * 0.8;
               break;
           }
+          
+          // Dynamic difficulty: smarter AI at higher player levels
+          const intelligenceBonus = Math.min(15, this.level * 0.5);
+          score += intelligenceBonus;
           
           // Add some randomness to make AI less predictable
           score += Math.random() * 10;
@@ -3139,11 +4504,28 @@
         
         return null;
       }
-      
+
+      defeat() {
+        this.inCombat = false;
+        this.losses++;
+        
+        this.showCombatMessage('💀 Derrota!');
+        
+        setTimeout(() => {
+          alert(`💀 Derrota!\nTente novamente!\nTotal de derrotas: ${this.losses}`);
+          this.goLobby();
+        }, 1500);
+      }
+
       victory() {
         this.inCombat = false;
         this.wins++;
         this.gold += this.currentEnemy.gold;
+        
+        // XP gain based on enemy difficulty
+        const baseXP = this.currentEnemy.isBoss ? 100 : (this.currentEnemy.isMiniBoss ? 50 : 25);
+        const xpGain = Math.floor(baseXP * (1 + (this.currentEnemy.hp / 100)));
+        this.gainXP(xpGain);
         
         // Check for boss loot drops
         const loot = this.calculateLootDrop();
@@ -3159,12 +4541,23 @@
             this.achievements.first_rare = true;
             this.showCombatMessage('🏆 Achievement: Primeiro Item Raro!');
           }
+          
+          // Update side quest progress for rare items
+          this.updateSideQuestProgress('rare_item_obtained', {});
         }
+        
+        // Check for hidden chest (15% chance)
+        this.findChest();
         
         // Update quests
         this.updateQuestProgress('daily_1', 1);
         this.updateQuestProgress('weekly_1', 1);
         this.updateQuestProgress('daily_2', this.currentEnemy.gold);
+        
+        // Update side quest progress for enemy defeat and combat win
+        this.updateSideQuestProgress('enemy_defeat', { enemyId: this.currentEnemy.name.toLowerCase() });
+        this.updateSideQuestProgress('combat_win', { location: this.currentLocation });
+        this.updateSideQuestProgress('gold_earned', { amount: this.currentEnemy.gold });
         
         // Check achievements
         this.checkAchievements();
@@ -3173,18 +4566,6 @@
         
         setTimeout(() => {
           alert(lootMessage + `\nTotal de vitórias: ${this.wins}`);
-          this.goLobby();
-        }, 1500);
-      }
-      
-      defeat() {
-        this.inCombat = false;
-        this.losses++;
-        
-        this.showCombatMessage('💀 Derrota!');
-        
-        setTimeout(() => {
-          alert(`💀 Derrota!\nTente novamente!\nTotal de derrotas: ${this.losses}`);
           this.goLobby();
         }, 1500);
       }
