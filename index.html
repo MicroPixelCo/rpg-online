@@ -2385,6 +2385,7 @@
           weeklyResetTime: this.weeklyResetTime,
           dailyRewardClaimed: this.dailyRewardClaimed,
           dailyRewardDay: this.dailyRewardDay,
+          dailyRewardClaimTime: this.dailyRewardClaimTime,
           reputation: this.reputation,
           currentLocation: this.currentLocation,
           sideQuests: this.sideQuests
@@ -2437,14 +2438,14 @@
           this.weeklyResetTime = Date.now();
         }
         
-        // Check daily reward reset (Friday 12:00)
-        const lastRewardReset = new Date(this.dailyRewardDay || 0);
-        const lastRewardDay = lastRewardReset.getDay();
-        const lastRewardHour = lastRewardReset.getHours();
+        // Check daily mission reset (24 hours from last reset)
+        const lastDailyMissionReset = new Date(this.dailyResetTime);
+        const timeSinceLastReset = now - lastDailyMissionReset;
+        const dailyResetTime = 24 * 60 * 60 * 1000; // 24 hours
         
-        if (currentDay === 5 && currentHour >= 12 && (lastRewardDay !== 5 || lastRewardHour < 12)) {
-          this.dailyRewardClaimed = false;
-          this.dailyRewardDay = now;
+        if (timeSinceLastReset >= dailyResetTime) {
+          this.resetDailyMissions();
+          this.dailyResetTime = Date.now();
         }
       }
 
@@ -2466,31 +2467,41 @@
           return;
         }
 
-        const rewards = [
-          { gold: 50 },
-          { gold: 75 },
-          { gold: 100 },
-          { gold: 125, potion: 'heal_small' },
-          { gold: 150, potion: 'heal_medium' },
-          { gold: 200, potion: 'heal_large' },
-          { gold: 250, equipment: 'sword_1' }
-        ];
-
-        const dayIndex = new Date().getDay(); // 0-6
-        const reward = rewards[dayIndex % rewards.length];
-
-        if (reward.gold) this.gold += reward.gold;
-        if (reward.potion) this.potions[reward.potion] = (this.potions[reward.potion] || 0) + 1;
-        if (reward.equipment) this.equipment[reward.equipment] = (this.equipment[reward.equipment] || 0) + 1;
-
+        // Progressive rewards based on consecutive days
+        const currentDay = this.dailyRewardDay || 0;
+        const nextDay = currentDay + 1;
+        
+        // Calculate progressive reward: day 1: 100, day 2: 250, day 3: 400, day 4: 600, day 5: 850, day 6: 1150, day 7+: 1500
+        const baseReward = 100;
+        const rewardMultiplier = nextDay;
+        const goldReward = Math.min(1500, baseReward + (nextDay - 1) * 150);
+        
+        // Bonus rewards on certain days
+        let bonusItem = null;
+        if (nextDay === 3) bonusItem = { type: 'potion', id: 'heal_medium', name: 'Poção Média' };
+        else if (nextDay === 5) bonusItem = { type: 'potion', id: 'heal_large', name: 'Poção Grande' };
+        else if (nextDay === 7) bonusItem = { type: 'equipment', id: 'sword_1', name: 'Espada Básica' };
+        
+        // Give rewards
+        this.gold += goldReward;
+        if (bonusItem && bonusItem.type === 'potion') {
+          this.potions[bonusItem.id] = (this.potions[bonusItem.id] || 0) + 1;
+        } else if (bonusItem && bonusItem.type === 'equipment') {
+          this.equipment[bonusItem.id] = (this.equipment[bonusItem.id] || 0) + 1;
+        }
+        
+        // Update daily reward tracking
         this.dailyRewardClaimed = true;
+        this.dailyRewardDay = nextDay;
+        this.dailyRewardClaimTime = Date.now();
+        
         this.updateUI();
         this.saveGame();
         this.updateDailyRewardsUI();
 
-        let rewardText = `✅ Recompensa diária: ${reward.gold}g`;
-        if (reward.potion) rewardText += ` + ${GAME_DATA.potions.find(p => p.id === reward.potion)?.name}`;
-        if (reward.equipment) rewardText += ` + ${GAME_DATA.equipment.find(e => e.id === reward.equipment)?.name}`;
+        let rewardText = `✅ Recompensa diária (Dia ${nextDay}): ${goldReward}g`;
+        if (bonusItem) rewardText += ` + ${bonusItem.name}`;
+        rewardText += `\n🔥 Sequência de dias: ${nextDay}`;
 
         alert(rewardText);
       }
@@ -2501,34 +2512,64 @@
       }
 
       updateDailyRewardsUI() {
-        const rewards = [
-          { gold: 50 },
-          { gold: 75 },
-          { gold: 100 },
-          { gold: 125, potion: 'heal_small' },
-          { gold: 150, potion: 'heal_medium' },
-          { gold: 200, potion: 'heal_large' },
-          { gold: 250, equipment: 'sword_1' }
-        ];
-
-        const dayIndex = new Date().getDay(); // 0-6
-        const reward = rewards[dayIndex % rewards.length];
-
-        let rewardText = `💰 ${reward.gold}g`;
-        if (reward.potion) rewardText += ` + ${GAME_DATA.potions.find(p => p.id === reward.potion)?.name}`;
-        if (reward.equipment) rewardText += ` + ${GAME_DATA.equipment.find(e => e.id === reward.equipment)?.name}`;
+        const currentDay = this.dailyRewardDay || 0;
+        const nextDay = currentDay + 1;
+        
+        // Calculate progressive reward
+        const baseReward = 100;
+        const goldReward = Math.min(1500, baseReward + (nextDay - 1) * 150);
+        
+        // Bonus rewards on certain days
+        let bonusItem = null;
+        if (nextDay === 3) bonusItem = { type: 'potion', id: 'heal_medium', name: 'Poção Média' };
+        else if (nextDay === 5) bonusItem = { type: 'potion', id: 'heal_large', name: 'Poção Grande' };
+        else if (nextDay === 7) bonusItem = { type: 'equipment', id: 'sword_1', name: 'Espada Básica' };
+        
+        let rewardText = `💰 Dia ${nextDay}: ${goldReward}g`;
+        if (bonusItem) rewardText += ` + ${bonusItem.name}`;
+        rewardText += ` (Sequência: ${nextDay} dias)`;
 
         $('dailyRewardAmount').textContent = rewardText;
 
         const btn = $('claimDailyRewardBtn');
         if (this.dailyRewardClaimed) {
-          btn.textContent = '✅ Já Coletado';
-          btn.disabled = true;
-          btn.style.opacity = '0.5';
+          // Calculate time until next reward (24 hours from claim time)
+          const now = Date.now();
+          const claimTime = this.dailyRewardClaimTime || 0;
+          const timeUntilReset = 24 * 60 * 60 * 1000 - (now - claimTime);
+          
+          if (timeUntilReset > 0) {
+            const hours = Math.floor(timeUntilReset / (60 * 60 * 1000));
+            const minutes = Math.floor((timeUntilReset % (60 * 60 * 1000)) / (60 * 1000));
+            const seconds = Math.floor((timeUntilReset % (60 * 1000)) / 1000);
+            
+            btn.textContent = `⏰ ${hours}h ${minutes}m ${seconds}s`;
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+            
+            // Update timer every second
+            if (!this.dailyRewardTimer) {
+              this.dailyRewardTimer = setInterval(() => this.updateDailyRewardsUI(), 1000);
+            }
+          } else {
+            // Reset available
+            this.dailyRewardClaimed = false;
+            btn.textContent = '🎁 Coletar Recompensa';
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            if (this.dailyRewardTimer) {
+              clearInterval(this.dailyRewardTimer);
+              this.dailyRewardTimer = null;
+            }
+          }
         } else {
           btn.textContent = '🎁 Coletar Recompensa';
           btn.disabled = false;
           btn.style.opacity = '1';
+          if (this.dailyRewardTimer) {
+            clearInterval(this.dailyRewardTimer);
+            this.dailyRewardTimer = null;
+          }
         }
       }
 
