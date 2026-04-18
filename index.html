@@ -5286,7 +5286,8 @@
               damage: 10,
               fireRate: 200,
               lastShot: 0,
-              spread: 0.1
+              spread: 0.1,
+              speed: 18
             }
           },
           enemies: [],
@@ -5314,55 +5315,96 @@
       generateArenaMap() {
         const { obstacles } = this.arena;
         
-        // Add rocks
-        for (let i = 0; i < 15; i++) {
+        // Add rocks (keep as obstacles)
+        for (let i = 0; i < 12; i++) {
           obstacles.push({
             type: 'rock',
             x: Math.random() * 1100 + 50,
             y: Math.random() * 600 + 50,
-            width: 40 + Math.random() * 30,
-            height: 35 + Math.random() * 25,
-            color: '#6b7280',
-            emoji: '🪨'
+            width: 35 + Math.random() * 25,
+            height: 30 + Math.random() * 20,
+            color: '#6b7280'
           });
         }
         
-        // Add trees
-        for (let i = 0; i < 20; i++) {
+        // Add trees (keep as obstacles)
+        for (let i = 0; i < 15; i++) {
           obstacles.push({
             type: 'tree',
             x: Math.random() * 1100 + 50,
             y: Math.random() * 600 + 50,
-            width: 50,
-            height: 50,
-            color: '#22c55e',
-            emoji: '🌳'
+            width: 45,
+            height: 45,
+            color: '#22c55e'
           });
         }
         
-        // Add brick walls
-        for (let i = 0; i < 10; i++) {
+        // Add orange walls (buildings) - zombsroyale style
+        for (let i = 0; i < 8; i++) {
+          const wallWidth = 100 + Math.random() * 80;
+          const wallHeight = 20;
           obstacles.push({
             type: 'wall',
-            x: Math.random() * 1000 + 100,
-            y: Math.random() * 500 + 100,
-            width: 80 + Math.random() * 60,
-            height: 20,
-            color: '#8b4513',
-            emoji: '🧱'
+            x: Math.random() * (1200 - wallWidth - 100) + 50,
+            y: Math.random() * (700 - wallHeight - 100) + 50,
+            width: wallWidth,
+            height: wallHeight,
+            color: '#f97316'
           });
         }
         
-        // Add houses
-        for (let i = 0; i < 4; i++) {
+        // Add larger buildings (ground squares) - zombsroyale style houses
+        for (let i = 0; i < 5; i++) {
+          const buildingWidth = 120 + Math.random() * 60;
+          const buildingHeight = 100 + Math.random() * 50;
+          const buildingX = Math.random() * (1200 - buildingWidth - 100) + 50;
+          const buildingY = Math.random() * (700 - buildingHeight - 100) + 50;
+          
+          // Building floor
           obstacles.push({
-            type: 'house',
-            x: Math.random() * 800 + 150,
-            y: Math.random() * 400 + 150,
-            width: 120,
-            height: 100,
-            color: '#dc2626',
-            emoji: '🏠'
+            type: 'building_floor',
+            x: buildingX,
+            y: buildingY,
+            width: buildingWidth,
+            height: buildingHeight,
+            color: '#78716c'
+          });
+          
+          // Building walls (orange)
+          obstacles.push({
+            type: 'wall',
+            x: buildingX,
+            y: buildingY,
+            width: buildingWidth,
+            height: 15,
+            color: '#ea580c'
+          });
+          
+          obstacles.push({
+            type: 'wall',
+            x: buildingX,
+            y: buildingY + buildingHeight - 15,
+            width: buildingWidth,
+            height: 15,
+            color: '#ea580c'
+          });
+          
+          obstacles.push({
+            type: 'wall',
+            x: buildingX,
+            y: buildingY,
+            width: 15,
+            height: buildingHeight,
+            color: '#ea580c'
+          });
+          
+          obstacles.push({
+            type: 'wall',
+            x: buildingX + buildingWidth - 15,
+            y: buildingY,
+            width: 15,
+            height: buildingHeight,
+            color: '#ea580c'
           });
         }
       }
@@ -5376,14 +5418,18 @@
             y: Math.random() * 600 + 50,
             width: 40,
             height: 40,
-            speed: 2 + Math.random() * 2,
-            health: 50 + Math.random() * 30,
-            maxHealth: 80,
+            speed: 2.5 + Math.random() * 1.5,
+            health: 60 + Math.random() * 40,
+            maxHealth: 100,
             angle: 0,
             lastShot: 0,
-            fireRate: 1000 + Math.random() * 500,
-            damage: 5 + Math.random() * 5,
-            emoji: '👹'
+            fireRate: 800 + Math.random() * 400,
+            damage: 8 + Math.random() * 7,
+            emoji: '👹',
+            strafeDirection: Math.random() > 0.5 ? 1 : -1,
+            strafeTimer: 0,
+            behavior: Math.random() > 0.5 ? 'aggressive' : 'cautious',
+            lastBehaviorChange: 0
           });
         }
       }
@@ -5483,12 +5529,42 @@
         
         // Update enemies
         enemies.forEach(enemy => {
-          // Simple AI: move towards player
           const angleToPlayer = Math.atan2(player.y - enemy.y, player.x - enemy.x);
           enemy.angle = angleToPlayer;
           
-          const enemyDx = Math.cos(angleToPlayer) * enemy.speed;
-          const enemyDy = Math.sin(angleToPlayer) * enemy.speed;
+          const distToPlayer = Math.sqrt(Math.pow(player.x - enemy.x, 2) + Math.pow(player.y - enemy.y, 2));
+          
+          // Change behavior periodically
+          enemy.strafeTimer++;
+          if (enemy.strafeTimer > 120) {
+            enemy.strafeDirection *= -1;
+            enemy.strafeTimer = 0;
+          }
+          
+          // Calculate movement based on behavior
+          let moveX = 0, moveY = 0;
+          
+          if (enemy.behavior === 'aggressive') {
+            // Move towards player but strafe
+            const strafeAngle = angleToPlayer + (Math.PI / 2) * enemy.strafeDirection;
+            moveX = Math.cos(angleToPlayer) * 0.7 + Math.cos(strafeAngle) * 0.3;
+            moveY = Math.sin(angleToPlayer) * 0.7 + Math.sin(strafeAngle) * 0.3;
+          } else {
+            // Cautious: strafe more, move forward less
+            const strafeAngle = angleToPlayer + (Math.PI / 2) * enemy.strafeDirection;
+            moveX = Math.cos(angleToPlayer) * 0.3 + Math.cos(strafeAngle) * 0.7;
+            moveY = Math.sin(angleToPlayer) * 0.3 + Math.sin(strafeAngle) * 0.7;
+          }
+          
+          // Normalize movement
+          const moveMag = Math.sqrt(moveX * moveX + moveY * moveY);
+          if (moveMag > 0) {
+            moveX /= moveMag;
+            moveY /= moveMag;
+          }
+          
+          const enemyDx = moveX * enemy.speed;
+          const enemyDy = moveY * enemy.speed;
           
           const enemyNewX = enemy.x + enemyDx;
           const enemyNewY = enemy.y + enemyDy;
@@ -5500,9 +5576,10 @@
             enemy.y = Math.max(enemy.height / 2, Math.min(700 - enemy.height / 2, enemyNewY));
           }
           
-          // Enemy shooting
+          // Enemy shooting - shoot more often when closer
           const now = Date.now();
-          if (now - enemy.lastShot > enemy.fireRate) {
+          const adjustedFireRate = distToPlayer < 200 ? enemy.fireRate * 0.7 : enemy.fireRate;
+          if (now - enemy.lastShot > adjustedFireRate) {
             enemy.lastShot = now;
             this.arenaShoot(enemy);
           }
@@ -5591,7 +5668,7 @@
           y: actualShooter.y + Math.sin(angle) * 25,
           width: 8,
           height: 8,
-          speed: 12,
+          speed: isPlayer ? player.gun.speed : 15,
           angle: angle,
           damage: isPlayer ? player.gun.damage : actualShooter.damage,
           owner: isPlayer ? 'player' : 'enemy',
@@ -5638,10 +5715,25 @@
         
         // Draw obstacles
         obstacles.forEach(obs => {
-          ctx.font = `${obs.width}px Arial`;
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText(obs.emoji, obs.x + obs.width / 2, obs.y + obs.height / 2);
+          if (obs.type === 'wall' || obs.type === 'building_floor') {
+            // Draw as rectangle
+            ctx.fillStyle = obs.color;
+            ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+            
+            // Add border for walls
+            if (obs.type === 'wall') {
+              ctx.strokeStyle = '#c2410c';
+              ctx.lineWidth = 2;
+              ctx.strokeRect(obs.x, obs.y, obs.width, obs.height);
+            }
+          } else {
+            // Draw rocks and trees as emojis
+            ctx.font = `${obs.width}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            const emoji = obs.type === 'rock' ? '🪨' : '🌳';
+            ctx.fillText(emoji, obs.x + obs.width / 2, obs.y + obs.height / 2);
+          }
         });
         
         // Draw enemies
