@@ -881,10 +881,124 @@
       min-height: 160px;
     }
 
+    .sprite-container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .sprite-container::before {
+      content: '';
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, transparent 70%);
+      animation: pulse-glow 2s ease-in-out infinite;
+      z-index: 1;
+    }
+
+    .sprite-container.fire::before {
+      background: radial-gradient(circle, rgba(255, 107, 53, 0.5) 0%, rgba(233, 69, 96, 0.3) 50%, transparent 70%);
+      animation: fire-glow 1.5s ease-in-out infinite;
+    }
+
+    .sprite-container.ice::before {
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.5) 0%, rgba(6, 182, 212, 0.3) 50%, transparent 70%);
+      animation: ice-glow 2s ease-in-out infinite;
+    }
+
+    .sprite-container.electric::before {
+      background: radial-gradient(circle, rgba(245, 158, 11, 0.5) 0%, rgba(234, 179, 8, 0.3) 50%, transparent 70%);
+      animation: electric-glow 0.8s ease-in-out infinite;
+    }
+
+    .sprite-container.physical::before {
+      background: radial-gradient(circle, rgba(156, 163, 175, 0.5) 0%, rgba(107, 114, 128, 0.3) 50%, transparent 70%);
+      animation: physical-glow 2.5s ease-in-out infinite;
+    }
+
+    .sprite-aura {
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      border: 3px solid rgba(99, 102, 241, 0.6);
+      animation: rotate-aura 8s linear infinite;
+      z-index: 0;
+    }
+
+    .sprite-aura::before {
+      content: '';
+      position: absolute;
+      top: -3px;
+      left: 50%;
+      width: 8px;
+      height: 8px;
+      background: rgba(99, 102, 241, 0.8);
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.8);
+    }
+
     .sprite {
       font-size: 90px;
       animation: float 3s ease-in-out infinite;
       filter: drop-shadow(0 0 10px rgba(114, 9, 183, 0.3));
+      position: relative;
+      z-index: 10;
+    }
+
+    .sprite.attacking {
+      animation: attack-slash 0.3s ease-out;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { transform: scale(1); opacity: 0.6; }
+      50% { transform: scale(1.1); opacity: 0.9; }
+    }
+
+    @keyframes fire-glow {
+      0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.7; }
+      25% { transform: scale(1.15) rotate(5deg); opacity: 0.9; }
+      50% { transform: scale(1.05) rotate(0deg); opacity: 0.8; }
+      75% { transform: scale(1.2) rotate(-5deg); opacity: 0.95; }
+    }
+
+    @keyframes ice-glow {
+      0%, 100% { transform: scale(1); opacity: 0.6; }
+      50% { transform: scale(1.08); opacity: 0.85; }
+    }
+
+    @keyframes electric-glow {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.15); opacity: 1; }
+    }
+
+    @keyframes physical-glow {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.05); opacity: 0.7; }
+    }
+
+    @keyframes rotate-aura {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes attack-slash {
+      0% { transform: translateX(0) scale(1); }
+      50% { transform: translateX(30px) scale(1.3); filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8)); }
+      100% { transform: translateX(0) scale(1); }
+    }
+
+    .sprite.hit {
+      animation: hit-flash 0.2s ease-out;
+    }
+
+    @keyframes hit-flash {
+      0% { filter: brightness(1); }
+      50% { filter: brightness(2) drop-shadow(0 0 20px rgba(255, 0, 0, 0.8)); }
+      100% { filter: brightness(1); }
     }
 
     .combat-buttons {
@@ -913,35 +1027,102 @@
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       padding: 16px;
-      border-radius: 12px;
+      border-radius: 16px;
       border: 2px solid var(--glass-border);
       text-align: center;
       cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      min-height: 120px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      min-height: 130px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .game-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transform: rotate(45deg);
+      transition: all 0.6s ease;
+      opacity: 0;
+    }
+
+    .game-card:hover::before {
+      opacity: 1;
+      animation: card-shine 1s ease-in-out;
     }
 
     .game-card:hover {
-      transform: translateY(-5px);
+      transform: translateY(-8px) scale(1.05);
       border-color: var(--secondary);
-      box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4);
+      box-shadow: 0 12px 35px rgba(236, 72, 153, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .game-card.attack-card {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(220, 38, 38, 0.15));
+      border-color: rgba(239, 68, 68, 0.5);
+    }
+
+    .game-card.attack-card:hover {
+      border-color: #ef4444;
+      box-shadow: 0 12px 35px rgba(239, 68, 68, 0.5);
+    }
+
+    .game-card.defense-card {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(37, 99, 235, 0.15));
+      border-color: rgba(59, 130, 246, 0.5);
+    }
+
+    .game-card.defense-card:hover {
+      border-color: #3b82f6;
+      box-shadow: 0 12px 35px rgba(59, 130, 246, 0.5);
+    }
+
+    .game-card.heal-card {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(22, 163, 74, 0.15));
+      border-color: rgba(34, 197, 94, 0.5);
+    }
+
+    .game-card.heal-card:hover {
+      border-color: #22c55e;
+      box-shadow: 0 12px 35px rgba(34, 197, 94, 0.5);
+    }
+
+    .game-card.special-card {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.3), rgba(147, 51, 234, 0.15));
+      border-color: rgba(168, 85, 247, 0.5);
+    }
+
+    .game-card.special-card:hover {
+      border-color: #a855f7;
+      box-shadow: 0 12px 35px rgba(168, 85, 247, 0.5);
     }
 
     .card-emoji {
-      font-size: 36px;
+      font-size: 42px;
       margin-bottom: 8px;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+      transition: transform 0.3s ease;
+    }
+
+    .game-card:hover .card-emoji {
+      transform: scale(1.15) rotate(5deg);
     }
 
     .card-name {
-      font-size: 12px;
+      font-size: 13px;
       font-weight: bold;
       color: var(--secondary);
       margin-bottom: 4px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
     }
 
     .card-desc {
@@ -953,31 +1134,48 @@
 
     .card-rarity {
       font-size: 8px;
-      padding: 2px 8px;
-      border-radius: 10px;
+      padding: 3px 10px;
+      border-radius: 12px;
       font-weight: bold;
       text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .card-rarity.common {
-      background: rgba(128, 128, 128, 0.3);
-      color: #a0a0a0;
+      background: linear-gradient(135deg, rgba(128, 128, 128, 0.4), rgba(107, 114, 128, 0.3));
+      color: #d1d5db;
+      border: 1px solid rgba(156, 163, 175, 0.4);
     }
 
     .card-rarity.uncommon {
-      background: rgba(16, 185, 129, 0.3);
-      color: #10b981;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.4), rgba(5, 150, 105, 0.3));
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
     }
 
     .card-rarity.rare {
-      background: rgba(59, 130, 246, 0.3);
-      color: #3b82f6;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.4), rgba(37, 99, 235, 0.3));
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
     }
 
     .card-rarity.legendary {
-      background: rgba(245, 158, 11, 0.3);
-      color: #f59e0b;
-      animation: glow 2s ease-in-out infinite;
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.4), rgba(217, 119, 6, 0.3));
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      animation: legendary-glow 2s ease-in-out infinite;
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+    }
+
+    @keyframes card-shine {
+      0% { left: -50%; }
+      100% { left: 150%; }
+    }
+
+    @keyframes legendary-glow {
+      0%, 100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
+      50% { box-shadow: 0 0 25px rgba(245, 158, 11, 0.6), 0 0 35px rgba(245, 158, 11, 0.3); }
     }
 
     #achievements, #quests, #stats {
@@ -1544,6 +1742,11 @@
             <div class="nav-label">Chefão Final</div>
             <div class="nav-badge">Insano</div>
           </div>
+          <div class="nav-card arena-card" onclick="window.game.startArena();" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(220, 38, 38, 0.15)); border-color: rgba(239, 68, 68, 0.5);">
+            <div class="nav-icon">🎮</div>
+            <div class="nav-label">Arena</div>
+            <div class="nav-badge">Battle Royale</div>
+          </div>
         </div>
 
         <div class="nav-section-title">🛒 Loja</div>
@@ -1764,6 +1967,8 @@
       <div class="hud-card">
         <div class="hud-name" id="playerName">🧙 Você</div>
         <div class="hp-bar"><div class="hp-fill" id="playerHpBar">100/100</div></div>
+        <div class="energy-bar"><div class="energy-fill" id="energyBar">⚡ 100/100</div></div>
+        <div class="combo-display" id="comboDisplay">🔥 Combo: 0</div>
       </div>
       <div class="hud-card">
         <div class="hud-name" id="enemyName">🧟 Inimigo</div>
@@ -1771,19 +1976,73 @@
       </div>
     </div>
     <div class="combat-arena">
-      <div style="text-align: center;"><div class="sprite" id="playerSprite">🧙</div></div>
+      <div class="sprite-container" id="playerSpriteContainer">
+        <div class="sprite-aura"></div>
+        <div class="sprite" id="playerSprite">🧙</div>
+      </div>
       <div style="font-size: 48px; opacity: 0.2;">⚔️</div>
-      <div style="text-align: center;"><div class="sprite" id="enemySprite">🧟</div></div>
+      <div class="sprite-container" id="enemySpriteContainer">
+        <div class="sprite-aura"></div>
+        <div class="sprite" id="enemySprite">🧟</div>
+      </div>
     </div>
     <div class="combat-log" id="combatLog"></div>
     <div class="card-hand" id="cardHand"></div>
   </div>
 
-  <div id="achievements" class="screen">
-    <button type="button" class="btn-secondary" style="margin: 0 0 14px 0;" onclick="window.game.showScreen('lobby');">⬅️ Voltar</button>
-    <h2 style="color: var(--secondary); margin: 0 0 14px 0;">🏆 Achievements</h2>
-    <div style="flex: 1; overflow-y: auto;">
-      <div class="grid-container" id="achievementsGrid"></div>
+  <div id="arena" class="screen">
+    <button type="button" class="btn-danger" style="margin: 0 0 10px 0; position: fixed; top: 80px; left: 20px; z-index: 100;" onclick="window.game.exitArena();">⬅️ Sair da Arena</button>
+    
+    <!-- Brawl Stars-style HUD -->
+    <div class="arena-hud">
+      <div class="arena-player-info">
+        <div class="arena-avatar" id="arenaAvatar">🧙</div>
+        <div class="arena-stats">
+          <div class="arena-health-bar">
+            <div class="arena-health-fill" id="arenaHealthFill"></div>
+            <span class="arena-health-text" id="arenaHealthText">100/100</span>
+          </div>
+          <div class="arena-ammo">
+            <span id="arenaAmmo">🔫 30/30</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="arena-abilities">
+        <div class="ability-slot" id="ability1" onclick="window.game.useAbility(1)">
+          <div class="ability-icon">⚡</div>
+          <div class="ability-cooldown" id="ability1Cooldown"></div>
+        </div>
+        <div class="ability-slot" id="ability2" onclick="window.game.useAbility(2)">
+          <div class="ability-icon">💥</div>
+          <div class="ability-cooldown" id="ability2Cooldown"></div>
+        </div>
+        <div class="ability-slot" id="ability3" onclick="window.game.useAbility(3)">
+          <div class="ability-icon">🛡️</div>
+          <div class="ability-cooldown" id="ability3Cooldown"></div>
+        </div>
+      </div>
+      
+      <div class="arena-minimap">
+        <canvas id="minimap" width="150" height="150"></canvas>
+      </div>
+      
+      <div class="arena-score">
+        <span id="arenaKills">💀 Kills: 0</span>
+      </div>
+    </div>
+    
+    <!-- Game Canvas -->
+    <canvas id="gameCanvas" style="display: block; margin: 0 auto; background: #2d5a27; border: 3px solid #1a3a16; border-radius: 10px;"></canvas>
+    
+    <!-- Controls Info -->
+    <div class="arena-controls">
+      <div class="control-key">W</div>
+      <div class="control-key">A</div>
+      <div class="control-key">S</div>
+      <div class="control-key">D</div>
+      <span>Move</span>
+      <div class="control-mouse">🖱️ Click to Shoot</div>
     </div>
   </div>
 
@@ -2337,6 +2596,15 @@
         this.extraAction = false;
         this.bossPhase = 1;
         this.bossMaxPhases = 1;
+        
+        // Combat improvements
+        this.combo = 0; // Combo counter
+        this.maxCombo = 0; // Max combo achieved
+        this.energy = 100; // Energy/stamina (0-100)
+        this.maxEnergy = 100;
+        this.isCharging = false; // Charge attack state
+        this.chargeTurns = 0; // How many turns charged
+        
         this.dailyResetTime = Date.now();
         this.weeklyResetTime = Date.now();
         this.dailyRewardClaimed = false;
@@ -3975,14 +4243,17 @@
         const cardContainer = this.$('cardHand');
         if (!cardContainer) return;
         
-        cardContainer.innerHTML = this.cardHand.map((card, index) => `
-          <div class="game-card" onclick="window.game.useCard(${index});">
+        cardContainer.innerHTML = this.cardHand.map((card, index) => {
+          const cardTypeClass = `${card.type}-card`;
+          return `
+          <div class="game-card ${cardTypeClass}" onclick="window.game.useCard(${index});">
             <div class="card-emoji">${card.emoji}</div>
             <div class="card-name">${card.name}</div>
             <div class="card-desc">${card.description}</div>
             <div class="card-rarity ${card.rarity}">${card.rarity}</div>
           </div>
-        `).join('');
+        `;
+        }).join('');
       }
 
       startCombat(mode) {
@@ -3990,6 +4261,13 @@
         this.inCombat = true;
         this.combatRound = 1;
         this.maxCombatRounds = 50; // Prevent infinite stalemates
+        
+        // Reset combat improvements state
+        this.combo = 0;
+        this.maxCombo = 0;
+        this.energy = 100;
+        this.isCharging = false;
+        this.chargeTurns = 0;
         
         // Initialize card system
         this.drawInitialHand();
@@ -4049,6 +4327,18 @@
         this.$('playerSprite').innerText = this.character.emoji;
         this.$('enemySprite').innerText = this.currentEnemy.emoji;
         
+        // Apply element-based classes to sprite containers
+        const playerContainer = this.$('playerSpriteContainer');
+        const enemyContainer = this.$('enemySpriteContainer');
+        
+        // Remove existing element classes
+        playerContainer.classList.remove('fire', 'ice', 'electric', 'physical');
+        enemyContainer.classList.remove('fire', 'ice', 'electric', 'physical');
+        
+        // Add new element classes
+        playerContainer.classList.add(this.character.element || 'physical');
+        enemyContainer.classList.add(this.currentEnemy.element || 'physical');
+        
         // Update HP bars
         const playerHpPercent = (this.playerCurrentHp / this.getTotalStats().hp) * 100;
         const enemyHpPercent = (this.enemyCurrentHp / this.currentEnemy.hp) * 100;
@@ -4072,6 +4362,18 @@
         this.$('enemyName').innerText = `${this.currentEnemy.emoji} ${this.currentEnemy.name} ${enemyElem.emoji}`;
         this.$('playerSprite').innerText = this.character.emoji;
         this.$('enemySprite').innerText = this.currentEnemy.emoji;
+        
+        // Apply element-based classes to sprite containers
+        const playerContainer = this.$('playerSpriteContainer');
+        const enemyContainer = this.$('enemySpriteContainer');
+        
+        // Remove existing element classes
+        playerContainer.classList.remove('fire', 'ice', 'electric', 'physical');
+        enemyContainer.classList.remove('fire', 'ice', 'electric', 'physical');
+        
+        // Add new element classes
+        playerContainer.classList.add(this.character.element || 'physical');
+        enemyContainer.classList.add(this.currentEnemy.element || 'physical');
         
         // Update HP bars
         const playerHpPercent = (this.playerCurrentHp / stats.hp) * 100;
@@ -4127,7 +4429,6 @@
         }
       }
       
-      // STATUS EFFECTS PROCESSING
       processStatusEffects() {
         const stats = this.getTotalStats();
         
@@ -4292,11 +4593,37 @@
       attack() {
         if (!this.inCombat) return;
         
+        // Check energy cost
+        const energyCost = 15;
+        if (this.energy < energyCost) {
+          this.showCombatMessage('❌ Sem energia suficiente!');
+          return;
+        }
+        
         const stats = this.getTotalStats();
-        const result = this.calculateDamage(stats.atk, this.currentEnemy.def, stats.crit, this.character.element, this.currentEnemy.element);
+        
+        // Apply combo bonus (10% damage per combo)
+        const comboBonus = 1 + (this.combo * 0.1);
+        const comboDamage = Math.floor(stats.atk * comboBonus);
+        
+        const result = this.calculateDamage(comboDamage, this.currentEnemy.def, stats.crit, this.character.element, this.currentEnemy.element);
         
         this.enemyCurrentHp = Math.max(0, this.enemyCurrentHp - result.damage);
         this.createDamageNumber(result.damage, result.isCrit, false);
+        
+        // Consume energy
+        this.energy = Math.max(0, this.energy - energyCost);
+        
+        // Increase combo
+        this.combo++;
+        if (this.combo > this.maxCombo) {
+          this.maxCombo = this.combo;
+        }
+        
+        // Show combo message
+        if (this.combo > 1) {
+          this.showCombatMessage(`🔥 Combo x${this.combo}!`);
+        }
         
         if (result.elementMessage) {
           this.showCombatMessage(result.elementMessage);
@@ -4329,6 +4656,52 @@
         if (this.enemyCurrentHp <= 0) {
           this.victory();
         } else {
+          this.enemyTurn();
+        }
+        
+        this.updateCombatUI();
+      }
+      
+      chargeAttack() {
+        if (!this.inCombat) return;
+        
+        // Check energy cost
+        const energyCost = 25;
+        if (this.energy < energyCost) {
+          this.showCombatMessage('❌ Sem energia suficiente para carregar!');
+          return;
+        }
+        
+        if (this.isCharging) {
+          // Release charged attack
+          const stats = this.getTotalStats();
+          const chargeMultiplier = 1 + (this.chargeTurns * 0.5); // 50% bonus per charge turn
+          const chargeDamage = Math.floor(stats.atk * chargeMultiplier);
+          const result = this.calculateDamage(chargeDamage, this.currentEnemy.def, stats.crit + 15, this.character.element, this.currentEnemy.element);
+          
+          this.enemyCurrentHp = Math.max(0, this.enemyCurrentHp - result.damage);
+          this.createDamageNumber(result.damage, result.isCrit, false);
+          this.showCombatMessage(`⚡ Ataque carregado! (x${this.chargeTurns.toFixed(1)})`);
+          
+          // Reset charge state
+          this.isCharging = false;
+          this.chargeTurns = 0;
+          
+          if (result.elementMessage) {
+            this.showCombatMessage(result.elementMessage);
+          }
+          
+          if (this.enemyCurrentHp <= 0) {
+            this.victory();
+          } else {
+            this.enemyTurn();
+          }
+        } else {
+          // Start charging
+          this.isCharging = true;
+          this.chargeTurns = 1;
+          this.energy -= energyCost;
+          this.showCombatMessage('⚡ Carregando ataque... (segure para aumentar poder)');
           this.enemyTurn();
         }
         
@@ -4879,10 +5252,533 @@
         }).join('');
       }
 
+      // ARENA / BATTLE ROYALE GAME ENGINE
+      startArena() {
+        this.showScreen('arena');
+        this.inArena = true;
+        
+        // Initialize canvas
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 1200;
+        canvas.height = 700;
+        
+        // Arena game state
+        this.arena = {
+          player: {
+            x: 600,
+            y: 350,
+            width: 40,
+            height: 40,
+            speed: 5,
+            health: 100,
+            maxHealth: 100,
+            ammo: 30,
+            maxAmmo: 30,
+            angle: 0,
+            kills: 0,
+            abilities: {
+              1: { cooldown: 0, maxCooldown: 5 },
+              2: { cooldown: 0, maxCooldown: 8 },
+              3: { cooldown: 0, maxCooldown: 12 }
+            },
+            gun: {
+              damage: 10,
+              fireRate: 200,
+              lastShot: 0,
+              spread: 0.1
+            }
+          },
+          enemies: [],
+          projectiles: [],
+          obstacles: [],
+          particles: [],
+          camera: { x: 0, y: 0 },
+          keys: { w: false, a: false, s: false, d: false },
+          mouse: { x: 0, y: 0, down: false }
+        };
+        
+        // Generate map obstacles
+        this.generateArenaMap();
+        
+        // Spawn initial enemies
+        this.spawnArenaEnemies(5);
+        
+        // Setup event listeners
+        this.setupArenaControls();
+        
+        // Start game loop
+        this.arenaGameLoop();
+      }
+      
+      generateArenaMap() {
+        const { obstacles } = this.arena;
+        
+        // Add rocks
+        for (let i = 0; i < 15; i++) {
+          obstacles.push({
+            type: 'rock',
+            x: Math.random() * 1100 + 50,
+            y: Math.random() * 600 + 50,
+            width: 40 + Math.random() * 30,
+            height: 35 + Math.random() * 25,
+            color: '#6b7280',
+            emoji: '🪨'
+          });
+        }
+        
+        // Add trees
+        for (let i = 0; i < 20; i++) {
+          obstacles.push({
+            type: 'tree',
+            x: Math.random() * 1100 + 50,
+            y: Math.random() * 600 + 50,
+            width: 50,
+            height: 50,
+            color: '#22c55e',
+            emoji: '🌳'
+          });
+        }
+        
+        // Add brick walls
+        for (let i = 0; i < 10; i++) {
+          obstacles.push({
+            type: 'wall',
+            x: Math.random() * 1000 + 100,
+            y: Math.random() * 500 + 100,
+            width: 80 + Math.random() * 60,
+            height: 20,
+            color: '#8b4513',
+            emoji: '🧱'
+          });
+        }
+        
+        // Add houses
+        for (let i = 0; i < 4; i++) {
+          obstacles.push({
+            type: 'house',
+            x: Math.random() * 800 + 150,
+            y: Math.random() * 400 + 150,
+            width: 120,
+            height: 100,
+            color: '#dc2626',
+            emoji: '🏠'
+          });
+        }
+      }
+      
+      spawnArenaEnemies(count) {
+        const { enemies } = this.arena;
+        
+        for (let i = 0; i < count; i++) {
+          enemies.push({
+            x: Math.random() * 1100 + 50,
+            y: Math.random() * 600 + 50,
+            width: 40,
+            height: 40,
+            speed: 2 + Math.random() * 2,
+            health: 50 + Math.random() * 30,
+            maxHealth: 80,
+            angle: 0,
+            lastShot: 0,
+            fireRate: 1000 + Math.random() * 500,
+            damage: 5 + Math.random() * 5,
+            emoji: '👹'
+          });
+        }
+      }
+      
+      setupArenaControls() {
+        const canvas = document.getElementById('gameCanvas');
+        
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+          if (!this.inArena) return;
+          const key = e.key.toLowerCase();
+          if (this.arena.keys.hasOwnProperty(key)) {
+            this.arena.keys[key] = true;
+          }
+        });
+        
+        document.addEventListener('keyup', (e) => {
+          if (!this.inArena) return;
+          const key = e.key.toLowerCase();
+          if (this.arena.keys.hasOwnProperty(key)) {
+            this.arena.keys[key] = false;
+          }
+        });
+        
+        // Mouse controls
+        canvas.addEventListener('mousemove', (e) => {
+          if (!this.inArena) return;
+          const rect = canvas.getBoundingClientRect();
+          this.arena.mouse.x = e.clientX - rect.left;
+          this.arena.mouse.y = e.clientY - rect.top;
+        });
+        
+        canvas.addEventListener('mousedown', (e) => {
+          if (!this.inArena) return;
+          this.arena.mouse.down = true;
+          this.arenaShoot();
+        });
+        
+        canvas.addEventListener('mouseup', (e) => {
+          if (!this.inArena) return;
+          this.arena.mouse.down = false;
+        });
+        
+        canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+      }
+      
+      arenaGameLoop() {
+        if (!this.inArena) return;
+        
+        this.updateArena();
+        this.renderArena();
+        
+        requestAnimationFrame(() => this.arenaGameLoop());
+      }
+      
+      updateArena() {
+        const { player, enemies, projectiles, obstacles, keys, mouse } = this.arena;
+        
+        // Update player movement (WASD)
+        let dx = 0, dy = 0;
+        if (keys.w) dy -= 1;
+        if (keys.s) dy += 1;
+        if (keys.a) dx -= 1;
+        if (keys.d) dx += 1;
+        
+        // Normalize diagonal movement
+        if (dx !== 0 && dy !== 0) {
+          dx *= 0.707;
+          dy *= 0.707;
+        }
+        
+        const newX = player.x + dx * player.speed;
+        const newY = player.y + dy * player.speed;
+        
+        // Collision detection with obstacles
+        if (!this.checkCollision(newX, player.y, player.width, player.height, obstacles)) {
+          player.x = Math.max(player.width / 2, Math.min(1200 - player.width / 2, newX));
+        }
+        if (!this.checkCollision(player.x, newY, player.width, player.height, obstacles)) {
+          player.y = Math.max(player.height / 2, Math.min(700 - player.height / 2, newY));
+        }
+        
+        // Update player angle (aim at mouse)
+        player.angle = Math.atan2(mouse.y - player.y, mouse.x - player.x);
+        
+        // Auto-fire if mouse is down
+        if (mouse.down) {
+          this.arenaShoot();
+        }
+        
+        // Update ability cooldowns
+        Object.keys(player.abilities).forEach(key => {
+          if (player.abilities[key].cooldown > 0) {
+            player.abilities[key].cooldown -= 1 / 60; // Assuming 60 FPS
+          }
+        });
+        
+        // Update enemies
+        enemies.forEach(enemy => {
+          // Simple AI: move towards player
+          const angleToPlayer = Math.atan2(player.y - enemy.y, player.x - enemy.x);
+          enemy.angle = angleToPlayer;
+          
+          const enemyDx = Math.cos(angleToPlayer) * enemy.speed;
+          const enemyDy = Math.sin(angleToPlayer) * enemy.speed;
+          
+          const enemyNewX = enemy.x + enemyDx;
+          const enemyNewY = enemy.y + enemyDy;
+          
+          if (!this.checkCollision(enemyNewX, enemy.y, enemy.width, enemy.height, obstacles)) {
+            enemy.x = Math.max(enemy.width / 2, Math.min(1200 - enemy.width / 2, enemyNewX));
+          }
+          if (!this.checkCollision(enemy.x, enemyNewY, enemy.width, enemy.height, obstacles)) {
+            enemy.y = Math.max(enemy.height / 2, Math.min(700 - enemy.height / 2, enemyNewY));
+          }
+          
+          // Enemy shooting
+          const now = Date.now();
+          if (now - enemy.lastShot > enemy.fireRate) {
+            enemy.lastShot = now;
+            this.arenaShoot(enemy);
+          }
+        });
+        
+        // Update projectiles
+        projectiles.forEach((proj, index) => {
+          proj.x += Math.cos(proj.angle) * proj.speed;
+          proj.y += Math.sin(proj.angle) * proj.speed;
+          
+          // Remove if out of bounds
+          if (proj.x < 0 || proj.x > 1200 || proj.y < 0 || proj.y > 700) {
+            projectiles.splice(index, 1);
+            return;
+          }
+          
+          // Collision with obstacles
+          if (this.checkCollision(proj.x, proj.y, proj.width, proj.height, obstacles)) {
+            projectiles.splice(index, 1);
+            return;
+          }
+          
+          // Collision with enemies (player projectiles)
+          if (proj.owner === 'player') {
+            enemies.forEach((enemy, eIndex) => {
+              if (this.checkCollision(proj.x, proj.y, proj.width, proj.height, [{ x: enemy.x, y: enemy.y, width: enemy.width, height: enemy.height }])) {
+                enemy.health -= proj.damage;
+                projectiles.splice(index, 1);
+                
+                if (enemy.health <= 0) {
+                  enemies.splice(eIndex, 1);
+                  player.kills++;
+                  this.$('arenaKills').textContent = `💀 Kills: ${player.kills}`;
+                  
+                  // Spawn new enemy
+                  this.spawnArenaEnemies(1);
+                }
+              }
+            });
+          }
+          
+          // Collision with player (enemy projectiles)
+          if (proj.owner === 'enemy') {
+            if (this.checkCollision(proj.x, proj.y, proj.width, proj.height, [{ x: player.x, y: player.y, width: player.width, height: player.height }])) {
+              player.health -= proj.damage;
+              projectiles.splice(index, 1);
+              
+              if (player.health <= 0) {
+                this.exitArena();
+                alert(`💀 Game Over! Kills: ${player.kills}`);
+              }
+            }
+          }
+        });
+        
+        // Update UI
+        this.updateArenaUI();
+      }
+      
+      arenaShoot(shooter = null) {
+        const { player, projectiles } = this.arena;
+        const actualShooter = shooter || player;
+        const isPlayer = shooter === null;
+        
+        const now = Date.now();
+        const fireRate = isPlayer ? player.gun.fireRate : actualShooter.fireRate;
+        
+        if (now - (isPlayer ? player.gun.lastShot : actualShooter.lastShot) < fireRate) {
+          return;
+        }
+        
+        if (isPlayer) {
+          player.gun.lastShot = now;
+          if (player.ammo <= 0) return;
+          player.ammo--;
+        } else {
+          actualShooter.lastShot = now;
+        }
+        
+        // Add spread
+        const spread = isPlayer ? player.gun.spread : 0.2;
+        const angle = actualShooter.angle + (Math.random() - 0.5) * spread;
+        
+        projectiles.push({
+          x: actualShooter.x + Math.cos(angle) * 25,
+          y: actualShooter.y + Math.sin(angle) * 25,
+          width: 8,
+          height: 8,
+          speed: 12,
+          angle: angle,
+          damage: isPlayer ? player.gun.damage : actualShooter.damage,
+          owner: isPlayer ? 'player' : 'enemy',
+          color: isPlayer ? '#fbbf24' : '#ef4444'
+        });
+      }
+      
+      checkCollision(x, y, width, height, obstacles) {
+        for (const obs of obstacles) {
+          if (x < obs.x + obs.width &&
+              x + width > obs.x &&
+              y < obs.y + obs.height &&
+              y + height > obs.y) {
+            return true;
+          }
+        }
+        return false;
+      }
+      
+      renderArena() {
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const { player, enemies, projectiles, obstacles } = this.arena;
+        
+        // Clear canvas
+        ctx.fillStyle = '#2d5a27';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw grid
+        ctx.strokeStyle = '#3d6a37';
+        ctx.lineWidth = 1;
+        for (let x = 0; x < canvas.width; x += 50) {
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, canvas.height);
+          ctx.stroke();
+        }
+        for (let y = 0; y < canvas.height; y += 50) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(canvas.width, y);
+          ctx.stroke();
+        }
+        
+        // Draw obstacles
+        obstacles.forEach(obs => {
+          ctx.font = `${obs.width}px Arial`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(obs.emoji, obs.x + obs.width / 2, obs.y + obs.height / 2);
+        });
+        
+        // Draw enemies
+        enemies.forEach(enemy => {
+          ctx.save();
+          ctx.translate(enemy.x, enemy.y);
+          ctx.rotate(enemy.angle);
+          
+          // Body
+          ctx.fillStyle = '#ef4444';
+          ctx.beginPath();
+          ctx.arc(0, 0, enemy.width / 2, 0, Math.PI * 2);
+          ctx.fill();
+          
+          // Gun
+          ctx.fillStyle = '#8b4513';
+          ctx.fillRect(15, -3, 20, 6);
+          
+          // Emoji
+          ctx.font = '24px Arial';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(enemy.emoji, 0, 0);
+          
+          ctx.restore();
+          
+          // Health bar
+          const healthPercent = enemy.health / enemy.maxHealth;
+          ctx.fillStyle = '#333';
+          ctx.fillRect(enemy.x - 20, enemy.y - 30, 40, 6);
+          ctx.fillStyle = healthPercent > 0.5 ? '#22c55e' : healthPercent > 0.25 ? '#fbbf24' : '#ef4444';
+          ctx.fillRect(enemy.x - 20, enemy.y - 30, 40 * healthPercent, 6);
+        });
+        
+        // Draw player
+        ctx.save();
+        ctx.translate(player.x, player.y);
+        ctx.rotate(player.angle);
+        
+        // Body
+        ctx.fillStyle = '#3b82f6';
+        ctx.beginPath();
+        ctx.arc(0, 0, player.width / 2, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Gun
+        ctx.fillStyle = '#8b4513';
+        ctx.fillRect(15, -3, 25, 6);
+        
+        // Character emoji
+        ctx.font = '24px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(this.character.emoji, 0, 0);
+        
+        ctx.restore();
+        
+        // Draw projectiles
+        projectiles.forEach(proj => {
+          ctx.fillStyle = proj.color;
+          ctx.beginPath();
+          ctx.arc(proj.x, proj.y, proj.width / 2, 0, Math.PI * 2);
+          ctx.fill();
+          
+          // Trail effect
+          ctx.strokeStyle = proj.color;
+          ctx.lineWidth = 2;
+          ctx.globalAlpha = 0.3;
+          ctx.beginPath();
+          ctx.moveTo(proj.x, proj.y);
+          ctx.lineTo(proj.x - Math.cos(proj.angle) * 15, proj.y - Math.sin(proj.angle) * 15);
+          ctx.stroke();
+          ctx.globalAlpha = 1;
+        });
+      }
+      
+      updateArenaUI() {
+        const { player } = this.arena;
+        
+        // Health bar
+        const healthPercent = (player.health / player.maxHealth) * 100;
+        this.$('arenaHealthFill').style.width = healthPercent + '%';
+        this.$('arenaHealthText').textContent = `${Math.ceil(player.health)}/${player.maxHealth}`;
+        
+        // Ammo
+        this.$('arenaAmmo').textContent = `🔫 ${player.ammo}/${player.maxAmmo}`;
+        
+        // Avatar
+        this.$('arenaAvatar').textContent = this.character.emoji;
+        
+        // Ability cooldowns
+        Object.keys(player.abilities).forEach(key => {
+          const ability = player.abilities[key];
+          const cooldownEl = this.$(`ability${key}Cooldown`);
+          if (cooldownEl) {
+            const cooldownPercent = (ability.cooldown / ability.maxCooldown) * 100;
+            cooldownEl.style.height = cooldownPercent + '%';
+          }
+        });
+      }
+      
+      useAbility(slot) {
+        const { player } = this.arena;
+        const ability = player.abilities[slot];
+        
+        if (ability.cooldown > 0) return;
+        
+        ability.cooldown = ability.maxCooldown;
+        
+        // Apply ability effects
+        switch (slot) {
+          case 1: // Speed boost
+            player.speed = 10;
+            setTimeout(() => { player.speed = 5; }, 3000);
+            break;
+          case 2: // Heal
+            player.health = Math.min(player.maxHealth, player.health + 30);
+            break;
+          case 3: // Damage boost
+            player.gun.damage = 20;
+            setTimeout(() => { player.gun.damage = 10; }, 5000);
+            break;
+        }
+      }
+      
+      exitArena() {
+        this.inArena = false;
+        
+        // Remove event listeners
+        document.removeEventListener('keydown', null);
+        document.removeEventListener('keyup', null);
+        
+        this.showScreen('lobby');
+      }
     }
 
     window.game = new Game();
   </script>
 </body>
 </html>
- 
