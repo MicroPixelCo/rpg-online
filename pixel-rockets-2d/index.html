@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Rockets 2D - Rocket Builder Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 Pixel Rockets 2D</h1>
+            <p>Design and launch your own rocket with realistic 2D physics!</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Parts Panel -->
+            <div class="parts-panel">
+                <h2>Parts Inventory</h2>
+                <div class="parts-list">
+                    <button class="part-btn" id="capsule-btn" onclick="game.addPart('capsule')">
+                        <div class="icon">🛸</div>
+                        <div class="name">Capsule</div>
+                        <div class="weight">500kg</div>
+                    </button>
+                    <button class="part-btn" id="tank-btn" onclick="game.addPart('tank')">
+                        <div class="icon">🪣</div>
+                        <div class="name">Fuel Tank</div>
+                        <div class="weight">300kg</div>
+                    </button>
+                    <button class="part-btn" id="engine-btn" onclick="game.addPart('engine')">
+                        <div class="icon">⚙️</div>
+                        <div class="name">Engine</div>
+                        <div class="weight">200kg</div>
+                        <div class="thrust">1000N thrust</div>
+                    </button>
+                    <button class="part-btn" id="parachute-btn" onclick="game.addPart('parachute')">
+                        <div class="icon">🪂</div>
+                        <div class="name">Parachute</div>
+                        <div class="weight">50kg</div>
+                    </button>
+                    <button class="part-btn" id="fins-btn" onclick="game.addPart('fins')">
+                        <div class="icon">⬆️</div>
+                        <div class="name">Fins</div>
+                        <div class="weight">30kg</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Builder Section -->
+            <div class="builder-section">
+                <canvas id="rocketCanvas" width="400" height="500"></canvas>
+                
+                <div class="builder-info">
+                    <div class="stat">
+                        <span class="label">Total Weight</span>
+                        <span class="value" id="weight-stat">0 kg</span>
+                    </div>
+                    <div class="stat">
+                        <span class="label">Total Thrust</span>
+                        <span class="value" id="thrust-stat">0 N</span>
+                    </div>
+                    <div class="stat">
+                        <span class="label">Thrust/Weight</span>
+                        <span class="value" id="tw-stat">0.00</span>
+                    </div>
+                    <div class="stat">
+                        <span class="label">Parts</span>
+                        <span class="value" id="parts-count">0/6</span>
+                    </div>
+                </div>
+
+                <button class="launch-btn" id="launch-btn" onclick="game.launch()">LAUNCH ROCKET</button>
+                <button class="clear-btn" onclick="game.clear()">Clear All</button>
+            </div>
+
+            <!-- Controls Panel -->
+            <div class="controls-panel">
+                <h2>How to Play</h2>
+                <p><strong>Building:</strong></p>
+                <p>✓ Click parts to add them to your rocket</p>
+                <p>✓ Right-click to remove parts</p>
+                <p>✓ Max 6 parts total</p>
+                
+                <p><strong>Launch Requirements:</strong></p>
+                <p>✓ Must have Capsule</p>
+                <p>✓ Must have Engine</p>
+                <p>✓ Thrust/Weight must be > 1.0</p>
+                
+                <p><strong>Flight:</strong></p>
+                <p>✓ Engine burns for 5 seconds</p>
+                <p>✓ Parachute auto-deploys if equipped</p>
+                <p>✓ Reach maximum altitude!</p>
+
+                <div class="parts-count">
+                    Parts Added: <strong id="parts-added">0</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="engine.js"></script>
+    <script src="parts.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
